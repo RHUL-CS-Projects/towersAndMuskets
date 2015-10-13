@@ -27,25 +27,25 @@ add_executable (TowerDefense ${SOURCES})
 # Link ENet
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/enet;${CMAKE_MODULE_PATH}")
+find_package(ENet)
 
-find_path(ENet_INCLUDE_DIR enet/enet.h
-    ${CMAKE_SOURCE_DIR}/include
-)
+#find_path(ENet_INCLUDE_DIR enet/enet.h
+#    ${CMAKE_SOURCE_DIR}/include
+#)
 
-find_library(ENet_LIBRARY
-    NAMES enet
-    PATHS ${CMAKE_SOURCE_DIR}/lib
-    ${CMAKE_SOURCE_DIR}/lib/enet
-)
+#find_library(ENet_LIBRARY
+#    NAMES enet
+#    PATHS ${CMAKE_SOURCE_DIR}/lib/enet
+#)
   
-target_link_libraries(TowerDefense ${ENet_LIBRARY})
+target_link_libraries(TowerDefense ${ENet_LIBRARIES})
 
 # Link SFML
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/sfml;${CMAKE_MODULE_PATH}")
-set(SFML_ROOT "${CMAKE_SOURCE_DIR}/lib/sfml")
-find_package(SFML COMPONENTS network graphics window system audio)
-target_link_libraries(TowerDefense ${SFML_LIBRARIES})
+#set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/sfml;${CMAKE_MODULE_PATH}")
+#set(SFML_ROOT "${CMAKE_SOURCE_DIR}/lib/sfml")
+#find_package(SFML COMPONENTS network graphics window system audio)
+#target_link_libraries(TowerDefense ${SFML_LIBRARIES})
 
 
 
