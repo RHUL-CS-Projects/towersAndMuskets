@@ -10,9 +10,10 @@ int main() {
     
     cout << enet_time_get() << endl;
     
-    /*while (!sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-        cout << "Running" << endl;
-    }*/
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+		cout << "A pressed" << endl;
+	else
+		cout << "A not pressed, obviously" << endl;
     
     //cout << "Enet time: " << enet_time_get() << endl;
     
