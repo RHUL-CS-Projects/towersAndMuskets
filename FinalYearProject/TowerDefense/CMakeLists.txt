@@ -31,13 +31,12 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/enet;${CMAKE_MODULE_PATH}")
 find_path(ENet_INCLUDE_DIR enet/enet.h
     ${CMAKE_SOURCE_DIR}/include
 )
+
 find_library(ENet_LIBRARY
     NAMES enet
     PATHS ${CMAKE_SOURCE_DIR}/lib
+    ${CMAKE_SOURCE_DIR}/lib/enet
 )
-
-set(ENET_INCLUDE_DIR ${ENet_INCLUDE_DIR})
-set(ENET_LIBRARIES ${ENet_LIBRARY})
   
 target_link_libraries(TowerDefense ${ENet_LIBRARY})
 
@@ -47,7 +46,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/sfml;${CMAKE_MODULE_PATH}")
 set(SFML_ROOT "${CMAKE_SOURCE_DIR}/lib/sfml")
 find_package(SFML COMPONENTS network graphics window system audio)
 target_link_libraries(TowerDefense ${SFML_LIBRARIES})
-
 
 
 
