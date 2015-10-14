@@ -1,7 +1,13 @@
 cmake_minimum_required (VERSION 2.8)
 project (TowerDefense)
 
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
+if (${CMAKE_SIZEOF_VOID_P} STREQUAL 8)
+	message("64 Bit")
+else(${CMAKE_SIZEOF_VOID_P} STREQUAL 8)
+	message("32 Bit")
+endif(${CMAKE_SIZEOF_VOID_P} STREQUAL 8)
+
+#set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
 
 include_directories (
   ${CMAKE_SOURCE_DIR}/include 
@@ -44,16 +50,7 @@ target_link_libraries(TowerDefense ${ENet_LIBRARIES})
 
 # Link SFML
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/sfml;${CMAKE_MODULE_PATH}")
-set(SFML_ROOT "${CMAKE_SOURCE_DIR}/lib/sfml;${CMAKE_SOURCE_DIR}/include/sfml")
-find_package(SFML COMPONENTS network graphics window system audio)
-target_link_libraries(TowerDefense ${SFML_LIBRARIES})
-
-
-
-
-
-
-
-
-
+#set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/sfml;${CMAKE_MODULE_PATH}")
+#set(SFML_ROOT "${CMAKE_SOURCE_DIR}/lib/sfml;${CMAKE_SOURCE_DIR}/include/sfml")
+#find_package(SFML COMPONENTS network graphics window system audio)
+#target_link_libraries(TowerDefense ${SFML_LIBRARIES})

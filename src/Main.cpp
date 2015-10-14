@@ -1,6 +1,6 @@
 #include <iostream>
 #include <TestClass.h>
-#include <SFML/Window.hpp>
+//#include <SFML/Window.hpp>
 #include <enet/enet.h>
 
 using namespace std;
@@ -10,11 +10,11 @@ int main() {
     
     cout << enet_time_get() << endl;
     
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+	/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 		cout << "A pressed" << endl;
 	else
 		cout << "A not pressed, obviously" << endl;
-    
+    */
     //cout << "Enet time: " << enet_time_get() << endl;
     
     /*TestClass* test = new TestClass();
