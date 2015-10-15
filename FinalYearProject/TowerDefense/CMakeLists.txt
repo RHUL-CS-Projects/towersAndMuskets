@@ -51,7 +51,7 @@ target_link_libraries(TowerDefense ${ENet_LIBRARIES})
 
 # Link SFML
 
-#set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/sfml;${CMAKE_MODULE_PATH}")
-#set(SFML_ROOT "${CMAKE_SOURCE_DIR}/lib/sfml;${CMAKE_SOURCE_DIR}/include/sfml")
-#find_package(SFML COMPONENTS network graphics window system audio)
-#target_link_libraries(TowerDefense ${SFML_LIBRARIES})
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/sfml;${CMAKE_MODULE_PATH}")
+set(SFML_ROOT "${CMAKE_SOURCE_DIR}/lib/sfml;${CMAKE_SOURCE_DIR}/include/sfml")
+find_package(SFML COMPONENTS network graphics window system audio)
+target_link_libraries(TowerDefense ${SFML_LIBRARIES})

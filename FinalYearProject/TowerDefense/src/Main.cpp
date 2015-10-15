@@ -1,6 +1,10 @@
 #include <iostream>
 #include <TestClass.h>
-//#include <SFML/Window.hpp>
+#include <SFML/Window.hpp>
+#include <SFML/Audio.hpp>
+#include <SFML/Graphics.hpp>
+#include <SFML/Network.hpp>
+#include <SFML/System.hpp>
 #include <enet/enet.h>
 
 using namespace std;
@@ -8,13 +12,31 @@ using namespace std;
 int main() {
     cout << "Hello world!" << endl;
     
+    // Test ENet
     cout << enet_time_get() << endl;
     
-	/*if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-		cout << "A pressed" << endl;
-	else
-		cout << "A not pressed, obviously" << endl;
-    */
+    // Test SFML Window.hpp
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+            cout << "A pressed" << endl;
+    else
+            cout << "A not pressed, obviously" << endl;
+    
+    //Test SFML Audio.hpp
+    sf::Sound* sound = new sf::Sound();
+    delete sound;
+    
+    // Test SFML Graphics.hpp
+    sf::Color* color = new sf::Color(255, 0, 0);
+    delete color;
+    
+    // Test SFML Network.hpp
+    sf::IpAddress ip = sf::IpAddress::getLocalAddress();
+    cout << ip.toString() << endl;
+    
+    // Test SFML System.hpp
+    sf::Vector2<int>* vec = new sf::Vector2<int>(10,5);
+    delete vec;
+    
     //cout << "Enet time: " << enet_time_get() << endl;
     
     /*TestClass* test = new TestClass();
