@@ -1,4 +1,7 @@
 cmake_minimum_required (VERSION 2.8)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread")
 project (TowerDefense)
 
 if (${CMAKE_SIZEOF_VOID_P} STREQUAL 8)
@@ -20,7 +23,7 @@ include_directories (
  
 set (SOURCES 
   ./src/Main.cpp
-  ./src/TestClass.cpp
+  src/Server.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)

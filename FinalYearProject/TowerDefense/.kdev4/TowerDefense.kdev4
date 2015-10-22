@@ -7,7 +7,7 @@ Current Build Directory Index=0
 ProjectRootRelative=./
 
 [CMake][CMake Build Directory 0]
-Build Directory Path=file:///home/jon/finalyearproject/FinalYearProject/TowerDefense/build
+Build Directory Path=file:///home/jon/FinalYearProject/TowerDefense/build
 Build Type=
 CMake Binary=file:///usr/bin/cmake
 Environment Profile=
@@ -33,7 +33,7 @@ Arguments=
 Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
 Dependency Action=Nothing
 EnvironmentGroup=
-Executable=file:///home/jon/finalyearproject/FinalYearProject/TowerDefense/build/TowerDefense
+Executable=file:///home/jon/FinalYearProject/TowerDefense/build/TowerDefense
 External Terminal=konsole --noclose --workdir %workdir -e %exe
 Project Target=TowerDefense,TowerDefense
 Use External Terminal=false
