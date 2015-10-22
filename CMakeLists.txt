@@ -1,8 +1,9 @@
 cmake_minimum_required (VERSION 2.8)
+project (TowerDefense)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread")
-project (TowerDefense)
 
 if (${CMAKE_SIZEOF_VOID_P} STREQUAL 8)
 	message("64 Bit")
