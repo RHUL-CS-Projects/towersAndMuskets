@@ -41,6 +41,7 @@ void Client::connectToServer ( string address, enet_uint16 port ) {
 	ENetEvent event;
 	if (enet_host_service(client, &event, 5000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
 		cout << "Connected successfully" << endl;
+		enet_host_flush(client);
 	} else {
 		cout << "Could not connect to server!" << endl;
 		return;
