@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 #include <sfml/SFML/Network.hpp>
+#include <pthread.h>
+#include <thread>
 
 using namespace std;
 
@@ -29,7 +31,7 @@ void Client::connectToServer ( string address, enet_uint16 port ) {
 		cout << "There was an error starting the client!" << endl;
 		return;
 	}
-	
+
 	cout << "Client started" << endl;
 	cout << "Client public address: " << sf::IpAddress::getPublicAddress().toString() << endl;
 	cout << "Client local address : " << sf::IpAddress::getLocalAddress().toString() << endl;
@@ -41,7 +43,6 @@ void Client::connectToServer ( string address, enet_uint16 port ) {
 	ENetEvent event;
 	if (enet_host_service(client, &event, 5000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
 		cout << "Connected successfully" << endl;
-		enet_host_flush(client);
 	} else {
 		cout << "Could not connect to server!" << endl;
 		return;
@@ -52,11 +53,33 @@ void Client::connectToServer ( string address, enet_uint16 port ) {
 }
 
 void Client::beginListen() {
-
+	thread listenThread(&Client::listen, this);
+	listenThread.join();
 }
 
 void Client::listen() {
-
+	cout << "Listening for server activity..." << endl;
+	
+	ENetEvent receivedEvent;
+	
+	while (isConnected()) {
+		if (enet_host_service(client, &receivedEvent, 0) > 0) {
+			char buf[60];
+			enet_address_get_host_ip(&receivedEvent.peer->address, buf, 20);
+			cout << "Packet received from: " << buf << endl;
+			switch (receivedEvent.type) {
+				case ENET_EVENT_TYPE_CONNECT:
+					cout << "Packet type         : Client connected" << endl;
+					break;
+				case ENET_EVENT_TYPE_DISCONNECT:
+					cout << "Packet type         : Client disconnected" << endl;
+					break;
+			}
+			cout << endl;
+		}
+	}
+	
+	cout << "Finished listening" << endl;
 }
 
 void Client::disconnect() {

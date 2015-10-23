@@ -49,7 +49,9 @@ void Server::listen() {
 	
 	while (isRunning()) {
 		if (enet_host_service(server, &receivedEvent, 0) > 0) {
-			cout << "Packet received from: " << receivedEvent.peer->address.host << endl;
+			char buf[60];
+			enet_address_get_host_ip(&receivedEvent.peer->address, buf, 20);
+			cout << "Packet received from: " << buf << endl;
 			switch (receivedEvent.type) {
 				case ENET_EVENT_TYPE_CONNECT:
 					cout << "Packet type         : Client connected" << endl;
