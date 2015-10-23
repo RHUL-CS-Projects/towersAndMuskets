@@ -11,7 +11,7 @@ private:
 public :
 	Server();
 	~Server();
-	void startServer(enet_uint16 port);
+	void startServer(enet_uint16 port = 25565);
 	void stopServer();
 	void beginListen();
 	
