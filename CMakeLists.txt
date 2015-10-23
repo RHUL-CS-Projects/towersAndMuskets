@@ -23,8 +23,9 @@ include_directories (
 )
  
 set (SOURCES 
-  ./src/Main.cpp
+  src/Main.cpp
   src/Server.cpp
+  src/Client.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)

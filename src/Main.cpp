@@ -1,16 +1,28 @@
 #include <iostream>
 #include <Server.h>
+#include <Client.h>
+#include <string>
 
 using namespace std;
 
 int main() {
 	enet_uint16 port;
 	
-    cout << "Enter a port: ";
-	cin >> port;
+	string input;
 	
-	Server server;
-	server.startServer(port);
+	cout << "Host? y/n: ";
+	cin >> input;
+	
+	if (input[0] == 'y') {
+		Server server;
+		server.startServer();
+	} else {
+		cout << "Connect to ip: ";
+		cin >> input;
+		
+		Client client;
+		client.connectToServer(input);
+	}
 	
 	return 0;
 }
