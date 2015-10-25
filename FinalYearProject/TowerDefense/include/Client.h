@@ -5,6 +5,7 @@ class Client {
 private:
 	ENetAddress serverAddress;
 	ENetHost* client;
+	ENetPeer* server;
 	bool connected;
 	
 	void listen();

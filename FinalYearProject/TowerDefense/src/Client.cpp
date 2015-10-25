@@ -17,29 +17,36 @@ Client::~Client() {
 	}
 }
 
+/**
+ * Connect to a server on a specific address and port.
+ */
 void Client::connectToServer ( string address, enet_uint16 port ) {
 	serverAddress.port = port;
 	
+	// Resolve string address to an actual host
 	if (enet_address_set_host(&serverAddress, address.c_str()) < 0) {
 		cout << "Invalid server address" << endl;
 		return;
 	}
 	
+	// Create the client with 2 channels and no bandwidth limit
 	client = enet_host_create(NULL, 1, 2, 0, 0);
 	
 	if (!client) {
 		cout << "There was an error starting the client!" << endl;
 		return;
 	}
-
+	
 	cout << "Client started" << endl;
 	cout << "Client public address: " << sf::IpAddress::getPublicAddress().toString() << endl;
 	cout << "Client local address : " << sf::IpAddress::getLocalAddress().toString() << endl;
 	cout << "Client port          : " << port << endl;
 	
+	// Connect to the server
 	cout << "Connecting to server at " << address << "..." << endl;
-	ENetPeer* server = enet_host_connect(client, &serverAddress, 2, 0);
+	server = enet_host_connect(client, &serverAddress, 2, 0);
 	
+	// Wait for server to acknowledge connection
 	ENetEvent event;
 	if (enet_host_service(client, &event, 5000) > 0 && event.type == ENET_EVENT_TYPE_CONNECT) {
 		cout << "Connected successfully" << endl;
@@ -49,14 +56,22 @@ void Client::connectToServer ( string address, enet_uint16 port ) {
 	}
 	
 	connected = true;
+	
+	// Begin listening for packets
 	beginListen();
 }
 
+/**
+ * Start a new thread to listen for packets
+ */
 void Client::beginListen() {
 	thread listenThread(&Client::listen, this);
 	listenThread.join();
 }
 
+/**
+ * Use ENet's host service to receive packets from the server
+ */
 void Client::listen() {
 	cout << "Listening for server activity..." << endl;
 	
@@ -82,13 +97,33 @@ void Client::listen() {
 	cout << "Finished listening" << endl;
 }
 
+/**
+ * Close the connection and destroy the client
+ */
 void Client::disconnect() {
-	connected = false;
-	cout << "Stopping client..." << endl;
-	enet_host_destroy(client);
-	cout << "Client stopped" << endl;
+	if (isConnected()) {
+		cout << "Stopping client..." << endl;
+		enet_peer_disconnect(server, 0);
+		enet_host_flush(client);
+		connected = false;
+		enet_host_destroy(client);
+		cout << "Client stopped" << endl;
+	}
 }
 
+/**
+ * Returns whether or not the client is currently connected to a server
+ */
 bool Client::isConnected() {
 	return connected;
 }
+
+
+
+
+
+
+
+
+
+
