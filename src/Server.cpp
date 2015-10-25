@@ -1,5 +1,7 @@
 #include <Server.h>
 #include <iostream>
+#include <string>
+#include <cstring>
 #include <pthread.h>
 #include <thread>
 #include <sfml/SFML/Network.hpp>
@@ -61,6 +63,13 @@ void Server::listen() {
 				case ENET_EVENT_TYPE_DISCONNECT:
 					cout << "Packet type         : Client disconnected" << endl;
 					break;
+				case ENET_EVENT_TYPE_RECEIVE:
+					string data((char *)receivedEvent.packet->data);
+					if (data == "RequestTime") {
+						syncClockReply(receivedEvent.peer);
+					}
+					cout << "Packet data         : " << data << endl;
+					break;
 			}
 			cout << endl;
 		}
@@ -69,6 +78,19 @@ void Server::listen() {
 	}
 	
 	cout << "Finished listening" << endl;
+}
+
+/**
+ * Reply to a peer with the current time for syncing clocks
+ */
+void Server::syncClockReply ( ENetPeer* peer ) {
+	string data = "RequestTime" + to_string(enet_time_get());
+	char buffer[data.length()+1];
+	strncpy(buffer, data.c_str(), data.length());
+	buffer[data.length()] = 0;
+	ENetPacket* packet = enet_packet_create(buffer, data.length(), ENET_PACKET_FLAG_RELIABLE);
+	enet_peer_send(peer, 0, packet);
+	enet_host_flush(server);
 }
 
 void Server::stopServer() {

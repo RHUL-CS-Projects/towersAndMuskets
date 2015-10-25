@@ -79,6 +79,7 @@ void Client::listen() {
 	cout << "Listening for server activity..." << endl;
 	
 	ENetEvent receivedEvent;
+	int syncTimes = 10;
 	
 	while (isConnected()) {
 		if (enet_host_service(client, &receivedEvent, 0) > 0) {
@@ -86,15 +87,28 @@ void Client::listen() {
 			enet_address_get_host_ip(&receivedEvent.peer->address, buf, 20);
 			cout << "Packet received from: " << buf << endl;
 			switch (receivedEvent.type) {
-				case ENET_EVENT_TYPE_CONNECT:
+				/*case ENET_EVENT_TYPE_CONNECT:
 					cout << "Packet type         : Client connected" << endl;
 					break;
 				case ENET_EVENT_TYPE_DISCONNECT:
 					cout << "Packet type         : Client disconnected" << endl;
+					break;*/
+				case ENET_EVENT_TYPE_RECEIVE:
+					string data((char *)receivedEvent.packet->data);
+					if (data.find("RequestTime") == 0) {
+						cout << "Roundtrip time      : " << server->roundTripTime << endl;
+						data.erase(0, 11);
+						cout << "Server time         : " << data << endl;
+						enet_time_set(server->roundTripTime + atoi(data.c_str()));
+						cout << "Setting own clock   : " << enet_time_get() << endl;
+					} else {
+						cout << "Packet data         : " << data << endl;
+					}
 					break;
 			}
 			cout << endl;
 		}
+		//cout << enet_time_get() << endl;
 	}
 	
 	cout << "Finished listening" << endl;
@@ -118,15 +132,12 @@ void Client::disconnect() {
  * Synchronise ENet time with the server's time
  */
 void Client::syncClockWithServer() {
-	// Ping the server a few times
-	for (int i = 0; i < 5; ++i) {
-		enet_peer_ping(server);
-		cout << "Average round trip time: " << server->roundTripTime << endl;
-	}
-	
-	
-}
+	// Send a request to server to get round-trip time and server time
+	char buffer[12] = "RequestTime";
+	ENetPacket* timePacket = enet_packet_create(buffer, 12, ENET_PACKET_FLAG_RELIABLE);
 
+	enet_peer_send(server, 0, timePacket);
+}
 
 /**
  * Returns whether or not the client is currently connected to a server

@@ -14,6 +14,7 @@ public :
 	void startServer(enet_uint16 port = 25565);
 	void stopServer();
 	void beginListen();
+	void syncClockReply(ENetPeer* peer);
 	
 	bool isRunning();
 };
