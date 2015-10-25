@@ -3,24 +3,41 @@
 #include <Client.h>
 #include <string>
 
+#include <signal.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+
 using namespace std;
 
+Server server;
+Client client;
+
+void signalExit(int s) {
+	server.stopServer();
+	client.disconnect();
+}
+
 int main() {
-	enet_uint16 port;
+	struct sigaction sigIntHandler;
+	sigIntHandler.sa_handler = signalExit;
+	sigemptyset(&sigIntHandler.sa_mask);
+	sigIntHandler.sa_flags = 0;
 	
+	sigaction(SIGINT, &sigIntHandler, NULL);
+	
+	enet_uint16 port;
 	string input;
 	
 	cout << "Host? y/n: ";
 	cin >> input;
 	
 	if (input[0] == 'y') {
-		Server server;
 		server.startServer();
 	} else {
 		cout << "Connect to ip: ";
 		cin >> input;
 		
-		Client client;
 		client.connectToServer(input);
 	}
 	

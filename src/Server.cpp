@@ -68,10 +68,12 @@ void Server::listen() {
 }
 
 void Server::stopServer() {
-	running = false;
-	cout << "Stopping server..." << endl;
-	enet_host_destroy(server);
-	cout << "Server stopped" << endl;
+	if (isRunning()) {
+		cout << "Stopping server..." << endl;
+		running = false;
+		enet_host_destroy(server);
+		cout << "Server stopped" << endl;
+	}
 }
 
 /**
