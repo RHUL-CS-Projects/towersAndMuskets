@@ -33,6 +33,8 @@ void Server::startServer(enet_uint16 port) {
 	cout << "Server public address: " << sf::IpAddress::getPublicAddress().toString() << endl;
 	cout << "Server local address : " << sf::IpAddress::getLocalAddress().toString() << endl;
 	cout << "Server port          : " << port << endl;
+	
+	enet_time_set(0);
 	running = true;
 	beginListen();
 }
@@ -62,6 +64,8 @@ void Server::listen() {
 			}
 			cout << endl;
 		}
+		
+		//cout << enet_time_get() << endl;
 	}
 	
 	cout << "Finished listening" << endl;

@@ -57,6 +57,9 @@ void Client::connectToServer ( string address, enet_uint16 port ) {
 	
 	connected = true;
 	
+	// Sync clocks with the server
+	syncClockWithServer();
+	
 	// Begin listening for packets
 	beginListen();
 }
@@ -110,6 +113,20 @@ void Client::disconnect() {
 		cout << "Client stopped" << endl;
 	}
 }
+
+/**
+ * Synchronise ENet time with the server's time
+ */
+void Client::syncClockWithServer() {
+	// Ping the server a few times
+	for (int i = 0; i < 5; ++i) {
+		enet_peer_ping(server);
+		cout << "Average round trip time: " << server->roundTripTime << endl;
+	}
+	
+	
+}
+
 
 /**
  * Returns whether or not the client is currently connected to a server

@@ -15,6 +15,7 @@ public :
 	void connectToServer(std::string address, enet_uint16 port = 25565);
 	void disconnect();
 	void beginListen();
+	void syncClockWithServer();
 	
 	bool isConnected();
 };
