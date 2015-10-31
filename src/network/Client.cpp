@@ -99,7 +99,7 @@ void Client::listen() {
 						cout << "Roundtrip time      : " << server->roundTripTime << endl;
 						data.erase(0, 11);
 						cout << "Server time         : " << data << endl;
-						enet_time_set(server->roundTripTime + atoi(data.c_str()));
+						enet_time_set(atoi(data.c_str()));
 						cout << "Setting own clock   : " << enet_time_get() << endl;
 					} else {
 						cout << "Packet data         : " << data << endl;
