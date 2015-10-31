@@ -3,7 +3,10 @@ project (TowerDefense)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lX11 -lGL -lGLU -lXrandr -lXext")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lGL -lXxf86vm -lXext -lX11 -lXcursor")
+#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread -lX11 -lGL -lGLU -lXrandr -lXext")
+
 
 if (${CMAKE_SIZEOF_VOID_P} STREQUAL 8)
 	message("64 Bit")
@@ -60,3 +63,22 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/sfml;${CMAKE_MODULE_PATH}")
 set(SFML_ROOT "${CMAKE_SOURCE_DIR}/lib/sfml;${CMAKE_SOURCE_DIR}/include/sfml")
 find_package(SFML COMPONENTS network graphics window system audio)
 target_link_libraries(TowerDefense ${SFML_LIBRARIES})
+
+
+# Find irrlicht dependencies
+#find_package(X11)
+#find_package(OpenGL)
+#find_package(GLUT)
+#find_package(ZLIB)
+
+#target_link_libraries(TowerDefense
+#	${X11_LIBRARIES}
+#	${OPENGL_LIBRARIES}
+#	${GLUT_LIBRARIES}
+#	${ZLIB_LIBRARIES}
+#)
+
+# Link Irrlicht
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/irrlicht;${CMAKE_MODULE_PATH}")
+find_package(Irrlicht)
+target_link_libraries(TowerDefense ${Irrlicht_LIBRARIES} -lGL -lXxf86vm -lXext -lX11 -lXcursor)
