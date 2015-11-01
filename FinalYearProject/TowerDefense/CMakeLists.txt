@@ -37,7 +37,8 @@ set (SOURCES
 
 add_executable (TowerDefense ${SOURCES})
 #file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR }/res)
-#file(COPY ${CMAKE_SOURCE_DIR }/res/ DESTINATION ${CMAKE_SOURCE_DIR }/bin/res) 
+file(REMOVE_RECURSE ${CMAKE_SOURCE_DIR}/build/res)
+file(COPY ${CMAKE_SOURCE_DIR}/res/ DESTINATION ${CMAKE_SOURCE_DIR}/build/res) 
 #file(COPY ${CMAKE_SOURCE_DIR }/src/resources.cfg DESTINATION ${CMAKE_SOURCE_DIR }/bin)
 #file(COPY ${CMAKE_SOURCE_DIR }/src/plugins.cfg DESTINATION ${CMAKE_SOURCE_DIR }/bin)
 
