@@ -61,25 +61,42 @@ int main() {
 	guienv->addStaticText(L"Hello world!", rect<s32>(10,10,260,22), true);
 	guienv->addButton(rect<s32>(10,40,140,80),0, -1, L"Click me");
 	
-	IAnimatedMesh* mesh = smgr->getMesh("./res/models/humantest.obj");
+	IAnimatedMesh* mesh = smgr->getMesh("./res/models/humantest.x");
 	if (!mesh) {
 		cout << "Mesh not found!" << endl;
 	}
 	
 	for (int i = 0; i < 10; ++i) {
 		for (int j = 0; j < 10; ++j) {
-			IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode(mesh);
-			if (node) {
-				node->setMaterialFlag(video::EMF_LIGHTING, true);
-				node->setMaterialFlag(video::EMF_GOURAUD_SHADING, true);
+			
+		}
+	}
+	
+	for (int i = 0; i < 10; ++i) {
+		for (int j = 0; j < 10; ++j) {
+			IAnimatedMeshSceneNode* animnode = smgr->addAnimatedMeshSceneNode(mesh);
+			if (animnode) {
+				animnode->setMaterialFlag(video::EMF_LIGHTING, true);
+				animnode->setMaterialFlag(video::EMF_GOURAUD_SHADING, true);
 				//node->setMD2Animation(scene::EMAT_STAND);
-				node->setMaterialTexture(0, driver->getTexture("./res/materials/textures/ManTexture.png"));
-				node->setPosition(vector3df(i*5,0,j*10));
+				animnode->setMaterialTexture(0, driver->getTexture("./res/materials/textures/ManTexture.png"));
+				animnode->setPosition(vector3df(i*10,0,j*15));
+				animnode->setRotation(vector3df(0, rand()%360,0));
+				
+				if (rand()%2 == 1) {
+					animnode->setFrameLoop(1,61);
+					animnode->setCurrentFrame(1+rand()%(62-1));
+				} else {
+					animnode->setFrameLoop(62,142);
+					animnode->setCurrentFrame(62+rand()%(142-62));
+				}
+				//animnode->setFrameLoop(63,142);
+				animnode->setAnimationSpeed(60);
 			}
 		}
 	}
 	
-	IMeshSceneNode* node = smgr->addCubeSceneNode(100, 0, -1, vector3df(25,0,40), vector3df(0,0,0), vector3df(1,0,1));
+	IMeshSceneNode* node = smgr->addCubeSceneNode(200, 0, -1, vector3df(25,0,40), vector3df(0,0,0), vector3df(1,0,1));
 	node->setMaterialFlag(video::EMF_LIGHTING, true);
 	
 	smgr->setAmbientLight(SColorf(0.5f, 0.5f, 0.5f));
