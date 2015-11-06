@@ -48,7 +48,7 @@ int main() {
 		client.connectToServer(input);
 	}*/
 	
-	IrrlichtDevice* device = createDevice(video::EDT_OPENGL, dimension2d<u32>(1280, 720), 16, false, false, false, 0);
+	IrrlichtDevice* device = createDevice(video::EDT_OPENGL, dimension2d<u32>(1280, 720), 16, false, true);
 	
 	if (!device)
 		return 1;
@@ -68,9 +68,10 @@ int main() {
 	
 	for (int i = 0; i < 10; ++i) {
 		for (int j = 0; j < 10; ++j) {
-			IMeshSceneNode* node = smgr->addMeshSceneNode(mesh);
+			IAnimatedMeshSceneNode* node = smgr->addAnimatedMeshSceneNode(mesh);
 			if (node) {
-				node->setMaterialFlag(video::EMF_LIGHTING, false);
+				node->setMaterialFlag(video::EMF_LIGHTING, true);
+				node->setMaterialFlag(video::EMF_GOURAUD_SHADING, true);
 				//node->setMD2Animation(scene::EMAT_STAND);
 				node->setMaterialTexture(0, driver->getTexture("./res/materials/textures/ManTexture.png"));
 				node->setPosition(vector3df(i*5,0,j*10));
@@ -78,13 +79,19 @@ int main() {
 		}
 	}
 	
+	IMeshSceneNode* node = smgr->addCubeSceneNode(100, 0, -1, vector3df(25,0,40), vector3df(0,0,0), vector3df(1,0,1));
+	node->setMaterialFlag(video::EMF_LIGHTING, true);
+	
+	smgr->setAmbientLight(SColorf(0.5f, 0.5f, 0.5f));
+	smgr->addLightSceneNode(0, vector3df(-20,30,45), SColorf(1,0.9f,0.5f), 100);
+	
 	//smgr->addCameraSceneNode(0, vector3df(-8, 10, 0), vector3df(0, 5, 0));
 	smgr->addCameraSceneNodeFPS(0, 50, 0.01f);
 	smgr->getActiveCamera()->setPosition(vector3df(-8, 10, 0));
 	smgr->getActiveCamera()->setTarget(vector3df(0, 5, 0));
 	
 	while (device->run()) {
-		driver->beginScene(true, true, SColor(255,100,101,140));
+		driver->beginScene(true, true, SColor(0,0,0,0));
 		
 		smgr->drawAll();
 		guienv->drawAll();
