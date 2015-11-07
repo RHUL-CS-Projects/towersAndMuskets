@@ -25,33 +25,11 @@ void signalExit(int s) {
 	client.disconnect();
 }
 
-int main() {
-	/*struct sigaction sigIntHandler;
-	sigIntHandler.sa_handler = signalExit;
-	sigemptyset(&sigIntHandler.sa_mask);
-	sigIntHandler.sa_flags = 0;
-	
-	sigaction(SIGINT, &sigIntHandler, NULL);
-	
-	enet_uint16 port;
-	string input;
-	
-	cout << "Host? y/n: ";
-	cin >> input;
-	
-	if (input[0] == 'y') {
-		server.startServer();
-	} else {
-		cout << "Connect to ip: ";
-		cin >> input;
-		
-		client.connectToServer(input);
-	}*/
-	
-	IrrlichtDevice* device = createDevice(video::EDT_OPENGL, dimension2d<u32>(1280, 720), 16, false, true);
+void basicGraphics() {
+	IrrlichtDevice* device = createDevice(video::EDT_OPENGL, dimension2d<u32>(1280, 720), 32, false, true);
 	
 	if (!device)
-		return 1;
+		return;
 	
 	device->setWindowCaption(L"Tower Defense");
 	IVideoDriver* driver = device->getVideoDriver();
@@ -78,10 +56,14 @@ int main() {
 			if (animnode) {
 				animnode->setMaterialFlag(video::EMF_LIGHTING, true);
 				animnode->setMaterialFlag(video::EMF_GOURAUD_SHADING, true);
-				//node->setMD2Animation(scene::EMAT_STAND);
+
 				animnode->setMaterialTexture(0, driver->getTexture("./res/materials/textures/ManTexture.png"));
 				animnode->setPosition(vector3df(i*10,0,j*15));
 				animnode->setRotation(vector3df(0, rand()%360,0));
+				
+				animnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
+				
+				animnode->addShadowVolumeSceneNode();
 				
 				if (rand()%2 == 1) {
 					animnode->setFrameLoop(1,61);
@@ -96,27 +78,74 @@ int main() {
 		}
 	}
 	
-	IMeshSceneNode* node = smgr->addCubeSceneNode(200, 0, -1, vector3df(25,0,40), vector3df(0,0,0), vector3df(1,0,1));
-	node->setMaterialFlag(video::EMF_LIGHTING, true);
-	
-	smgr->setAmbientLight(SColorf(0.5f, 0.5f, 0.5f));
-	smgr->addLightSceneNode(0, vector3df(-20,30,45), SColorf(1,0.9f,0.5f), 100);
+	smgr->setShadowColor(video::SColor(80,0,0,0));
+	smgr->setAmbientLight(SColorf(0.8f, 0.8f, 0.8f));
+	vector3df lightdir = vector3df( 0.8f, -1, 0.8f ).normalize();
+	ILightSceneNode* light = smgr->addLightSceneNode(0, -lightdir * 10000, SColorf(1,1,1), 100000);
+	light->setLightType(video::ELT_DIRECTIONAL);
+	light->getLightData().Direction = lightdir;
 	
 	//smgr->addCameraSceneNode(0, vector3df(-8, 10, 0), vector3df(0, 5, 0));
 	smgr->addCameraSceneNodeFPS(0, 50, 0.01f);
 	smgr->getActiveCamera()->setPosition(vector3df(-8, 10, 0));
-	smgr->getActiveCamera()->setTarget(vector3df(0, 5, 0));
+	smgr->getActiveCamera()->setTarget(vector3df(20, 5,20));
+	smgr->getActiveCamera()->setFarValue(10000.0f);
+	
+	ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
+		"./res/materials/textures/terrain-heightmap-flat.bmp", 
+		0, 
+		-1, 
+		vector3df(-200,0,-200),
+		vector3df(0,0,0),
+		vector3df(20,4,20),
+		SColor(255,255,255,255),
+		5,
+		scene::ETPS_17,
+		4
+  		);
+	
+	terrain->setMaterialFlag(video::EMF_LIGHTING, true);
+	terrain->setMaterialTexture(0, driver->getTexture("./res/materials/textures/grass-texture.jpg"));
+	terrain->setMaterialTexture(1, driver->getTexture("./res/materials/textures/grass-texture.jpg"));
+	terrain->setMaterialType(video::EMT_DETAIL_MAP);
+	terrain->scaleTexture(500, 500);
 	
 	while (device->run()) {
 		driver->beginScene(true, true, SColor(0,0,0,0));
 		
 		smgr->drawAll();
-		guienv->drawAll();
+		//guienv->drawAll();
 		
 		driver->endScene();
 	}
 	
 	device->drop();
+}
+
+int main() {
+	struct sigaction sigIntHandler;
+	sigIntHandler.sa_handler = signalExit;
+	sigemptyset(&sigIntHandler.sa_mask);
+	sigIntHandler.sa_flags = 0;
+	
+	sigaction(SIGINT, &sigIntHandler, NULL);
+	
+	/*enet_uint16 port;
+	string input;
+	
+	cout << "Host? y/n: ";
+	cin >> input;
+	
+	if (input[0] == 'y') {
+		server.startServer();
+	} else {
+		cout << "Connect to ip: ";
+		cin >> input;
+		
+		client.connectToServer(input);
+	}*/
+	
+	basicGraphics();
 	
 	return 0;
 }
