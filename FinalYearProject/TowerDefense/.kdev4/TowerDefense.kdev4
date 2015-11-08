@@ -30,8 +30,8 @@ Type=Native Application
 
 [Launch][Launch Configuration 0][Data]
 Arguments=
-Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
-Dependency Action=Nothing
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\x18\x00T\x00o\x00w\x00e\x00r\x00D\x00e\x00f\x00e\x00n\x00s\x00e)
+Dependency Action=Build
 EnvironmentGroup=
 Executable=file:///home/jon/FinalYearProject/TowerDefense/build/TowerDefense
 External Terminal=konsole --noclose --workdir %workdir -e %exe
