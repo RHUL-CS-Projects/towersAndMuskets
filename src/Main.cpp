@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include <ObjectManager.h>
+
 using namespace std;
 using namespace irr;
 using namespace core;
@@ -50,16 +52,17 @@ void basicGraphics() {
 		}
 	}
 	
-	for (int i = 0; i < 10; ++i) {
-		for (int j = 0; j < 10; ++j) {
+	for (int i = 0; i < 5; ++i) {
+		for (int j = 0; j < 5; ++j) {
 			IAnimatedMeshSceneNode* animnode = smgr->addAnimatedMeshSceneNode(mesh);
 			if (animnode) {
 				animnode->setMaterialFlag(video::EMF_LIGHTING, true);
 				animnode->setMaterialFlag(video::EMF_GOURAUD_SHADING, true);
 
 				animnode->setMaterialTexture(0, driver->getTexture("./res/materials/textures/ManTexture.png"));
-				animnode->setPosition(vector3df(i*10,0,j*15));
+				animnode->setPosition(vector3df(i*20,0,j*30));
 				animnode->setRotation(vector3df(0, rand()%360,0));
+				animnode->getMaterial(0).SpecularColor = SColor(0,0,0,0);
 				
 				animnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 				
@@ -86,7 +89,7 @@ void basicGraphics() {
 	light->getLightData().Direction = lightdir;
 	
 	//smgr->addCameraSceneNode(0, vector3df(-8, 10, 0), vector3df(0, 5, 0));
-	smgr->addCameraSceneNodeFPS(0, 50, 0.01f);
+	smgr->addCameraSceneNodeFPS(0, 50, 0.1f);
 	smgr->getActiveCamera()->setPosition(vector3df(-8, 10, 0));
 	smgr->getActiveCamera()->setTarget(vector3df(20, 5,20));
 	smgr->getActiveCamera()->setFarValue(10000.0f);
@@ -95,9 +98,9 @@ void basicGraphics() {
 		"./res/materials/textures/terrain-heightmap-flat.bmp", 
 		0, 
 		-1, 
-		vector3df(-200,0,-200),
+		vector3df(-128*4,0,-128*4),
 		vector3df(0,0,0),
-		vector3df(20,4,20),
+		vector3df(4,0.5f,4),
 		SColor(255,255,255,255),
 		5,
 		scene::ETPS_17,
@@ -108,13 +111,18 @@ void basicGraphics() {
 	terrain->setMaterialTexture(0, driver->getTexture("./res/materials/textures/grass-texture.jpg"));
 	terrain->setMaterialTexture(1, driver->getTexture("./res/materials/textures/grass-texture.jpg"));
 	terrain->setMaterialType(video::EMT_DETAIL_MAP);
-	terrain->scaleTexture(500, 500);
+	terrain->scaleTexture(250, 250);
+// 	terrain->overrideLODDistance(0, 10000);
+// 	terrain->overrideLODDistance(1, 11000);
+// 	terrain->overrideLODDistance(2, 12000);
+// 	terrain->overrideLODDistance(3, 13000);
+// 	terrain->overrideLODDistance(4, 14000);
 	
 	while (device->run()) {
-		driver->beginScene(true, true, SColor(0,0,0,0));
+		driver->beginScene(true, true, SColor(255,159,200,214));
 		
 		smgr->drawAll();
-		//guienv->drawAll();
+		//guienv->drawAll(); 
 		
 		driver->endScene();
 	}
@@ -145,7 +153,12 @@ int main() {
 		client.connectToServer(input);
 	}*/
 	
-	basicGraphics();
+	//basicGraphics();
+	cout << "Total Objects: " << ObjectManager::getObjectCount() << endl;
+	
+	ObjectManager::createObject();
+	ObjectManager::createObject();
+	cout << "Total Objects: " << ObjectManager::getObjectCount() << endl;
 	
 	return 0;
 }

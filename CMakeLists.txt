@@ -29,6 +29,7 @@ set (SOURCES
   src/Main.cpp
   src/network/Server.cpp
   src/network/Client.cpp
+  src/ObjectManager.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)
