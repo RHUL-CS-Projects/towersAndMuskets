@@ -1,3 +1,6 @@
+#ifndef CLIENT_H
+#define CLIENT_H
+
 #include <enet/enet.h>
 #include <string>
 
@@ -19,3 +22,5 @@ public :
 	
 	bool isConnected();
 };
+
+#endif

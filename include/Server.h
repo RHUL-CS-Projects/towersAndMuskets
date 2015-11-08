@@ -1,3 +1,6 @@
+#ifndef SERVER_H
+#define SERVER_H
+
 #include <enet/enet.h>
 
 class Server {
@@ -18,3 +21,5 @@ public :
 	
 	bool isRunning();
 };
+
+#endif

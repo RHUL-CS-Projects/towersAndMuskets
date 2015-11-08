@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include <ObjectManager.h>
+#include <TransformComponent.h>
 
 using namespace std;
 using namespace irr;
@@ -156,10 +157,59 @@ int main() {
 	//basicGraphics();
 	cout << "Total Objects: " << ObjectManager::getObjectCount() << endl;
 	
-	ObjectManager::createObject();
-	ObjectManager::createObject();
+	int obj1 = ObjectManager::createObject();
+	int obj2 = ObjectManager::createObject();
+	int obj3 = ObjectManager::createObject();
+	int obj4 = ObjectManager::createObject();
+	cout << "Total Objects: " << ObjectManager::getObjectCount() << endl;
+	ObjectManager::printGameObject(obj1);
+	
+	// Add a transform component to obj1, obj3, and obj4
+	TransformComponent transform(vector3df(0,0,0));
+ 	ObjectManager::attachComponent(obj1, transform);
+	
+	TransformComponent transform3(vector3df(0,0,0));
+ 	ObjectManager::attachComponent(obj3, transform3);
+	
+	TransformComponent transform4(vector3df(0,0,0));
+ 	ObjectManager::attachComponent(obj4, transform4);
+	
+	ObjectManager::printGameObject(obj1);
+	
+	if (ObjectManager::objectHasComponent(obj3, "TransformComponent")) {
+		cout << "object 3 has TransformComponent" << endl;
+	} else {
+		cout << "object 3 does not have TransformComponent" << endl;
+	}
+
+	ObjectManager::detachComponent(obj3, "TransformComponent");
+	
+	if (ObjectManager::objectHasComponent(obj3, "TransformComponent")) {
+		cout << "object 3 has TransformComponent" << endl;
+	} else {
+		cout << "object 3 does not have TransformComponent" << endl;
+	}
+	
+	ObjectManager::destroyObject(obj3);
+	ObjectManager::destroyObject(obj2);
+	
+	ObjectManager::detachComponent(obj3, "TransformComponent");
+	
+	ObjectManager::printObjectsWithComponent("TransformComponent");
+	
+	obj3 = ObjectManager::createObject();
+	int obj5 = ObjectManager::createObject();
+	ObjectManager::attachComponent(obj3, transform3);
+ 	ObjectManager::attachComponent(obj5, transform4);
+	
+	ObjectManager::printObjectsWithComponent("TransformComponent");
+	ObjectManager::destroyObject(obj4);
+	ObjectManager::printObjectsWithComponent("TransformComponent");
+	
 	cout << "Total Objects: " << ObjectManager::getObjectCount() << endl;
 	
+	//TransformComponent transCompFromObj1 = dynamic_cast<TransformComponent>(ObjectManager::getObjectComponent(obj1, "TransformComponent"));
+
 	return 0;
 }
 
