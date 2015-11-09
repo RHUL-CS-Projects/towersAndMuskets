@@ -11,29 +11,32 @@ using namespace std;
 
 class ObjectManager {
 private:
-	static unordered_map<int, list<GameComponent>> objectComponents;
-	static unordered_map<string, list<int>> componentObjects;
-	static list<ComponentSystem> systems;
-	static int objectID;
-	static int objectCount;
+	unordered_map<int, list<GameComponent*>>* objectComponents;
+	unordered_map<string, list<int>> componentObjects;
+	list<ComponentSystem> systems;
+	int objectID;
+	int objectCount;
 
 public:
-	static int createObject();
-	static void destroyObject(int id);
-	static list<int> getObjectsWithComponent(string componentName);
-	static list<GameComponent> getObjectComponents(int id);
-	static GameComponent getObjectComponent(int id, string componentName);
-	static bool objectHasComponent(int id, string componentName);
-	static bool objectExists(int id);
+	ObjectManager();
+	~ObjectManager();
 	
-	static void attachComponent(int id, GameComponent component);
-	static void detachComponent(int id, string componentName);
+	int createObject();
+	void destroyObject(int id);
+	list<int> getObjectsWithComponent(string componentName);
+	list<GameComponent*> getObjectComponents(int id);
+	GameComponent* getObjectComponent(int id, string componentName);
+	bool objectHasComponent(int id, string componentName);
+	bool objectExists(int id);
 	
-	static int getObjectCount();
+	void attachComponent(int id, GameComponent* component);
+	void detachComponent(int id, string componentName);
 	
-	static void updateSystems(float timestep);
-	static void printGameObject(int id);
-	static void printObjectsWithComponent(string componentName);
+	int getObjectCount();
+	
+	void updateSystems(float timestep);
+	void printGameObject(int id);
+	void printObjectsWithComponent(string componentName);
 };
 
 #endif
