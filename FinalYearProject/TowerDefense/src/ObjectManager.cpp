@@ -2,12 +2,25 @@
 #include <iostream>
 #include <algorithm>
 
-int ObjectManager::objectID = 0;
-int ObjectManager::objectCount = 0;
+// int /*ObjectManager::*/objectID = 0;
+// int /*ObjectManager::*/objectCount = 0;
+// 
+// unordered_map<int, list<GameComponent*>>* /*ObjectManager::*/objectComponents = new unordered_map<int, list<GameComponent*>>();
+// unordered_map<string, list<int>> /*ObjectManager::*/componentObjects;
+// list<ComponentSystem> /*ObjectManager::*/systems;
 
-unordered_map<int, list<GameComponent>> ObjectManager::objectComponents;
-unordered_map<string, list<int>> ObjectManager::componentObjects;
-list<ComponentSystem> ObjectManager::systems;
+
+ObjectManager::ObjectManager() {
+	objectID = 0;
+	objectCount = 0;
+
+	objectComponents = new unordered_map<int, list<GameComponent*>>();
+}
+
+ObjectManager::~ObjectManager() {
+	delete objectComponents;
+}
+
 
 /**
  * Get the total number of objects currently in the game.
@@ -21,7 +34,7 @@ int ObjectManager::getObjectCount() {
  */
 int ObjectManager::createObject() {
 	int newObjID = objectID;
-	objectComponents.insert(make_pair(newObjID, list<GameComponent>()));
+	objectComponents->insert(make_pair(newObjID, list<GameComponent*>()));
 	
 	objectID++;
 	objectCount++;
@@ -39,13 +52,13 @@ void ObjectManager::destroyObject ( int id ) {
 		return;
 	}
 	
-	list<GameComponent> components = getObjectComponents(id);
+	list<GameComponent*> components = getObjectComponents(id);
 	
-	for (GameComponent gc : components) {
-		detachComponent(id, gc.getName());
+	for (GameComponent* gc : components) {
+		detachComponent(id, gc->getName());
 	}
 	
-	objectComponents.erase(id);
+	objectComponents->erase(id);
 	objectCount--;
 }
 
@@ -58,10 +71,10 @@ bool ObjectManager::objectHasComponent ( int id, string componentName ) {
 		return false;
 	}
 	
-	list<GameComponent> components = getObjectComponents(id);
+	list<GameComponent*> components = getObjectComponents(id);
 	
-	for (GameComponent gc : components) {
-		if (gc.getName() == componentName)
+	for (GameComponent* gc : components) {
+		if (gc->getName() == componentName)
 			return true;
 	}
 	
@@ -71,32 +84,33 @@ bool ObjectManager::objectHasComponent ( int id, string componentName ) {
 /**
  * Get a specific component attached to a given object id.
  */
-GameComponent ObjectManager::getObjectComponent( int id, string componentName ) {
+GameComponent* ObjectManager::getObjectComponent( int id, string componentName ) {
 	if (!objectExists(id)) {
 		cerr << "Get Object Component Failed: Object with ID=" << id << " does not exist!" << endl;
-		return GameComponent("EmptyComponent");
+		return nullptr;
 	}
 	
-	list<GameComponent> components = getObjectComponents(id);
+	list<GameComponent*> components = objectComponents->at(id);
 	
-	for (GameComponent gc : components) {
-		if (gc.getName() == componentName)
+	for (GameComponent* gc : components) {
+		if (gc->getName() == componentName) {
 			return gc;
+		}
 	}
 	
-	return GameComponent("EmptyComponent");
+	return nullptr;
 }
 
 /**
  * Get a list of all components attached to a game object.
  */
-list< GameComponent > ObjectManager::getObjectComponents ( int id ) {
+list< GameComponent* > ObjectManager::getObjectComponents ( int id ) {
 	if (objectExists(id)) {
-		return objectComponents.at(id);
+		return objectComponents->at(id);
 	}
 	
 	cerr << "Get Object Components Failed: Object with ID=" << id << " does not exist!" << endl;
-	return list<GameComponent>();
+	return list<GameComponent*>();
 }
 
 /**
@@ -110,22 +124,22 @@ list< int > ObjectManager::getObjectsWithComponent ( string componentName ) {
 /**
  * Attach a component to a game object.
  */
-void ObjectManager::attachComponent ( int id, GameComponent component ) {
+void ObjectManager::attachComponent ( int id, GameComponent* component ) {
 	if (!objectExists(id)) {
 		cerr << "Attach Component Failed: Object with ID=" << id << " does not exist!" << endl;
 		return;
 	}
 	
-	list<GameComponent>* components = &objectComponents.at(id);
+	list<GameComponent*>* components = &objectComponents->at(id);
 	components->push_back(component);
 	
 	//objectComponents.insert(make_pair(id, components));
 	
-	if (componentObjects.count(component.getName()) == 0) {
-		componentObjects.insert(make_pair(component.getName(), list<int>()));
+	if (componentObjects.count(component->getName()) == 0) {
+		componentObjects.insert(make_pair(component->getName(), list<int>()));
 	}
 	
-	(&componentObjects.at(component.getName()))->push_back(id);
+	(&componentObjects.at(component->getName()))->push_back(id);
 }
 
 /**
@@ -140,10 +154,10 @@ void ObjectManager::detachComponent ( int id, string componentName ) {
 	list<int>* objectIDs = &componentObjects.at(componentName);
 	objectIDs->remove(id);
 	
-	list<GameComponent>* components = &objectComponents.at(id);
+	list<GameComponent*>* components = &objectComponents->at(id);
 	
-	for (GameComponent gc : *components) {
-		if (gc.getName() == componentName) {
+	for (GameComponent* gc : *components) {
+		if (gc->getName() == componentName) {
 			components->remove(gc);
 			break;
 		}
@@ -162,7 +176,7 @@ void ObjectManager::updateSystems ( float timestep ) {
  * in the game.
  */
 bool ObjectManager::objectExists ( int id ) {
-	return objectComponents.find(id) != objectComponents.end();
+	return objectComponents->find(id) != objectComponents->end();
 }
 
 
@@ -175,7 +189,7 @@ void ObjectManager::printGameObject ( int id ) {
 		return;
 	}
 	
-	list<GameComponent> components = getObjectComponents(id);
+	list<GameComponent*> components = getObjectComponents(id);
 	if (components.size() == 0) {
 		cout << "Object ID=" << id << " has NO components" << endl;
 		return;
@@ -183,8 +197,8 @@ void ObjectManager::printGameObject ( int id ) {
 	
 	cout << "Object ID=" << id << " has components:" << endl;
 	
-	for (GameComponent gc : components) {
-		cout << gc.getName() << endl;
+	for (GameComponent* gc : components) {
+		cout << gc->getName() << endl;
 	}
 	
 	cout << endl;

@@ -155,61 +155,81 @@ int main() {
 	}*/
 	
 	//basicGraphics();
-	cout << "Total Objects: " << ObjectManager::getObjectCount() << endl;
+	ObjectManager manager;
 	
-	int obj1 = ObjectManager::createObject();
-	int obj2 = ObjectManager::createObject();
-	int obj3 = ObjectManager::createObject();
-	int obj4 = ObjectManager::createObject();
-	cout << "Total Objects: " << ObjectManager::getObjectCount() << endl;
-	ObjectManager::printGameObject(obj1);
+	cout << "Total Objects: " << manager.getObjectCount() << endl;
+	
+	int obj1 = manager.createObject();
+	int obj2 = manager.createObject();
+	int obj3 = manager.createObject();
+	int obj4 = manager.createObject();
+	cout << "Total Objects: " << manager.getObjectCount() << endl;
+	manager.printGameObject(obj1);
 	
 	// Add a transform component to obj1, obj3, and obj4
 	TransformComponent transform(vector3df(0,0,0));
- 	ObjectManager::attachComponent(obj1, transform);
+ 	manager.attachComponent(obj1, &transform);
 	
 	TransformComponent transform3(vector3df(0,0,0));
- 	ObjectManager::attachComponent(obj3, transform3);
+ 	manager.attachComponent(obj3, &transform3);
 	
 	TransformComponent transform4(vector3df(0,0,0));
- 	ObjectManager::attachComponent(obj4, transform4);
+ 	manager.attachComponent(obj4, &transform4);
 	
-	ObjectManager::printGameObject(obj1);
+	manager.printGameObject(obj1);
 	
-	if (ObjectManager::objectHasComponent(obj3, "TransformComponent")) {
+	if (manager.objectHasComponent(obj3, "TransformComponent")) {
 		cout << "object 3 has TransformComponent" << endl;
 	} else {
 		cout << "object 3 does not have TransformComponent" << endl;
 	}
 
-	ObjectManager::detachComponent(obj3, "TransformComponent");
+	manager.detachComponent(obj3, "TransformComponent");
 	
-	if (ObjectManager::objectHasComponent(obj3, "TransformComponent")) {
+	if (manager.objectHasComponent(obj3, "TransformComponent")) {
 		cout << "object 3 has TransformComponent" << endl;
 	} else {
 		cout << "object 3 does not have TransformComponent" << endl;
 	}
 	
-	ObjectManager::destroyObject(obj3);
-	ObjectManager::destroyObject(obj2);
+	manager.destroyObject(obj3);
+	manager.destroyObject(obj2);
 	
-	ObjectManager::detachComponent(obj3, "TransformComponent");
+	manager.detachComponent(obj3, "TransformComponent");
 	
-	ObjectManager::printObjectsWithComponent("TransformComponent");
+	manager.printObjectsWithComponent("TransformComponent");
 	
-	obj3 = ObjectManager::createObject();
-	int obj5 = ObjectManager::createObject();
-	ObjectManager::attachComponent(obj3, transform3);
- 	ObjectManager::attachComponent(obj5, transform4);
+	obj3 = manager.createObject();
+	int obj5 = manager.createObject();
+	manager.attachComponent(obj3, &transform3);
+ 	manager.attachComponent(obj5, &transform4);
 	
-	ObjectManager::printObjectsWithComponent("TransformComponent");
-	ObjectManager::destroyObject(obj4);
-	ObjectManager::printObjectsWithComponent("TransformComponent");
+	manager.printObjectsWithComponent("TransformComponent");
+	manager.destroyObject(obj4);
+	manager.printObjectsWithComponent("TransformComponent");
 	
-	cout << "Total Objects: " << ObjectManager::getObjectCount() << endl;
+	cout << "Total Objects: " << manager.getObjectCount() << endl;
 	
-	//TransformComponent transCompFromObj1 = dynamic_cast<TransformComponent>(ObjectManager::getObjectComponent(obj1, "TransformComponent"));
-
+	TransformComponent* transCompFromObj1 = dynamic_cast<TransformComponent*>(manager.getObjectComponent(obj1, "TransformComponent"));
+	//GameComponent* transComponent = ObjectManager::getObjectComponent(obj1, "TransformComonent");
+	
+	cout << "Object ID " << obj1 << "'s TransformComponent has values:" << endl;
+	cout << transCompFromObj1->worldPosition.X << ", " << transCompFromObj1->worldPosition.Y << ", " << transCompFromObj1->worldPosition.Z << endl;
+	
+	transCompFromObj1->worldPosition.X = 3;
+	transCompFromObj1->worldPosition.Y = 5;
+	transCompFromObj1->worldPosition.Z = 1;
+	
+	transCompFromObj1 = dynamic_cast<TransformComponent*>(manager.getObjectComponent(obj1, "TransformComponent"));
+	//GameComponent* transComponent = ObjectManager::getObjectComponent(obj1, "TransformComonent");
+	
+	cout << "Object ID " << obj1 << "'s TransformComponent has values:" << endl;
+	cout << transCompFromObj1->worldPosition.X << ", " << transCompFromObj1->worldPosition.Y << ", " << transCompFromObj1->worldPosition.Z << endl;
+	
+	manager.destroyObject(obj1);
+	manager.destroyObject(obj5);
+	manager.printObjectsWithComponent("TransformComponent");
+	
 	return 0;
 }
 
