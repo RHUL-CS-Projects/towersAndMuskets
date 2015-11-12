@@ -10,7 +10,7 @@ private:
 	string componentName;
 	int parentObjectID;
 public:
-	GameComponent(string name) { componentName = name; }
+	GameComponent(string name) { componentName = name; };
 	virtual ~GameComponent(){};
 	int getObjectID() { return parentObjectID; }
 	string getName() { return componentName; }
