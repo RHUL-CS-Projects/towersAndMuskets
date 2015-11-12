@@ -11,8 +11,9 @@ private:
 
 public:
 	ComponentSystem(string name) { componentName = name; }
+	~ComponentSystem();
 	string getName() { return componentName; }
-	void update(float timestep);
+	virtual void update(float timestep) {};
 };
 
 #endif
