@@ -1,12 +1,20 @@
-#include <RenderSystem.h>
-#include <RenderManager.h>
 #include <list>
-#include <AnimatedMeshComponent.h>
-#include <TransformComponent.h>
+
+#include <RenderSystem.h>
+#include <ObjectManager.h>
+#include <SelectableComponent.h>
+
+using namespace irr;
+using namespace core;
+using namespace scene;
+using namespace video;
+using namespace io;
+using namespace gui;
 
 void RenderSystem::update ( float timestep ) {
 	// Get the object manager
 	ObjectManager* mgr = &ObjectManager::manager;
+	irr::scene::ISceneManager* smgr = RenderManager::renderManager.getSceneManager();
 	
 	// Get all renderable objects
 	std::list<int> renderables = mgr->getObjectsWithComponent("RenderComponent");
@@ -31,18 +39,42 @@ void RenderSystem::update ( float timestep ) {
 			if (rendComp->sceneNode == nullptr) 
 				addSceneNode(rendComp, animComp, transComp);
 			
+			// Check if object is selectable and create a selection plane to render
+			SelectableComponent* selectComp;
+			if ((selectComp = mgr->getObjectComponent<SelectableComponent>(i, "SelectableComponent")) != nullptr) {
+				
+				if (selectComp->selectionMesh == nullptr) {
+					irr::core::dimension2d<irr::f32> tileSize(4,4);
+					irr::core::dimension2d<irr::u32> tileCount(1,1);
+
+					selectComp->selectionMesh = smgr->getGeometryCreator()->createPlaneMesh(tileSize, tileCount);
+				}
+				
+				if (selectComp->sceneNode == nullptr) {
+					selectComp->sceneNode = smgr->addMeshSceneNode(selectComp->selectionMesh);
+				}
+				
+				selectComp->sceneNode->setVisible(selectComp->selected);
+				selectComp->sceneNode->setPosition(transComp->worldPosition + vector3df(0,0.01f,0));			
+			}
+			
 			rendComp->sceneNode->setPosition(transComp->worldPosition);
 			rendComp->sceneNode->setRotation(transComp->rotation);
 			rendComp->sceneNode->setScale(transComp->scale);
 		}	
 	}
 	
-	RenderManager::renderManager.getDriver()->beginScene(true, true, SColor(255,159,200,214));	
-	RenderManager::renderManager.getSceneManager()->drawAll();
-	RenderManager::renderManager.getDriver()->endScene();
+	//RenderManager::renderManager.getDriver()->beginScene(true, true, SColor(255,159,200,214));	
+// 	RenderManager::renderManager.getSceneManager()->drawAll();
+// 	RenderManager::renderManager.getGUIEnvironment()->drawAll();
+	//RenderManager::renderManager.getDriver()->endScene();
 }
 
 
+void RenderSystem::draw ( float timestep ) {
+    RenderManager::renderManager.getSceneManager()->drawAll();
+	RenderManager::renderManager.getGUIEnvironment()->drawAll();
+}
 
 void RenderSystem::addSceneNode ( RenderComponent* rendComp, AnimatedMeshComponent* animComp, TransformComponent* transComp ) {
 	irr::video::IVideoDriver* driver = RenderManager::renderManager.getDriver();
@@ -63,8 +95,8 @@ void RenderSystem::addSceneNode ( RenderComponent* rendComp, AnimatedMeshCompone
 
 		animnode->addShadowVolumeSceneNode();
 		
-		animnode->setAnimationSpeed(70);
-		animnode->setFrameLoop(63, 142);
+		animnode->setAnimationSpeed(50);
+		animnode->setFrameLoop(0, 61);
 	}
 	
 	rendComp->sceneNode = animnode;

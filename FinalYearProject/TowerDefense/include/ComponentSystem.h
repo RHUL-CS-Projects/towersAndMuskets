@@ -3,17 +3,16 @@
 
 #include <string>
 
-using namespace std;
-
 class ComponentSystem {
 private:
-	string componentName;
+	std::string componentName;
 
 public:
-	ComponentSystem(string name) { componentName = name; }
+	ComponentSystem(std::string name) { componentName = name; }
 	~ComponentSystem();
-	string getName() { return componentName; }
+	std::string getName() { return componentName; }
 	virtual void update(float timestep) {};
+	virtual void draw(float timestep) {};
 };
 
 #endif

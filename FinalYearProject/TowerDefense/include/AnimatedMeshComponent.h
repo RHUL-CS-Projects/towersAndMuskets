@@ -1,8 +1,8 @@
 #ifndef ANIMATEDMESHCOMPONENT_H
 #define ANIMATEDMESHCOMPONENT_H
 
-#include <GameComponent.h>
 #include <irrlicht/irrlicht.h>
+#include <GameComponent.h>
 #include <RenderManager.h>
 
 class AnimatedMeshComponent : public GameComponent {

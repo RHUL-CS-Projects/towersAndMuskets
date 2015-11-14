@@ -32,6 +32,8 @@ set (SOURCES
   src/ObjectManager.cpp
   src/RenderManager.cpp
   src/RenderSystem.cpp
+  src/CameraSystem.cpp
+  src/SelectionSystem.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)

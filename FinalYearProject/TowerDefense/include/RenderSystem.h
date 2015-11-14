@@ -2,8 +2,8 @@
 #define RENDERSYSTEM_H
 
 #include <string>
+
 #include <ComponentSystem.h>
-#include <ObjectManager.h>
 #include <RenderComponent.h>
 #include <AnimatedMeshComponent.h>
 #include <TransformComponent.h>
@@ -14,6 +14,7 @@ private:
 public:
 	RenderSystem() : ComponentSystem("RenderSystem") {}
 	void update(float timestep);
+	void draw(float timestep);
 };
 
 #endif
