@@ -4,19 +4,12 @@
 #include <irrlicht/irrlicht.h>
 #include <string>
 
-using namespace irr;
-using namespace core;
-using namespace scene;
-using namespace video;
-using namespace io;
-using namespace gui;
-
 class RenderManager {
 private:
-	IrrlichtDevice* device;
-	IVideoDriver* driver;
-	ISceneManager* smgr;
-	IGUIEnvironment* guienv;
+	irr::IrrlichtDevice* device;
+	irr::video::IVideoDriver* driver;
+	irr::scene::ISceneManager* smgr;
+	irr::gui::IGUIEnvironment* guienv;
 	
 public:
 	static RenderManager renderManager;
@@ -26,10 +19,10 @@ public:
 	~RenderManager();
 	void init(const wchar_t* caption);
 	
-	IrrlichtDevice* getDevice();
-	IVideoDriver* getDriver();
-	ISceneManager* getSceneManager();
-	IGUIEnvironment* getGUIEnvironment();
+	irr::IrrlichtDevice* getDevice();
+	irr::video::IVideoDriver* getDriver();
+	irr::scene::ISceneManager* getSceneManager();
+	irr::gui::IGUIEnvironment* getGUIEnvironment();
 };
 
 #endif

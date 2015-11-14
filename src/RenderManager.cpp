@@ -1,7 +1,14 @@
-#include <RenderManager.h>
 #include <iostream>
 
+#include <RenderManager.h>
+
 using namespace std;
+using namespace irr;
+using namespace core;
+using namespace scene;
+using namespace video;
+using namespace io;
+using namespace gui;
 
 RenderManager RenderManager::renderManager;
 std::string const RenderManager::resPath = "./res";

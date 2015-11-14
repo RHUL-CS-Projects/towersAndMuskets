@@ -5,15 +5,14 @@
 #include <unordered_map>
 #include <list>
 #include <string>
+
 #include <GameComponent.h>
 #include <ComponentSystem.h>
 
-using namespace std;
-
 class ObjectManager {
 private:
-	unordered_map<int, std::list<GameComponent*>>* objectComponents;
-	unordered_map<string, std::list<int>> componentObjects;
+	std::unordered_map<int, std::list<GameComponent*>>* objectComponents;
+	std::unordered_map<std::string, std::list<int>> componentObjects;
 	std::list<ComponentSystem*> systems;
 	int objectID;
 	int objectCount;
@@ -26,16 +25,16 @@ public:
 	
 	int createObject();
 	void destroyObject(int id);
-	std::list<int> getObjectsWithComponent(string componentName);
+	std::list<int> getObjectsWithComponent(std::string componentName);
 	std::list<GameComponent*> getObjectComponents(int id);
 	
 	/**
 	* Get a specific component attached to a given object id.
 	*/
 	template <class T>
-	T* getObjectComponent( int id, string componentName ) {
+	T* getObjectComponent( int id, std::string componentName ) {
 		if (!objectExists(id)) {
-			cerr << "Get Object Component Failed: Object with ID=" << id << " does not exist!" << endl;
+			std::cerr << "Get Object Component Failed: Object with ID=" << id << " does not exist!" << std::endl;
 			return nullptr;
 		}
 		
@@ -54,18 +53,18 @@ public:
 		return nullptr;
 	}
 	
-	bool objectHasComponent(int id, string componentName);
+	bool objectHasComponent(int id, std::string componentName);
 	bool objectExists(int id);
 	
 	void attachComponent(int id, GameComponent* component);
-	void detachComponent(int id, string componentName);
+	void detachComponent(int id, std::string componentName);
 	
 	int getObjectCount();
 	
 	void updateSystems(float timestep);
 	void printGameObject(int id);
 	void printGameObjects();
-	void printObjectsWithComponent(string componentName);
+	void printObjectsWithComponent(std::string componentName);
 };
 
 #endif

@@ -1,9 +1,18 @@
-#include <ObjectManager.h>
 #include <iostream>
 #include <algorithm>
+
+#include <irrlicht/irrlicht.h>
+#include <ObjectManager.h>
+#include <GameComponent.h>
+
+#include <ComponentSystem.h>
 #include <RenderSystem.h>
+#include <CameraSystem.h>
+#include <SelectionSystem.h>
 
 ObjectManager ObjectManager::manager;
+
+using namespace std;
 
 ObjectManager::ObjectManager() {
 	objectID = 0;
@@ -13,6 +22,8 @@ ObjectManager::ObjectManager() {
 	
 	// Create and add game systems
 	systems.push_back(new RenderSystem());
+	systems.push_back(new CameraSystem());
+	systems.push_back(new SelectionSystem());
 }
 
 ObjectManager::~ObjectManager() {
@@ -156,6 +167,13 @@ void ObjectManager::updateSystems ( float timestep ) {
 		system->update(0);
 	}
 	
+	RenderManager::renderManager.getDriver()->beginScene(true, true, irr::video::SColor(255,159,200,214));
+	
+	for (ComponentSystem* system : systems) {
+		system->draw(0);
+	}
+	
+	RenderManager::renderManager.getDriver()->endScene();
 }
 
 /**
