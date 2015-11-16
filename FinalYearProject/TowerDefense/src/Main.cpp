@@ -53,7 +53,12 @@ void basicGraphics() {
 	camera->setPosition(vector3df(camX, cameraHeight, camZ));
 	camera->setTarget(vector3df(camX + cos(camRotY), cameraHeight - camAngleXZ, camZ + sin(camRotY)));
 	camera->setFarValue(10000.0f);
-
+	camera->setNearValue(1);
+	
+	matrix4 projMatrix;
+	projMatrix.buildProjectionMatrixPerspectiveFovLH(1.250f, 1280.0f/720.0f, 1, 10000.0f);
+	camera->setProjectionMatrix(projMatrix);
+	
 	ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
 		"./res/materials/textures/terrain-heightmap-flat.bmp", 
 		0, 

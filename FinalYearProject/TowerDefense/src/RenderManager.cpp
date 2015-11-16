@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include <RenderManager.h>
+#include <EventReceiver.h>
 
 using namespace std;
 using namespace irr;
@@ -26,7 +27,8 @@ RenderManager::~RenderManager() {
  * used by Irrlicht
  */
 void RenderManager::init ( const wchar_t* caption ) {
-	device = createDevice(video::EDT_OPENGL, dimension2d<u32>(1280, 720), 32, false, true);
+	EventReceiver* eventReceiver = new EventReceiver();
+	device = createDevice(video::EDT_OPENGL, dimension2d<u32>(1280, 720), 32, false, true, false, eventReceiver);
 	
 	if (!device) {
 		cerr << "An error occurred when creating the display device :(" << endl; 
