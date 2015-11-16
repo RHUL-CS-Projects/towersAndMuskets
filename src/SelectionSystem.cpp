@@ -45,7 +45,7 @@ void SelectionSystem::selectObjects() {
 	
 	// Get all selectable objects
 	std::list<int> objects = mgr->getObjectsWithComponent("SelectableComponent");
-
+	
 	for (int i : objects) {
 		
 		SelectableComponent* selectComp = mgr->getObjectComponent<SelectableComponent>(i, "SelectableComponent");
@@ -58,8 +58,13 @@ void SelectionSystem::selectObjects() {
 		
 		vector2di screenPos = worldToScreen(transComp->worldPosition);
 		
-		if (screenPos.X >= clickPos.X && screenPos.X <= mousePos.X &&
-			screenPos.Y >= clickPos.Y && screenPos.Y <= mousePos.Y)
+		int topLeftX = (clickPos.X < mousePos.X) ? clickPos.X : mousePos.X;
+		int topLeftY = (clickPos.Y < mousePos.Y) ? clickPos.Y : mousePos.Y;
+		int bottomRightX = (clickPos.X > mousePos.X) ? clickPos.X : mousePos.X;
+		int bottomRightY = (clickPos.Y > mousePos.Y) ? clickPos.Y : mousePos.Y;
+		
+		if (screenPos.X >= topLeftX && screenPos.X <= bottomRightX &&
+			screenPos.Y >= topLeftY && screenPos.Y <= bottomRightY)
 			selectComp->selected = true;
 		else
 			selectComp->selected = false;

@@ -42,7 +42,7 @@ void basicGraphics() {
 	light->setLightType(video::ELT_DIRECTIONAL);
 	light->getLightData().Direction = lightdir;
 	
-	float cameraHeight = 70;
+	float cameraHeight = 100;
 	float camX = -50;
 	float camZ = -50;
 	float camRotY = 45;
