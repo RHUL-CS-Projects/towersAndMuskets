@@ -52,6 +52,13 @@ void RenderSystem::update ( float timestep ) {
 				
 				if (selectComp->sceneNode == nullptr) {
 					selectComp->sceneNode = smgr->addMeshSceneNode(selectComp->selectionMesh);
+					std::string texturePath = RenderManager::resPath + "/materials/textures/Selected.png";
+					ITexture* texture = RenderManager::renderManager.getDriver()->getTexture(texturePath.c_str());
+					
+					selectComp->sceneNode->setMaterialTexture(0, texture);
+					selectComp->sceneNode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
+					selectComp->sceneNode->setMaterialFlag(video::EMF_LIGHTING, false);
+					selectComp->sceneNode->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
 				}
 				
 				selectComp->sceneNode->setVisible(selectComp->selected);
@@ -63,11 +70,6 @@ void RenderSystem::update ( float timestep ) {
 			rendComp->sceneNode->setScale(transComp->scale);
 		}	
 	}
-	
-	//RenderManager::renderManager.getDriver()->beginScene(true, true, SColor(255,159,200,214));	
-// 	RenderManager::renderManager.getSceneManager()->drawAll();
-// 	RenderManager::renderManager.getGUIEnvironment()->drawAll();
-	//RenderManager::renderManager.getDriver()->endScene();
 }
 
 

@@ -14,6 +14,8 @@ public:
 	SelectionSystem() : ComponentSystem("SelectionSystem") {}
 	void update(float timestep);
 	void draw(float timestep);
+	void selectObjects();
+	irr::core::vector2di worldToScreen(irr::core::vector3df point);
 };
 
 

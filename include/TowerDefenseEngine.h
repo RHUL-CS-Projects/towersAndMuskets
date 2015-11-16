@@ -6,6 +6,7 @@
 #include <CameraSystem.h>
 #include <Client.h>
 #include <ComponentSystem.h>
+#include <EventReceiver.h>
 #include <GameComponent.h>
 #include <ObjectManager.h>
 #include <RenderComponent.h>
