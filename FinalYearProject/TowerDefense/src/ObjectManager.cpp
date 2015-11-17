@@ -9,6 +9,7 @@
 #include <RenderSystem.h>
 #include <CameraSystem.h>
 #include <SelectionSystem.h>
+#include <PathMovementSystem.h>
 
 ObjectManager ObjectManager::manager;
 
@@ -24,6 +25,7 @@ ObjectManager::ObjectManager() {
 	systems.push_back(new RenderSystem());
 	systems.push_back(new CameraSystem());
 	systems.push_back(new SelectionSystem());
+	systems.push_back(new PathMovementSystem());
 }
 
 ObjectManager::~ObjectManager() {
@@ -164,17 +166,26 @@ void ObjectManager::detachComponent ( int id, std::string componentName ) {
 void ObjectManager::updateSystems ( float timestep ) {
 	
 	for (ComponentSystem* system : systems) {
-		system->update(0);
+		system->update(timestep);
 	}
-	
-	RenderManager::renderManager.getDriver()->beginScene(true, true, irr::video::SColor(255,159,200,214));
-	
-	for (ComponentSystem* system : systems) {
-		system->draw(0);
-	}
-	
-	RenderManager::renderManager.getDriver()->endScene();
 }
+
+/**
+ * Render all component systems.
+ */
+void ObjectManager::drawSystems ( float timestep ) {
+	RenderManager::renderManager.getDriver()->beginScene(true, true, irr::video::SColor(255,159,200,214));
+		
+	for (ComponentSystem* system : systems) {
+		system->draw(timestep);
+	}
+	
+	RenderManager::renderManager.getGUIEnvironment()->drawAll();
+	RenderManager::renderManager.getDriver()->endScene();
+	
+	
+}
+
 
 /**
  * Check if there is an object with the given id currently

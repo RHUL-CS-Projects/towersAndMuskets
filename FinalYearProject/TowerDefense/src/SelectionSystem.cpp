@@ -36,6 +36,11 @@ void SelectionSystem::update ( float timestep ) {
 void SelectionSystem::draw ( float timestep ) {
 	if (dragging) {
 		recti drawRect(clickPos.X, clickPos.Y, mousePos.X, mousePos.Y);
+		
+		SMaterial m;
+		m.Lighting = false;
+		m.Thickness = 1.0f;
+		RenderManager::renderManager.getDriver()->setMaterial(m);
 		RenderManager::renderManager.getDriver()->draw2DRectangleOutline(drawRect, SColor(150,255,255,255));
 	}
 }

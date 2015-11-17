@@ -7,10 +7,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <chrono>
+#include <ctime>
 
 #include <TowerDefenseEngine.h>
 
 using namespace std;
+using namespace chrono;
 using namespace irr;
 using namespace core;
 using namespace scene;
@@ -42,7 +45,7 @@ void basicGraphics() {
 	light->setLightType(video::ELT_DIRECTIONAL);
 	light->getLightData().Direction = lightdir;
 	
-	float cameraHeight = 100;
+	float cameraHeight = 70;
 	float camX = -50;
 	float camZ = -50;
 	float camRotY = 45;
@@ -93,47 +96,86 @@ void basicGraphics() {
 			ObjectManager::manager.attachComponent(obj1, new AnimatedMeshComponent("humantest.x", "ManTexture.png"));
 			ObjectManager::manager.attachComponent(obj1, new RenderComponent(true));
 			ObjectManager::manager.attachComponent(obj1, new SelectableComponent());
+			PathMovementComponent* pathComp = new PathMovementComponent(0.3f);
+			pathComp->waypoints.push(vector3df(-300+rand()%600,0,-300+rand()%600));
+			pathComp->waypoints.push(vector3df(-300+rand()%600,0,-300+rand()%600));
+			pathComp->waypoints.push(vector3df(-300+rand()%600,0,-300+rand()%600));
+			pathComp->waypoints.push(vector3df(-300+rand()%600,0,-300+rand()%600));
+			ObjectManager::manager.attachComponent(obj1, pathComp);
 		}
 // 		ObjectManager::manager.printGameObjects();
 	}
 	
+	// Main game loop
+	
+	Clock gameClock;
+	double ticksPerSecond = 60;
+	double tickTime = 1000.0 / ticksPerSecond * 1000.0;
+	double maxFrameSkip = 10;
+	double nextTick = gameClock.getElapsedTime().asMicroseconds();
+	double currentTime;
+	int loops = 0;
+	
+	int tickCounter = 0;
+	int frameCounter = 0;
+	double updateTime = gameClock.getElapsedTime().asMicroseconds();
 	
 	while (device->run()) {
-		// Camera controls
+		currentTime = gameClock.getElapsedTime().asMicroseconds();
 		
-		if (Keyboard::isKeyPressed(Keyboard::W)) {
-			camX += cos(camRotY);
-			camZ += sin(camRotY);
+		loops = 0;
+		while (currentTime >= nextTick && loops < maxFrameSkip) {
+			// Update the game
+			
+			// Camera controls
+			if (Keyboard::isKeyPressed(Keyboard::W)) {
+				camX += cos(camRotY);
+				camZ += sin(camRotY);
+			}
+			
+			if (Keyboard::isKeyPressed(Keyboard::S)) {
+				camX -= cos(camRotY);
+				camZ -= sin(camRotY);
+			}
+			
+			if (Keyboard::isKeyPressed(Keyboard::A)) {
+				camX += cos(camRotY + (90 * (PI/180))); 
+				camZ += sin(camRotY + (90 * (PI/180)));
+			}
+			
+			if (Keyboard::isKeyPressed(Keyboard::D)) {
+				camX += cos(camRotY - (90 * (PI/180))); 
+				camZ += sin(camRotY - (90 * (PI/180)));
+			}
+			
+			if (Keyboard::isKeyPressed(Keyboard::Q)) {
+				camRotY += 0.05f;
+			}
+			
+			if (Keyboard::isKeyPressed(Keyboard::E)) {
+				camRotY -= 0.05f;
+			}
+			
+			camera->setPosition(vector3df(camX, cameraHeight, camZ));
+			camera->setTarget(vector3df(camX + cos(camRotY), cameraHeight - sin(camAngleXZ), camZ + sin(camRotY)));
+			
+			ObjectManager::manager.updateSystems(0);
+			
+			nextTick += tickTime;
+			loops++;
+			tickCounter++;
 		}
 		
-		if (Keyboard::isKeyPressed(Keyboard::S)) {
-			camX -= cos(camRotY);
-			camZ -= sin(camRotY);
-		}
-		
-		if (Keyboard::isKeyPressed(Keyboard::A)) {
-			camX += cos(camRotY + (90 * (PI/180))); 
-			camZ += sin(camRotY + (90 * (PI/180)));
-		}
-		
-		if (Keyboard::isKeyPressed(Keyboard::D)) {
-			camX += cos(camRotY - (90 * (PI/180))); 
-			camZ += sin(camRotY - (90 * (PI/180)));
-		}
-		
-		if (Keyboard::isKeyPressed(Keyboard::Q)) {
-			camRotY += 0.05f;
-		}
-		
-		if (Keyboard::isKeyPressed(Keyboard::E)) {
-			camRotY -= 0.05f;
-		}
-		
-		camera->setPosition(vector3df(camX, cameraHeight, camZ));
-		camera->setTarget(vector3df(camX + cos(camRotY), cameraHeight - sin(camAngleXZ), camZ + sin(camRotY)));
-		
-// 		ObjectManager::manager.getObjectComponent<TransformComponent>(obj1, "TransformComponent")->worldPosition.Z -= 0.1f;
-		ObjectManager::manager.updateSystems(0);
+		ObjectManager::manager.drawSystems(0);
+		frameCounter++;
+
+		/*if (currentTime - updateTime >= 1000000.0) {
+			cout << "Ticks: " << tickCounter << ", Frames: " << frameCounter << endl;
+			
+			frameCounter = 0;
+			tickCounter = 0;
+			updateTime += 1000000.0;//currentTime - ((currentTime - updateTime) - 1000);
+		}*/
 	}
 	
 	device->drop();
