@@ -9,7 +9,7 @@ class SelectableComponent : public GameComponent {
 private:
 
 public:
-	bool selected = true;
+	bool selected = false;
 	float selectionXScale = 1;
 	float selectionZScale = 1;
 	irr::scene::IMesh* selectionMesh = nullptr;

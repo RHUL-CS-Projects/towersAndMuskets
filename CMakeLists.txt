@@ -35,6 +35,7 @@ set (SOURCES
   src/CameraSystem.cpp
   src/SelectionSystem.cpp
   src/EventReceiver.cpp
+  src/PathMovementSystem.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)

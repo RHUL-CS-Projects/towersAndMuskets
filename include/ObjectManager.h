@@ -62,6 +62,7 @@ public:
 	int getObjectCount();
 	
 	void updateSystems(float timestep);
+	void drawSystems(float timestep);
 	void printGameObject(int id);
 	void printGameObjects();
 	void printObjectsWithComponent(std::string componentName);

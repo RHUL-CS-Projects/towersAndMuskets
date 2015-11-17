@@ -9,6 +9,8 @@
 #include <EventReceiver.h>
 #include <GameComponent.h>
 #include <ObjectManager.h>
+#include <PathMovementComponent.h>
+#include <PathMovementSystem.h>
 #include <RenderComponent.h>
 #include <RenderManager.h>
 #include <RenderSystem.h>

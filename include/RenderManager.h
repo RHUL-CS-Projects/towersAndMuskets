@@ -12,6 +12,7 @@ private:
 	irr::gui::IGUIEnvironment* guienv;
 	
 public:
+	static const bool DEBUG_GRAPHICS = true;	
 	static RenderManager renderManager;
 	static std::string const resPath;
 	

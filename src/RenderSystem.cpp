@@ -44,7 +44,7 @@ void RenderSystem::update ( float timestep ) {
 			if ((selectComp = mgr->getObjectComponent<SelectableComponent>(i, "SelectableComponent")) != nullptr) {
 				
 				if (selectComp->selectionMesh == nullptr) {
-					irr::core::dimension2d<irr::f32> tileSize(4,4);
+					irr::core::dimension2d<irr::f32> tileSize(4*selectComp->selectionXScale,4*selectComp->selectionZScale);
 					irr::core::dimension2d<irr::u32> tileCount(1,1);
 
 					selectComp->selectionMesh = smgr->getGeometryCreator()->createPlaneMesh(tileSize, tileCount);
@@ -74,8 +74,7 @@ void RenderSystem::update ( float timestep ) {
 
 
 void RenderSystem::draw ( float timestep ) {
-    RenderManager::renderManager.getSceneManager()->drawAll();
-	RenderManager::renderManager.getGUIEnvironment()->drawAll();
+	RenderManager::renderManager.getSceneManager()->drawAll();
 }
 
 void RenderSystem::addSceneNode ( RenderComponent* rendComp, AnimatedMeshComponent* animComp, TransformComponent* transComp ) {
