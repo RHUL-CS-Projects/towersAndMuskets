@@ -11,13 +11,15 @@ public:
 	{
 		irr::core::position2di position;
 		bool leftPressed;
+		bool rightPressed;
+		float wheelDelta; 
 	};
 	
 	static EventReceiver::SMouseState MouseState;
 	
 	virtual bool OnEvent(const irr::SEvent& event);
 	
-	static EventReceiver::SMouseState getMouseState();
+	static EventReceiver::SMouseState* getMouseState();
 };
 
 

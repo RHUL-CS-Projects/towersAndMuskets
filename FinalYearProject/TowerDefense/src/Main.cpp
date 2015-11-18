@@ -45,7 +45,8 @@ void basicGraphics() {
 	light->setLightType(video::ELT_DIRECTIONAL);
 	light->getLightData().Direction = lightdir;
 	
-	float cameraHeight = 70;
+	float cameraHeight = 60;
+	float targetCamHeight = 60;
 	float camX = -50;
 	float camZ = -50;
 	float camRotY = 45;
@@ -55,7 +56,7 @@ void basicGraphics() {
 	ICameraSceneNode* camera = smgr->getActiveCamera();
 	camera->setPosition(vector3df(camX, cameraHeight, camZ));
 	camera->setTarget(vector3df(camX + cos(camRotY), cameraHeight - camAngleXZ, camZ + sin(camRotY)));
-	camera->setFarValue(10000.0f);
+	camera->setFarValue(1000.0f);
 	camera->setNearValue(1);
 	
 	matrix4 projMatrix;
@@ -80,6 +81,11 @@ void basicGraphics() {
 	terrain->setMaterialTexture(1, driver->getTexture("./res/materials/textures/grass-texture.jpg"));
 	terrain->setMaterialType(video::EMT_DETAIL_MAP);
 	terrain->scaleTexture(250, 250);
+	
+	ITriangleSelector* terrainSelector = smgr->createTerrainTriangleSelector(terrain);
+	terrain->setTriangleSelector(terrainSelector);
+	terrain->setName("MainTerrain");
+	
 // 	terrain->overrideLODDistance(0, 10000);
 // 	terrain->overrideLODDistance(1, 11000);
 // 	terrain->overrideLODDistance(2, 12000);
@@ -93,14 +99,18 @@ void basicGraphics() {
 		for (int j = 0; j < 10; j++) {
 			int obj1 = ObjectManager::manager.createObject();
 			ObjectManager::manager.attachComponent(obj1, new TransformComponent(vector3df(i*15,0,j*15)));
-			ObjectManager::manager.attachComponent(obj1, new AnimatedMeshComponent("humantest.x", "ManTexture.png"));
+			ObjectManager::manager.attachComponent(obj1, new AnimatedMeshComponent("humantest.x", "ManTexture.png", vector3df(0,0,0)));
+			
+			AnimatorComponent* animComp = new AnimatorComponent();
+			animComp->addAnimation("IDLE", 0, 61, 50);
+			animComp->addAnimation("WALK", 62, 142, 90);
+			ObjectManager::manager.attachComponent(obj1, animComp);
+			
 			ObjectManager::manager.attachComponent(obj1, new RenderComponent(true));
 			ObjectManager::manager.attachComponent(obj1, new SelectableComponent());
-			PathMovementComponent* pathComp = new PathMovementComponent(0.3f);
-			pathComp->waypoints.push(vector3df(-300+rand()%600,0,-300+rand()%600));
-			pathComp->waypoints.push(vector3df(-300+rand()%600,0,-300+rand()%600));
-			pathComp->waypoints.push(vector3df(-300+rand()%600,0,-300+rand()%600));
-			pathComp->waypoints.push(vector3df(-300+rand()%600,0,-300+rand()%600));
+			ObjectManager::manager.attachComponent(obj1, new FaceDirectionComponent(0, 0.08f));
+			ObjectManager::manager.attachComponent(obj1, new RTSMovementComponent());
+			PathMovementComponent* pathComp = new PathMovementComponent(0.2f);
 			ObjectManager::manager.attachComponent(obj1, pathComp);
 		}
 // 		ObjectManager::manager.printGameObjects();
@@ -156,6 +166,20 @@ void basicGraphics() {
 				camRotY -= 0.05f;
 			}
 			
+			if (EventReceiver::getMouseState()->wheelDelta < 0) {
+				EventReceiver::getMouseState()->wheelDelta = 0;
+				targetCamHeight += 10;
+				targetCamHeight = (targetCamHeight > 120) ? 120 : targetCamHeight;
+			}
+			
+			if (EventReceiver::getMouseState()->wheelDelta > 0) {
+				EventReceiver::getMouseState()->wheelDelta = 0;
+				targetCamHeight -= 10;
+				targetCamHeight = (targetCamHeight < 10) ? 10 : targetCamHeight;
+			}
+			
+			cameraHeight = cameraHeight + (targetCamHeight - cameraHeight) * 0.2f;
+			
 			camera->setPosition(vector3df(camX, cameraHeight, camZ));
 			camera->setTarget(vector3df(camX + cos(camRotY), cameraHeight - sin(camAngleXZ), camZ + sin(camRotY)));
 			
@@ -169,13 +193,13 @@ void basicGraphics() {
 		ObjectManager::manager.drawSystems(0);
 		frameCounter++;
 
-		/*if (currentTime - updateTime >= 1000000.0) {
+		if (currentTime - updateTime >= 1000000.0) {
 			cout << "Ticks: " << tickCounter << ", Frames: " << frameCounter << endl;
 			
 			frameCounter = 0;
 			tickCounter = 0;
 			updateTime += 1000000.0;//currentTime - ((currentTime - updateTime) - 1000);
-		}*/
+		}
 	}
 	
 	device->drop();
