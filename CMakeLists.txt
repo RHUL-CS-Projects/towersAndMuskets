@@ -36,6 +36,8 @@ set (SOURCES
   src/SelectionSystem.cpp
   src/EventReceiver.cpp
   src/PathMovementSystem.cpp
+  src/FaceDirectionSystem.cpp
+  src/RTSMovementSystem.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)

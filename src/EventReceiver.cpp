@@ -11,6 +11,15 @@ bool EventReceiver::OnEvent ( const irr::SEvent& event ) {
 			case irr::EMIE_LMOUSE_LEFT_UP:
 				EventReceiver::MouseState.leftPressed = false;
 				break;
+			case irr::EMIE_RMOUSE_PRESSED_DOWN:
+				EventReceiver::MouseState.rightPressed = true;
+				break;
+			case irr::EMIE_RMOUSE_LEFT_UP:
+				EventReceiver::MouseState.rightPressed = false;
+				break;
+			case irr::EMIE_MOUSE_WHEEL:
+				EventReceiver::MouseState.wheelDelta = event.MouseInput.Wheel;
+				break;
 			case irr::EMIE_MOUSE_MOVED:
 				EventReceiver::MouseState.position.X = event.MouseInput.X;
 				EventReceiver::MouseState.position.Y = event.MouseInput.Y;
@@ -22,6 +31,6 @@ bool EventReceiver::OnEvent ( const irr::SEvent& event ) {
 }
 
 	
-EventReceiver::SMouseState EventReceiver::getMouseState() {
-	return EventReceiver::MouseState;
+EventReceiver::SMouseState* EventReceiver::getMouseState() {
+	return &EventReceiver::MouseState;
 }

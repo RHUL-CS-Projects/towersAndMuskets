@@ -15,7 +15,7 @@ using namespace video;
 using namespace scene;
 
 void SelectionSystem::update ( float timestep ) {
-	EventReceiver::SMouseState mouseState = EventReceiver::getMouseState();
+	EventReceiver::SMouseState mouseState = *EventReceiver::getMouseState();
 	
 	if (mouseState.leftPressed) {
 		if (!dragging) {

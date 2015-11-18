@@ -10,6 +10,8 @@
 #include <CameraSystem.h>
 #include <SelectionSystem.h>
 #include <PathMovementSystem.h>
+#include <FaceDirectionSystem.h>
+#include <RTSMovementSystem.h>
 
 ObjectManager ObjectManager::manager;
 
@@ -26,6 +28,8 @@ ObjectManager::ObjectManager() {
 	systems.push_back(new CameraSystem());
 	systems.push_back(new SelectionSystem());
 	systems.push_back(new PathMovementSystem());
+	systems.push_back(new FaceDirectionSystem());
+	systems.push_back(new RTSMovementSystem());
 }
 
 ObjectManager::~ObjectManager() {

@@ -3,6 +3,8 @@
 #include <RenderSystem.h>
 #include <ObjectManager.h>
 #include <SelectableComponent.h>
+#include <FaceDirectionComponent.h>
+#include <AnimatorComponent.h>
 
 using namespace irr;
 using namespace core;
@@ -27,21 +29,28 @@ void RenderSystem::update ( float timestep ) {
 			if (!(rendComp = mgr->getObjectComponent<RenderComponent>(i, "RenderComponent"))->visible)
 				continue;
 			
-			AnimatedMeshComponent* animComp;
-			TransformComponent* transComp;
+			AnimatedMeshComponent* animComp = mgr->getObjectComponent<AnimatedMeshComponent>(i, "AnimatedMeshComponent");
+			TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
 			
 			// Check that each object has a transform and mesh
-			if ((animComp = mgr->getObjectComponent<AnimatedMeshComponent>(i, "AnimatedMeshComponent")) == nullptr 
-				|| (transComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent")) == nullptr)
+			if (animComp == nullptr || transComp == nullptr)
 				continue;
 			
 			// Check all renderable objects have been added to scene
-			if (rendComp->sceneNode == nullptr) 
+			if (rendComp->sceneNode == nullptr) {
 				addSceneNode(rendComp, animComp, transComp);
+				
+				// Initialise the object's animation if it has an AnimatorComponent
+				AnimatorComponent* animatorComp = mgr->getObjectComponent<AnimatorComponent>(i, "AnimatorComponent");
+				
+				if (animatorComp != nullptr) {
+					animatorComp->setAnimation(animatorComp->currentAnimation, rendComp->sceneNode);
+				}
+			}
 			
 			// Check if object is selectable and create a selection plane to render
-			SelectableComponent* selectComp;
-			if ((selectComp = mgr->getObjectComponent<SelectableComponent>(i, "SelectableComponent")) != nullptr) {
+			SelectableComponent* selectComp = mgr->getObjectComponent<SelectableComponent>(i, "SelectableComponent");
+			if (selectComp != nullptr) {
 				
 				if (selectComp->selectionMesh == nullptr) {
 					irr::core::dimension2d<irr::f32> tileSize(4*selectComp->selectionXScale,4*selectComp->selectionZScale);
@@ -65,8 +74,19 @@ void RenderSystem::update ( float timestep ) {
 				selectComp->sceneNode->setPosition(transComp->worldPosition + vector3df(0,0.01f,0));			
 			}
 			
+			// Check if the object has a facing direction
+			FaceDirectionComponent* dirComp = mgr->getObjectComponent<FaceDirectionComponent>(i, "FaceDirectionComponent");
+			vector3df facingDirection(0,0,0);
+			vector3df meshRot(animComp->meshRotOffX, animComp->meshRotOffY, animComp->meshRotOffZ);
+			
+			if (dirComp != nullptr) {
+				facingDirection = vector3df(0, dirComp->currentYRot, 0);
+				rendComp->sceneNode->setRotation(facingDirection + meshRot);
+			} else {
+				rendComp->sceneNode->setRotation(transComp->rotation + meshRot);
+			}
+			
 			rendComp->sceneNode->setPosition(transComp->worldPosition);
-			rendComp->sceneNode->setRotation(transComp->rotation);
 			rendComp->sceneNode->setScale(transComp->scale);
 		}	
 	}
@@ -75,9 +95,42 @@ void RenderSystem::update ( float timestep ) {
 
 void RenderSystem::draw ( float timestep ) {
 	RenderManager::renderManager.getSceneManager()->drawAll();
+	
+	if (!RenderManager::DEBUG_GRAPHICS) return;
+	/*
+	// Get the object manager
+	ObjectManager* mgr = &ObjectManager::manager;
+	irr::scene::ISceneManager* smgr = RenderManager::renderManager.getSceneManager();
+	
+	// Get all renderable objects
+	std::list<int> renderables = mgr->getObjectsWithComponent("RenderComponent");
+
+	if (renderables.size() > 0) {	
+		for (int i : renderables) {
+			RenderComponent* rendComp;
+			
+			// Check object is visible
+			if (!(rendComp = mgr->getObjectComponent<RenderComponent>(i, "RenderComponent"))->visible)
+				continue;
+			
+			AnimatedMeshComponent* animComp = mgr->getObjectComponent<AnimatedMeshComponent>(i, "AnimatedMeshComponent");
+			TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
+			
+			// Check that each object has a transform and mesh
+			if (animComp == nullptr || transComp == nullptr)
+				continue;
+			
+			SMaterial m;
+			m.Lighting = false;
+			m.Thickness = 2.0f;
+			RenderManager::renderManager.getDriver()->setMaterial(m);
+			RenderManager::renderManager.getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
+			RenderManager::renderManager.getDriver()->draw3DLine(transComp->worldPosition+vector3df(0,4,0), transComp->worldPosition+vector3df(0,4,0)+animComp->meshForward*3, SColor(255,0,0,255));
+		}	
+	}*/
 }
 
-void RenderSystem::addSceneNode ( RenderComponent* rendComp, AnimatedMeshComponent* animComp, TransformComponent* transComp ) {
+void RenderSystem::addSceneNode (RenderComponent* rendComp, AnimatedMeshComponent* animComp, TransformComponent* transComp ) {
 	irr::video::IVideoDriver* driver = RenderManager::renderManager.getDriver();
 	irr::scene::ISceneManager* smgr = RenderManager::renderManager.getSceneManager();
 	
@@ -96,8 +149,9 @@ void RenderSystem::addSceneNode ( RenderComponent* rendComp, AnimatedMeshCompone
 
 		animnode->addShadowVolumeSceneNode();
 		
-		animnode->setAnimationSpeed(50);
-		animnode->setFrameLoop(0, 61);
+		animnode->setAnimationSpeed(70);
+		animnode->setFrameLoop(62, 142);
+		animnode->setCurrentFrame(62 + rand() % (142-64));
 	}
 	
 	rendComp->sceneNode = animnode;
