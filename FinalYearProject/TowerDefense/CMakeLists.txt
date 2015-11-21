@@ -38,6 +38,8 @@ set (SOURCES
   src/PathMovementSystem.cpp
   src/FaceDirectionSystem.cpp
   src/RTSMovementSystem.cpp
+  src/NodePath.cpp
+  src/SteeringSystem.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)

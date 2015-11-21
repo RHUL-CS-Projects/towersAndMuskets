@@ -95,8 +95,8 @@ void basicGraphics() {
 // 	device->getCursorControl()->setVisible(false);
 	
 	// Add soldiers
-	for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 10; j++) {
+	for (int i = 0; i < 1; i++) {
+		for (int j = 0; j < 1; j++) {
 			int obj1 = ObjectManager::manager.createObject();
 			ObjectManager::manager.attachComponent(obj1, new TransformComponent(vector3df(i*15,0,j*15)));
 			ObjectManager::manager.attachComponent(obj1, new AnimatedMeshComponent("humantest.x", "ManTexture.png", vector3df(0,0,0)));
@@ -110,8 +110,21 @@ void basicGraphics() {
 			ObjectManager::manager.attachComponent(obj1, new SelectableComponent());
 			ObjectManager::manager.attachComponent(obj1, new FaceDirectionComponent(0, 0.08f));
 			ObjectManager::manager.attachComponent(obj1, new RTSMovementComponent());
-			PathMovementComponent* pathComp = new PathMovementComponent(0.2f);
-			ObjectManager::manager.attachComponent(obj1, pathComp);
+// 			PathMovementComponent* pathComp = new PathMovementComponent(0.2f);
+// 			ObjectManager::manager.attachComponent(obj1, pathComp);
+			SteeringComponent* steerComp = new SteeringComponent(0.18, 40);
+			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
+			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
+			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
+			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
+			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
+			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
+			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
+			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
+			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
+			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
+			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
+			ObjectManager::manager.attachComponent(obj1, steerComp);
 		}
 // 		ObjectManager::manager.printGameObjects();
 	}
