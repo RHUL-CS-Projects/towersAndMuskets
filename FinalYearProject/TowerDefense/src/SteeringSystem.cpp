@@ -5,6 +5,8 @@
 #include <TransformComponent.h>
 #include <FaceDirectionComponent.h>
 #include <RenderManager.h>
+#include <AnimatorComponent.h>
+#include <RenderComponent.h>
 
 using namespace irr;
 using namespace core;
@@ -31,22 +33,56 @@ void SteeringSystem::update ( float timestep ) {
 			
 			seek(steerComp->path.getCurrentNode(), steerComp, transComp);
 			
-			if ((steerComp->path.getCurrentNode() - transComp->worldPosition).getLengthSQ() < 100) 
+			if ((steerComp->path.getCurrentNode() - transComp->worldPosition).getLengthSQ() < 50) 
 				steerComp->path.nextNode();
 				
-			transComp->worldPosition += steerComp->velocity;
-		}		
+		} else {
+			steerComp->velocity *= 0.95;
+		}
+		
+		// Avoid other units
+		for (int j : objects) {
+			if (j == i) continue;
+			
+			SteeringComponent* otherSteerComp = mgr->getObjectComponent<SteeringComponent>(j, "SteeringComponent");
+			
+			// Check the object has a transform
+			TransformComponent* otherTransComp = mgr->getObjectComponent<TransformComponent>(j, "TransformComponent");
+			
+			if (otherTransComp == nullptr)
+				continue;
+			
+			if ((transComp->worldPosition - otherTransComp->worldPosition).getLengthSQ() < steerComp->radius*steerComp->radius + otherSteerComp->radius*otherSteerComp->radius)
+				avoid(otherTransComp->worldPosition, steerComp, transComp);
+		}
+		
+		transComp->worldPosition += steerComp->velocity;
+		transComp->worldPosition.Y = 0;
+		
+		// Animate the object appropriately (TEMPORARY)
+		RenderComponent* rendComp = mgr->getObjectComponent<RenderComponent>(i, "RenderComponent");
+		AnimatorComponent* animComp = mgr->getObjectComponent<AnimatorComponent>(i, "AnimatorComponent");
+		
+		if (rendComp != nullptr && animComp != nullptr) {
+			if (steerComp->path.ended() && steerComp->velocity.getLength() < 0.01) {
+				animComp->setAnimation("IDLE", rendComp->sceneNode);
+			} else {
+				animComp->setAnimation("WALK", rendComp->sceneNode);
+			}
+		}
 		
 		// Update facing direction if necessary
 		FaceDirectionComponent* faceComp = mgr->getObjectComponent<FaceDirectionComponent>(i, "FaceDirectionComponent");
 		
-		if (faceComp != nullptr)
+		if (faceComp != nullptr && (!steerComp->path.ended() || steerComp->velocity.getLength() > 0.01))
 			faceComp->targetYRot = radToDeg(atan2(-steerComp->velocity.X,-steerComp->velocity.Z));
 	}
 }
 
 
 void SteeringSystem::draw ( float timestep ) {
+	if (!RenderManager::DEBUG_GRAPHICS) return;
+	
 	// Get the object manager
 	ObjectManager* mgr = &ObjectManager::manager;
 	
@@ -68,7 +104,7 @@ void SteeringSystem::draw ( float timestep ) {
 		m.Thickness = 2.0f;
 		RenderManager::renderManager.getDriver()->setMaterial(m);
 		RenderManager::renderManager.getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
-		vector3df velToTarget = (steerComp->path.getCurrentNode() - transComp->worldPosition).normalize() * 10;;
+		vector3df velToTarget = (steerComp->path.getCurrentNode() - transComp->worldPosition).normalize() * 10;
 		vector3df vel = steerComp->velocity;
 		vel = vel.normalize() * 10;
 		
@@ -107,7 +143,22 @@ void SteeringSystem::seek ( vector3df targetPos, SteeringComponent* steerComp, T
 	steerComp->velocity += steerForce;
 }
 
-
+/**
+ * Use basic steering behaviours to avoid a target position
+ */
+void SteeringSystem::avoid ( vector3df avoidPos, SteeringComponent* steerComp, TransformComponent* transComp ) {
+	vector3df* pos = &transComp->worldPosition;
+	vector3df* vel = &steerComp->velocity;
+	
+	vector3df velToTarget = (*pos - avoidPos).normalize() * steerComp->maxSpeed;
+	vector3df steerForce = velToTarget - *vel;
+	
+	if (steerForce.getLength() > steerComp->maxSpeed)
+		steerForce = steerForce.normalize() * steerComp->maxSpeed;
+	steerForce /= steerComp->mass;
+	
+	steerComp->velocity += steerForce;
+}
 
 
 

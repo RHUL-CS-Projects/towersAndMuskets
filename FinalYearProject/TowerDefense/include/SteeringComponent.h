@@ -16,6 +16,7 @@ public:
 	
 	NodePath path;
 	float maxSpeed;
+	float radius = 2;
 	float mass;
 	irr::core::vector3df velocity = irr::core::vector3df(0,0,0);
 };
