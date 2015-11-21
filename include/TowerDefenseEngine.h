@@ -11,6 +11,7 @@
 #include <FaceDirectionComponent.h>
 #include <FaceDirectionSystem.h>
 #include <GameComponent.h>
+#include <NodePath.h>
 #include <ObjectManager.h>
 #include <PathMovementComponent.h>
 #include <PathMovementSystem.h>
@@ -22,6 +23,7 @@
 #include <SelectableComponent.h>
 #include <SelectionSystem.h>
 #include <Server.h>
+#include <SteeringComponent.h>
 #include <TransformComponent.h>
 
 #endif
