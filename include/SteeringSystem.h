@@ -16,6 +16,7 @@ public:
 	void draw(float timestep);
 	
 	void seek(irr::core::vector3df targetPos, SteeringComponent* steerComp, TransformComponent* transComp);
+	void avoid(irr::core::vector3df avoidPos, SteeringComponent* steerComp, TransformComponent* transComp);
 };
 
 #endif

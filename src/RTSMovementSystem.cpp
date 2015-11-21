@@ -6,6 +6,8 @@
 #include <RenderManager.h>
 #include <SelectableComponent.h>
 #include <PathMovementComponent.h>
+#include <SteeringComponent.h>
+#include <TransformComponent.h>
 
 #include <irrlicht/irrlicht.h>
 
@@ -44,6 +46,13 @@ void RTSMovementSystem::update ( float timestep ) {
 			if (selectComp == nullptr || selectComp->selected == false)
 				continue;
 			
+			// Get only selected selectable objects
+			TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
+			
+			if (transComp == nullptr)
+				continue;
+			
+			/*
 			// Get object's path mover
 			PathMovementComponent* pathComp = mgr->getObjectComponent<PathMovementComponent>(i, "PathMovementComponent");
 			
@@ -51,13 +60,27 @@ void RTSMovementSystem::update ( float timestep ) {
 				continue;
 			
 			pathComp->waypoints.push(point);
+			*/
+			
+			// Get object's steering system
+			SteeringComponent* steerComp = mgr->getObjectComponent<SteeringComponent>(i, "SteeringComponent");
+			
+			if (steerComp == nullptr)
+				continue;
+			
+			if (steerComp->path.ended())
+				steerComp->path.resetPath();
+			
+			if (steerComp->path.getWaypoints().size() == 0)
+				steerComp->path.addNode(transComp->worldPosition);
+			
+			steerComp->path.addNode(point);
 		}
 	} else {
 		if (!EventReceiver::getMouseState()->rightPressed)
 			mouseClicked = false;
 	}
 }
-
 
 
 void RTSMovementSystem::draw ( float timestep ) {
