@@ -90,51 +90,51 @@ void PathMovementSystem::update ( float timestep ) {
  * Draw debug information to the screen about each path being followed
  */
 void PathMovementSystem::draw ( float timestep ) {
-    if (RenderManager::DEBUG_GRAPHICS) {
-		// Get the object manager
-		ObjectManager* mgr = &ObjectManager::manager;
+
+	// Get the object manager
+	ObjectManager* mgr = &ObjectManager::manager;
+	
+	// Get all objects with a PathMovementComponent
+	std::list<int> objects = mgr->getObjectsWithComponent("PathMovementComponent");
+	
+	for (int i : objects) {
+		PathMovementComponent* pathComp = mgr->getObjectComponent<PathMovementComponent>(i, "PathMovementComponent");
 		
-		// Get all objects with a PathMovementComponent
-		std::list<int> objects = mgr->getObjectsWithComponent("PathMovementComponent");
+		// Check the object has a TransformComponent
+		TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
+		if (transComp == nullptr)
+			continue;
+	
+		// Check if the object has a SelectableComponent (to only draw the path if it is selected)
+		SelectableComponent* selectComp = mgr->getObjectComponent<SelectableComponent>(i, "SelectableComponent");
+		if (selectComp == nullptr || !selectComp->selected)
+			continue;
 		
-		for (int i : objects) {
-			PathMovementComponent* pathComp = mgr->getObjectComponent<PathMovementComponent>(i, "PathMovementComponent");
-			
-			// Check the object has a TransformComponent
-			TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
-			if (transComp == nullptr)
-				continue;
+		// Check there are waypoints
+		if (pathComp->waypoints.size() <= 0)
+			continue;
 		
-			// Check if the object has a SelectableComponent (to only draw the path if it is selected)
-			SelectableComponent* selectComp = mgr->getObjectComponent<SelectableComponent>(i, "SelectableComponent");
-			if (selectComp == nullptr || !selectComp->selected)
-				continue;
+		IVideoDriver* driver =  RenderManager::renderManager.getDriver();	
+		
+		std::queue<vector3df> copyQueue = pathComp->waypoints;
+		
+		SMaterial m;
+		m.Lighting = false;
+		m.Thickness = 1.0f;
+		RenderManager::renderManager.getDriver()->setMaterial(m);
+		RenderManager::renderManager.getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
+		
+		vector3df prevNode = transComp->worldPosition;
+		vector3df node;
+		while (copyQueue.size() > 0) {
+			node = copyQueue.front();
+			driver->draw3DLine(prevNode+vector3df(0,1,0), node+vector3df(0,1,0), SColor(130,255,0,0));			
 			
-			// Check there are waypoints
-			if (pathComp->waypoints.size() <= 0)
-				continue;
-			
-			IVideoDriver* driver =  RenderManager::renderManager.getDriver();	
-			
-			std::queue<vector3df> copyQueue = pathComp->waypoints;
-			
-			SMaterial m;
-			m.Lighting = false;
-			m.Thickness = 1.0f;
-			RenderManager::renderManager.getDriver()->setMaterial(m);
-			RenderManager::renderManager.getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
-			
-			vector3df prevNode = transComp->worldPosition;
-			vector3df node;
-			while (copyQueue.size() > 0) {
-				node = copyQueue.front();
-				driver->draw3DLine(prevNode+vector3df(0,1,0), node+vector3df(0,1,0), SColor(130,255,0,0));			
-				
-				copyQueue.pop();
-				prevNode = node;
-			}
+			copyQueue.pop();
+			prevNode = node;
 		}
 	}
+	
 }
 
 

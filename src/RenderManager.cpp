@@ -27,8 +27,8 @@ RenderManager::~RenderManager() {
  * used by Irrlicht
  */
 void RenderManager::init ( const wchar_t* caption ) {
-	EventReceiver* eventReceiver = new EventReceiver();
-	device = createDevice(video::EDT_OPENGL, dimension2d<u32>(1280, 720), 32, false, true, true, eventReceiver);
+	
+	device = createDevice(video::EDT_OPENGL, dimension2d<u32>(1280, 720), 32, false, true, true);
 	
 	if (!device) {
 		cerr << "An error occurred when creating the display device :(" << endl; 

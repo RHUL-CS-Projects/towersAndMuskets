@@ -1,26 +1,33 @@
 #include <EventReceiver.h>
+#include <RenderManager.h>
+#include <iostream>
+#include <DebugValues.h>
 
 EventReceiver::SMouseState EventReceiver::MouseState;
 
-bool EventReceiver::OnEvent ( const irr::SEvent& event ) {
+using namespace irr;
+using namespace core;
+using namespace gui;
+
+bool EventReceiver::OnEvent ( const SEvent& event ) {
 	if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
 		switch (event.MouseInput.Event) {
-			case irr::EMIE_LMOUSE_PRESSED_DOWN:
+			case EMIE_LMOUSE_PRESSED_DOWN:
 				EventReceiver::MouseState.leftPressed = true;
 				break;
-			case irr::EMIE_LMOUSE_LEFT_UP:
+			case EMIE_LMOUSE_LEFT_UP:
 				EventReceiver::MouseState.leftPressed = false;
 				break;
-			case irr::EMIE_RMOUSE_PRESSED_DOWN:
+			case EMIE_RMOUSE_PRESSED_DOWN:
 				EventReceiver::MouseState.rightPressed = true;
 				break;
-			case irr::EMIE_RMOUSE_LEFT_UP:
+			case EMIE_RMOUSE_LEFT_UP:
 				EventReceiver::MouseState.rightPressed = false;
 				break;
-			case irr::EMIE_MOUSE_WHEEL:
+			case EMIE_MOUSE_WHEEL:
 				EventReceiver::MouseState.wheelDelta = event.MouseInput.Wheel;
 				break;
-			case irr::EMIE_MOUSE_MOVED:
+			case EMIE_MOUSE_MOVED:
 				EventReceiver::MouseState.position.X = event.MouseInput.X;
 				EventReceiver::MouseState.position.Y = event.MouseInput.Y;
 				break;
@@ -28,9 +35,39 @@ bool EventReceiver::OnEvent ( const irr::SEvent& event ) {
 				break;
 		}
 	}
+
+	if (event.EventType == EEVENT_TYPE::EET_GUI_EVENT) {
+		int id = event.GUIEvent.Caller->getID();
+		IGUIEnvironment* guiEnv = Context.device->getGUIEnvironment();
+		
+		
+		switch (event.GUIEvent.EventType){
+			case EGUI_EVENT_TYPE::EGET_BUTTON_CLICKED:
+				
+				switch (id) {
+					case BUTTON_ID_QUADTREE:
+						DebugValues::DRAW_QUADTREE = !DebugValues::DRAW_QUADTREE;
+						Context.txtQuadtree->setText((DebugValues::DRAW_QUADTREE) ? L"ON" : L"OFF");
+						break;
+					case BUTTON_ID_PATHS:
+						DebugValues::DRAW_PATHS = !DebugValues::DRAW_PATHS;
+						Context.txtPaths->setText((DebugValues::DRAW_PATHS) ? L"ON" : L"OFF");
+						break;
+				}
+				
+				break;
+			default:
+				break;
+		}
+		
+	}
+	
+	return false;
 }
 
 	
 EventReceiver::SMouseState* EventReceiver::getMouseState() {
 	return &EventReceiver::MouseState;
 }
+
+

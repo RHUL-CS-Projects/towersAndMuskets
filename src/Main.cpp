@@ -67,20 +67,22 @@ void basicGraphics() {
 		"./res/materials/textures/terrain-heightmap-flat.bmp", 
 		0, 
 		-1, 
-		vector3df(-128*4,0,-128*4),
 		vector3df(0,0,0),
-		vector3df(4,0.5f,4),
+		vector3df(0,0,0),
+		vector3df(2,0.5f,2),
 		SColor(255,255,255,255),
 		5,
 		scene::ETPS_17,
 		4
   		);
 	
+	cout << terrain->getBoundingBox().getCenter().X << ", " << terrain->getBoundingBox().getCenter().Z << endl;
+	
 	terrain->setMaterialFlag(video::EMF_LIGHTING, true);
 	terrain->setMaterialTexture(0, driver->getTexture("./res/materials/textures/grass-texture.jpg"));
 	terrain->setMaterialTexture(1, driver->getTexture("./res/materials/textures/grass-texture.jpg"));
 	terrain->setMaterialType(video::EMT_DETAIL_MAP);
-	terrain->scaleTexture(250, 250);
+	terrain->scaleTexture(128, 128);
 	
 	ITriangleSelector* terrainSelector = smgr->createTerrainTriangleSelector(terrain);
 	terrain->setTriangleSelector(terrainSelector);
@@ -95,10 +97,10 @@ void basicGraphics() {
 // 	device->getCursorControl()->setVisible(false);
 	
 	// Add soldiers
-	for (int i = 0; i < 5; i++) {
-		for (int j = 0; j < 5; j++) {
+	for (int i = 0; i < 10; i++) {
+		for (int j = 0; j < 10; j++) {
 			int obj1 = ObjectManager::manager.createObject();
-			ObjectManager::manager.attachComponent(obj1, new TransformComponent(vector3df(i*15,0,j*15)));
+			ObjectManager::manager.attachComponent(obj1, new TransformComponent(vector3df(128 + i*15+3,0,128 + j*15+3)));
 			ObjectManager::manager.attachComponent(obj1, new AnimatedMeshComponent("humantest.x", "ManTexture.png", vector3df(0,0,0)));
 			
 			AnimatorComponent* animComp = new AnimatorComponent();
@@ -110,23 +112,8 @@ void basicGraphics() {
 			ObjectManager::manager.attachComponent(obj1, new SelectableComponent());
 			ObjectManager::manager.attachComponent(obj1, new FaceDirectionComponent(0, 0.08f));
 			ObjectManager::manager.attachComponent(obj1, new RTSMovementComponent());
-// 			PathMovementComponent* pathComp = new PathMovementComponent(0.2f);
-// 			ObjectManager::manager.attachComponent(obj1, pathComp);
-// 			SteeringComponent* steerComp = new SteeringComponent(0.2, 80);
-// 			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
-// 			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
-// 			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
-// 			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
-// 			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
-// 			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
-// 			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
-// 			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
-// 			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
-// 			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
-// 			steerComp->path.addNode(vector3df(-100 + rand()%200,0,-100 + rand()%200));
 			ObjectManager::manager.attachComponent(obj1, new SteeringComponent(0.2, 80));
 		}
-// 		ObjectManager::manager.printGameObjects();
 	}
 	
 	// Main game loop
@@ -142,6 +129,22 @@ void basicGraphics() {
 	int tickCounter = 0;
 	int frameCounter = 0;
 	double updateTime = gameClock.getElapsedTime().asMicroseconds();
+	
+	SAppContext context;
+    context.device = device;
+	
+	guienv->addStaticText(L"DEBUG CONTROLS", recti(10,10,90,40))->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
+	
+	guienv->addButton(recti(10,50,90,80), 0, GUI_IDS::BUTTON_ID_QUADTREE, L"QUADTREE");
+	context.txtQuadtree = guienv->addStaticText(L"OFF", recti(95,50,110,80));
+	context.txtQuadtree->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
+	
+	guienv->addButton(recti(10,90,90,120), 0, GUI_IDS::BUTTON_ID_PATHS, L"PATHS");
+	context.txtPaths = guienv->addStaticText(L"OFF", recti(95,90,110,120));
+	context.txtPaths->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
+	
+	EventReceiver eventReceiver(context);
+	device->setEventReceiver(&eventReceiver);
 	
 	while (device->run()) {
 		currentTime = gameClock.getElapsedTime().asMicroseconds();

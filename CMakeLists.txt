@@ -40,6 +40,8 @@ set (SOURCES
   src/RTSMovementSystem.cpp
   src/NodePath.cpp
   src/SteeringSystem.cpp
+  src/Quadtree.cpp
+  src/DebugValues.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)

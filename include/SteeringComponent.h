@@ -19,6 +19,7 @@ public:
 	float radius = 2;
 	float mass;
 	irr::core::vector3df velocity = irr::core::vector3df(0,0,0);
+	irr::core::vector3df prevTargetDir = irr::core::vector3df(0,0,0);
 };
 
 #endif

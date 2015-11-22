@@ -7,6 +7,7 @@
 #include <CameraSystem.h>
 #include <Client.h>
 #include <ComponentSystem.h>
+#include <DebugValues.h>
 #include <EventReceiver.h>
 #include <FaceDirectionComponent.h>
 #include <FaceDirectionSystem.h>
