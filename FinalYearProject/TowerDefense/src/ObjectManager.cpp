@@ -184,11 +184,10 @@ void ObjectManager::drawSystems ( float timestep ) {
 	for (ComponentSystem* system : systems) {
 		system->draw(timestep);
 	}
-	
+		
 	RenderManager::renderManager.getGUIEnvironment()->drawAll();
+	
 	RenderManager::renderManager.getDriver()->endScene();
-	
-	
 }
 
 

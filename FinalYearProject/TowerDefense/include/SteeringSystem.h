@@ -5,10 +5,13 @@
 #include <irrlicht/irrlicht.h>
 #include <SteeringComponent.h>
 #include <TransformComponent.h>
+#include <Quadtree.h>
+#include <list>
 
 class SteeringSystem : public ComponentSystem {
 private:
-	
+	Quadtree* tempTree;
+	void buildQuadtree(std::list<int> objects, Quadtree& root);
 public:
 	SteeringSystem() : ComponentSystem("SteeringSystem") {}
 	

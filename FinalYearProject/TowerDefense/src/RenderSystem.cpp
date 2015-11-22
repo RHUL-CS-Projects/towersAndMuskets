@@ -95,39 +95,6 @@ void RenderSystem::update ( float timestep ) {
 
 void RenderSystem::draw ( float timestep ) {
 	RenderManager::renderManager.getSceneManager()->drawAll();
-	
-	if (!RenderManager::DEBUG_GRAPHICS) return;
-	/*
-	// Get the object manager
-	ObjectManager* mgr = &ObjectManager::manager;
-	irr::scene::ISceneManager* smgr = RenderManager::renderManager.getSceneManager();
-	
-	// Get all renderable objects
-	std::list<int> renderables = mgr->getObjectsWithComponent("RenderComponent");
-
-	if (renderables.size() > 0) {	
-		for (int i : renderables) {
-			RenderComponent* rendComp;
-			
-			// Check object is visible
-			if (!(rendComp = mgr->getObjectComponent<RenderComponent>(i, "RenderComponent"))->visible)
-				continue;
-			
-			AnimatedMeshComponent* animComp = mgr->getObjectComponent<AnimatedMeshComponent>(i, "AnimatedMeshComponent");
-			TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
-			
-			// Check that each object has a transform and mesh
-			if (animComp == nullptr || transComp == nullptr)
-				continue;
-			
-			SMaterial m;
-			m.Lighting = false;
-			m.Thickness = 2.0f;
-			RenderManager::renderManager.getDriver()->setMaterial(m);
-			RenderManager::renderManager.getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
-			RenderManager::renderManager.getDriver()->draw3DLine(transComp->worldPosition+vector3df(0,4,0), transComp->worldPosition+vector3df(0,4,0)+animComp->meshForward*3, SColor(255,0,0,255));
-		}	
-	}*/
 }
 
 void RenderSystem::addSceneNode (RenderComponent* rendComp, AnimatedMeshComponent* animComp, TransformComponent* transComp ) {

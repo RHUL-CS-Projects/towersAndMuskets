@@ -7,6 +7,8 @@
 #include <RenderManager.h>
 #include <AnimatorComponent.h>
 #include <RenderComponent.h>
+#include <Quadtree.h>
+#include <DebugValues.h>
 
 using namespace irr;
 using namespace core;
@@ -19,6 +21,14 @@ void SteeringSystem::update ( float timestep ) {
 	// Get objects with steering components
 	std::list<int> objects = mgr->getObjectsWithComponent("SteeringComponent");
 	
+	int collisionCalls = 0;
+	
+	Quadtree collisionTree(0, rectf(0, 0, 480, 480));
+	buildQuadtree(objects, collisionTree);
+	
+	tempTree = &collisionTree;
+	
+	std::list<int> possibleCollisions;
 	for (int i : objects) {
 		// Get the steering component
 		SteeringComponent* steerComp = mgr->getObjectComponent<SteeringComponent>(i, "SteeringComponent");
@@ -40,20 +50,30 @@ void SteeringSystem::update ( float timestep ) {
 			steerComp->velocity *= 0.95;
 		}
 		
-		// Avoid other units
-		for (int j : objects) {
-			if (j == i) continue;
+		if (steerComp->velocity.getLength() > 0.01) {
+			// Get list of possible collisions from the quadtree
+			possibleCollisions.clear();
+			collisionTree.getObjects(possibleCollisions, i, transComp->worldPosition, steerComp->radius);
 			
-			SteeringComponent* otherSteerComp = mgr->getObjectComponent<SteeringComponent>(j, "SteeringComponent");
-			
-			// Check the object has a transform
-			TransformComponent* otherTransComp = mgr->getObjectComponent<TransformComponent>(j, "TransformComponent");
-			
-			if (otherTransComp == nullptr)
-				continue;
-			
-			if ((transComp->worldPosition - otherTransComp->worldPosition).getLengthSQ() < steerComp->radius*steerComp->radius + otherSteerComp->radius*otherSteerComp->radius)
-				avoid(otherTransComp->worldPosition, steerComp, transComp);
+			// Avoid other units
+			for (int j : possibleCollisions) {
+				if (j == i) continue;
+				
+				collisionCalls++;
+				
+				SteeringComponent* otherSteerComp = mgr->getObjectComponent<SteeringComponent>(j, "SteeringComponent");
+				
+				// Check the object has a transform
+				TransformComponent* otherTransComp = mgr->getObjectComponent<TransformComponent>(j, "TransformComponent");
+				
+				if (otherTransComp == nullptr)
+					continue;
+				
+				if ((transComp->worldPosition - otherTransComp->worldPosition).getLengthSQ() < steerComp->radius*steerComp->radius + otherSteerComp->radius*otherSteerComp->radius) {
+					avoid(otherTransComp->worldPosition, steerComp, transComp);
+					avoid(transComp->worldPosition, otherSteerComp, otherTransComp);
+				}
+			}
 		}
 		
 		transComp->worldPosition += steerComp->velocity;
@@ -64,7 +84,7 @@ void SteeringSystem::update ( float timestep ) {
 		AnimatorComponent* animComp = mgr->getObjectComponent<AnimatorComponent>(i, "AnimatorComponent");
 		
 		if (rendComp != nullptr && animComp != nullptr) {
-			if (steerComp->path.ended() && steerComp->velocity.getLength() < 0.01) {
+			if (steerComp->path.ended() && steerComp->velocity.getLength() < 0.03) {
 				animComp->setAnimation("IDLE", rendComp->sceneNode);
 			} else {
 				animComp->setAnimation("WALK", rendComp->sceneNode);
@@ -77,51 +97,68 @@ void SteeringSystem::update ( float timestep ) {
 		if (faceComp != nullptr && (!steerComp->path.ended() || steerComp->velocity.getLength() > 0.01))
 			faceComp->targetYRot = radToDeg(atan2(-steerComp->velocity.X,-steerComp->velocity.Z));
 	}
+	
+	//std::cout << "Collision calls: " << collisionCalls << std::endl;
 }
 
 
 void SteeringSystem::draw ( float timestep ) {
-	if (!RenderManager::DEBUG_GRAPHICS) return;
-	
 	// Get the object manager
 	ObjectManager* mgr = &ObjectManager::manager;
 	
 	// Get objects with steering components
 	std::list<int> objects = mgr->getObjectsWithComponent("SteeringComponent");
 	
-	for (int i : objects) {
-		// Get the steering component
-		SteeringComponent* steerComp = mgr->getObjectComponent<SteeringComponent>(i, "SteeringComponent");
-		
-		// Check the object has a transform
-		TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
-		
-		if (transComp == nullptr)
-			continue;
+	if (DebugValues::DRAW_PATHS) {
+		for (int i : objects) {
+			// Get the steering component
+			SteeringComponent* steerComp = mgr->getObjectComponent<SteeringComponent>(i, "SteeringComponent");
+			
+			// Check the object has a transform
+			TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
+			
+			if (transComp == nullptr)
+				continue;
 
+			SMaterial m;
+			m.Lighting = false;
+			m.Thickness = 2.0f;
+			RenderManager::renderManager.getDriver()->setMaterial(m);
+			RenderManager::renderManager.getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
+			if (!steerComp->path.ended())
+				steerComp->prevTargetDir = (steerComp->path.getCurrentNode() - transComp->worldPosition).normalize() * 10;
+			vector3df velToTarget = steerComp->prevTargetDir;
+			vector3df vel = steerComp->velocity;
+			vel = vel.normalize() * 10;
+			
+			RenderManager::renderManager.getDriver()->draw3DLine(transComp->worldPosition+vector3df(0,5,0), transComp->worldPosition+vector3df(0,5,0)+velToTarget, SColor(255,0,255,0));
+			RenderManager::renderManager.getDriver()->draw3DLine(transComp->worldPosition+vector3df(0,4,0), transComp->worldPosition+vector3df(0,4,0)+vel, SColor(255,0,0,255));
+			
+			m.Lighting = false;
+			m.Thickness = 1.0f;
+			RenderManager::renderManager.getDriver()->setMaterial(m);
+			RenderManager::renderManager.getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
+			
+			vector3df node, prevNode;
+			for (int i = 1; i < steerComp->path.getWaypoints().size(); i++) {
+				node = steerComp->path.getWaypoints()[i];
+				prevNode = steerComp->path.getWaypoints()[i-1];
+				RenderManager::renderManager.getDriver()->draw3DLine(prevNode+vector3df(0,1,0), node+vector3df(0,1,0), SColor(130,255,0,0));			
+			}
+		}
+	}
+	
+	if (DebugValues::DRAW_QUADTREE) {
 		SMaterial m;
 		m.Lighting = false;
 		m.Thickness = 2.0f;
 		RenderManager::renderManager.getDriver()->setMaterial(m);
 		RenderManager::renderManager.getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
-		vector3df velToTarget = (steerComp->path.getCurrentNode() - transComp->worldPosition).normalize() * 10;
-		vector3df vel = steerComp->velocity;
-		vel = vel.normalize() * 10;
 		
-		RenderManager::renderManager.getDriver()->draw3DLine(transComp->worldPosition+vector3df(0,5,0), transComp->worldPosition+vector3df(0,5,0)+velToTarget, SColor(255,0,255,0));
-		RenderManager::renderManager.getDriver()->draw3DLine(transComp->worldPosition+vector3df(0,4,0), transComp->worldPosition+vector3df(0,4,0)+vel, SColor(255,0,0,255));
+		Quadtree collisionTree(0, rectf(0, 0, 480, 480));
+		buildQuadtree(objects, collisionTree);
 		
-		m.Lighting = false;
-		m.Thickness = 1.0f;
-		RenderManager::renderManager.getDriver()->setMaterial(m);
-		RenderManager::renderManager.getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
-		
-		vector3df node, prevNode;
-		for (int i = 1; i < steerComp->path.getWaypoints().size(); i++) {
-			node = steerComp->path.getWaypoints()[i];
-			prevNode = steerComp->path.getWaypoints()[i-1];
-			RenderManager::renderManager.getDriver()->draw3DLine(prevNode+vector3df(0,1,0), node+vector3df(0,1,0), SColor(130,255,0,0));			
-		}
+		collisionTree.draw();
 	}
 }
 
@@ -160,6 +197,31 @@ void SteeringSystem::avoid ( vector3df avoidPos, SteeringComponent* steerComp, T
 	steerComp->velocity += steerForce;
 }
 
+/**
+ * Build a quadtree of all units with steering components for efficient
+ * collision checking
+ */
+void SteeringSystem::buildQuadtree ( std::list< int > objects, Quadtree& root ) {
+	// Get the object manager
+	ObjectManager* mgr = &ObjectManager::manager;
+	
+	root.clear();
+
+	for (int i : objects) {
+		SteeringComponent* steerComp = mgr->getObjectComponent<SteeringComponent>(i, "SteeringComponent");
+		
+		// Check the object has a transform
+		TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
+		
+		if (transComp == nullptr)
+			continue;
+		
+		vector3df pos = transComp->worldPosition;
+		float rad = steerComp->radius;
+		
+		root.insert(i, pos, rad);
+	}
+}
 
 
 
