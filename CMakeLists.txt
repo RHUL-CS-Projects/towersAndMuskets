@@ -42,6 +42,7 @@ set (SOURCES
   src/SteeringSystem.cpp
   src/Quadtree.cpp
   src/DebugValues.cpp
+  src/WorldManager.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)

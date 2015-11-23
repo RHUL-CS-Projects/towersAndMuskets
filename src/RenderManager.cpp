@@ -2,6 +2,7 @@
 
 #include <RenderManager.h>
 #include <EventReceiver.h>
+#include <DebugValues.h>
 
 using namespace std;
 using namespace irr;
@@ -28,7 +29,7 @@ RenderManager::~RenderManager() {
  */
 void RenderManager::init ( const wchar_t* caption ) {
 	
-	device = createDevice(video::EDT_OPENGL, dimension2d<u32>(1280, 720), 32, false, true, true);
+	device = createDevice(video::EDT_OPENGL, dimension2d<u32>(1280, 720), 32, false, DebugValues::STENCIL_ENABLED, true);
 	
 	if (!device) {
 		cerr << "An error occurred when creating the display device :(" << endl; 

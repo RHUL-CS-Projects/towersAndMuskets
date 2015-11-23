@@ -45,10 +45,10 @@ void basicGraphics() {
 	light->setLightType(video::ELT_DIRECTIONAL);
 	light->getLightData().Direction = lightdir;
 	
-	float cameraHeight = 60;
-	float targetCamHeight = 60;
-	float camX = -50;
-	float camZ = -50;
+	float cameraHeight = 100;
+	float targetCamHeight = 100;
+	float camX = 100;
+	float camZ = 100;
 	float camRotY = 45;
 	float camAngleXZ = 1;
 	smgr->addCameraSceneNode(0, vector3df(0, 0, 0), vector3df(0, 0, 0));
@@ -74,15 +74,15 @@ void basicGraphics() {
 		5,
 		scene::ETPS_17,
 		4
-  		);
+	);
 	
 	cout << terrain->getBoundingBox().getCenter().X << ", " << terrain->getBoundingBox().getCenter().Z << endl;
 	
 	terrain->setMaterialFlag(video::EMF_LIGHTING, true);
-	terrain->setMaterialTexture(0, driver->getTexture("./res/materials/textures/grass-texture.jpg"));
-	terrain->setMaterialTexture(1, driver->getTexture("./res/materials/textures/grass-texture.jpg"));
-	terrain->setMaterialType(video::EMT_DETAIL_MAP);
-	terrain->scaleTexture(128, 128);
+	terrain->setMaterialTexture(0, driver->getTexture("./res/materials/textures/grass-texture2.jpg"));
+	//terrain->setMaterialTexture(1, driver->getTexture("./res/materials/textures/grass-texture4.jpg"));
+	//terrain->setMaterialType(video::EMT_DETAIL_MAP);
+	terrain->scaleTexture(32, 32);
 	
 	ITriangleSelector* terrainSelector = smgr->createTerrainTriangleSelector(terrain);
 	terrain->setTriangleSelector(terrainSelector);
@@ -133,15 +133,35 @@ void basicGraphics() {
 	SAppContext context;
     context.device = device;
 	
-	guienv->addStaticText(L"DEBUG CONTROLS", recti(10,10,90,40))->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
+	std::string fontPath = RenderManager::resPath + "/materials/textures/lucida0.png";
+	IGUIFont* font = guienv->getFont(path(fontPath.c_str()));
+	guienv->getSkin()->setFont(font);
 	
-	guienv->addButton(recti(10,50,90,80), 0, GUI_IDS::BUTTON_ID_QUADTREE, L"QUADTREE");
-	context.txtQuadtree = guienv->addStaticText(L"OFF", recti(95,50,110,80));
+	
+	IGUIStaticText* lblTickFrame = guienv->addStaticText(L"TICKS: 0, FRAMES: 0", recti(10,10,120,30));
+	lblTickFrame->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_CENTER);
+	
+	guienv->addStaticText(L"DEBUG CONTROLS", recti(10,30,90,50))->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
+	
+	guienv->addButton(recti(10,50,120,80), 0, GUI_IDS::BUTTON_ID_QUADTREE, L"QUADTREE");
+	context.txtQuadtree = guienv->addStaticText(L"OFF", recti(125,50,140,80));
 	context.txtQuadtree->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 	
-	guienv->addButton(recti(10,90,90,120), 0, GUI_IDS::BUTTON_ID_PATHS, L"PATHS");
-	context.txtPaths = guienv->addStaticText(L"OFF", recti(95,90,110,120));
+	guienv->addButton(recti(10,90,120,120), 0, GUI_IDS::BUTTON_ID_PATHS, L"PATHS");
+	context.txtPaths = guienv->addStaticText(L"OFF", recti(125,90,140,120));
 	context.txtPaths->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
+	
+	guienv->addButton(recti(10,130,120,160), 0, GUI_IDS::BUTTON_ID_STEER, L"STEERING");
+	context.txtSteer = guienv->addStaticText(L"OFF", recti(125,130,140,160));
+	context.txtSteer->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
+	
+	guienv->addStaticText(L"STENCIL BUFFER", recti(10,170,120,200))->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
+	context.txtStencil = guienv->addStaticText((DebugValues::STENCIL_ENABLED) ? L"ON" : L"OFF", recti(125,170,140,200));
+	context.txtStencil->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
+	
+	guienv->addButton(recti(10,210,120,240), 0, GUI_IDS::BUTTON_ID_GRIDWORLD, L"WORLD GRID");
+	context.txtGridWorld = guienv->addStaticText(L"OFF", recti(125,210,140,240));
+	context.txtGridWorld->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 	
 	EventReceiver eventReceiver(context);
 	device->setEventReceiver(&eventReceiver);
@@ -153,33 +173,35 @@ void basicGraphics() {
 		while (currentTime >= nextTick && loops < maxFrameSkip) {
 			// Update the game
 			
-			// Camera controls
-			if (Keyboard::isKeyPressed(Keyboard::W)) {
-				camX += cos(camRotY);
-				camZ += sin(camRotY);
-			}
-			
-			if (Keyboard::isKeyPressed(Keyboard::S)) {
-				camX -= cos(camRotY);
-				camZ -= sin(camRotY);
-			}
-			
-			if (Keyboard::isKeyPressed(Keyboard::A)) {
-				camX += cos(camRotY + (90 * (PI/180))); 
-				camZ += sin(camRotY + (90 * (PI/180)));
-			}
-			
-			if (Keyboard::isKeyPressed(Keyboard::D)) {
-				camX += cos(camRotY - (90 * (PI/180))); 
-				camZ += sin(camRotY - (90 * (PI/180)));
-			}
-			
-			if (Keyboard::isKeyPressed(Keyboard::Q)) {
-				camRotY += 0.05f;
-			}
-			
-			if (Keyboard::isKeyPressed(Keyboard::E)) {
-				camRotY -= 0.05f;
+			if (device->isWindowActive()) {
+				// Camera controls
+				if (Keyboard::isKeyPressed(Keyboard::W)) {
+					camX += cos(camRotY);
+					camZ += sin(camRotY);
+				}
+				
+				if (Keyboard::isKeyPressed(Keyboard::S)) {
+					camX -= cos(camRotY);
+					camZ -= sin(camRotY);
+				}
+				
+				if (Keyboard::isKeyPressed(Keyboard::A)) {
+					camX += cos(camRotY + (90 * (PI/180))); 
+					camZ += sin(camRotY + (90 * (PI/180)));
+				}
+				
+				if (Keyboard::isKeyPressed(Keyboard::D)) {
+					camX += cos(camRotY - (90 * (PI/180))); 
+					camZ += sin(camRotY - (90 * (PI/180)));
+				}
+				
+				if (Keyboard::isKeyPressed(Keyboard::Q)) {
+					camRotY += 0.05f;
+				}
+				
+				if (Keyboard::isKeyPressed(Keyboard::E)) {
+					camRotY -= 0.05f;
+				}
 			}
 			
 			if (EventReceiver::getMouseState()->wheelDelta < 0) {
@@ -212,10 +234,20 @@ void basicGraphics() {
 		if (currentTime - updateTime >= 1000000.0) {
 			cout << "Ticks: " << tickCounter << ", Frames: " << frameCounter << endl;
 			
+			std::wstring labelText;
+			labelText += L"TICKS: ";
+			labelText += to_wstring(tickCounter);
+			labelText += L", FRAMES: ";
+			labelText += to_wstring(frameCounter);;
+			
+			lblTickFrame->setText(labelText.c_str());
+			
 			frameCounter = 0;
 			tickCounter = 0;
 			updateTime += 1000000.0;//currentTime - ((currentTime - updateTime) - 1000);
 		}
+		
+		
 	}
 	
 	device->drop();

@@ -10,13 +10,17 @@ struct SAppContext
     irr::IrrlichtDevice *device;
 	irr::gui::IGUIStaticText* txtQuadtree;
 	irr::gui::IGUIStaticText* txtPaths;
+	irr::gui::IGUIStaticText* txtSteer;
+	irr::gui::IGUIStaticText* txtStencil;
+	irr::gui::IGUIStaticText* txtGridWorld;
 };
 
 enum GUI_IDS {
 	BUTTON_ID_QUADTREE,
 	BUTTON_ID_PATHS,
-	LABEL_ID_QUADTREE,
-	LABEL_ID_PATHS
+	BUTTON_ID_STEER,
+	BUTTON_ID_STENCIL,
+	BUTTON_ID_GRIDWORLD
 };
 
 class EventReceiver : public irr::IEventReceiver {
