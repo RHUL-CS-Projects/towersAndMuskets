@@ -13,6 +13,7 @@
 #include <FaceDirectionSystem.h>
 #include <RTSMovementSystem.h>
 #include <SteeringSystem.h>
+#include <DebugValues.h>
 
 ObjectManager ObjectManager::manager;
 
@@ -31,10 +32,15 @@ ObjectManager::ObjectManager() {
 	systems.push_back(new SteeringSystem());
 	systems.push_back(new FaceDirectionSystem());
 	systems.push_back(new RTSMovementSystem());
+	
+	worldManager = new WorldManager(4, irr::core::recti(0,0,480,480));
+	
+	worldManager->setPassable(irr::core::rectf(300, 300, 360, 400), false);
 }
 
 ObjectManager::~ObjectManager() {
 	delete objectComponents;
+	worldManager->dropWorld();
 }
 
 
@@ -44,6 +50,7 @@ ObjectManager::~ObjectManager() {
 int ObjectManager::getObjectCount() {
 	return objectCount;
 }
+
 
 /**
  * Return a new GameObject with a unique id and update the object counter.
@@ -57,6 +64,7 @@ int ObjectManager::createObject() {
 	
 	return newObjID;
 }
+
 
 /**
  * Remove all components from a given object and then remove the object
@@ -78,6 +86,7 @@ void ObjectManager::destroyObject ( int id ) {
 	objectCount--;
 }
 
+
 /**
  * Check if a given object has a specific component attached to it.
  */
@@ -98,7 +107,6 @@ bool ObjectManager::objectHasComponent ( int id, std::string componentName ) {
 }
 
 
-
 /**
  * Get a list of all components attached to a game object.
  */
@@ -110,6 +118,7 @@ std::list< GameComponent* > ObjectManager::getObjectComponents ( int id ) {
 	cerr << "Get Object Components Failed: Object with ID=" << id << " does not exist!" << endl;
 	return std::list<GameComponent*>();
 }
+
 
 /**
  * Get a list of all game objects with a specific component attached.
@@ -143,6 +152,7 @@ void ObjectManager::attachComponent ( int id, GameComponent* component ) {
 	(&componentObjects.at(component->getName()))->push_back(id);
 }
 
+
 /**
  * Remove a component a given object.
  */
@@ -165,6 +175,7 @@ void ObjectManager::detachComponent ( int id, std::string componentName ) {
 	}
 }
 
+
 /**
  * Update all component systems.
  */
@@ -175,17 +186,21 @@ void ObjectManager::updateSystems ( float timestep ) {
 	}
 }
 
+
 /**
  * Render all component systems.
  */
 void ObjectManager::drawSystems ( float timestep ) {
 	RenderManager::renderManager.getDriver()->beginScene(true, true, irr::video::SColor(255,159,200,214));
-		
+	
 	for (ComponentSystem* system : systems) {
 		system->draw(timestep);
 	}
-		
+	
 	RenderManager::renderManager.getGUIEnvironment()->drawAll();
+	
+	if (DebugValues::DRAW_GRIDWORLD)
+		worldManager->draw(timestep);
 	
 	RenderManager::renderManager.getDriver()->endScene();
 }
@@ -223,6 +238,7 @@ void ObjectManager::printGameObject ( int id ) {
 	
 	cout << endl;
 }
+
 
 /**
  * Print information about all game objects

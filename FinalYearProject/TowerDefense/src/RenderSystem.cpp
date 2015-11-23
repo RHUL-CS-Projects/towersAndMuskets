@@ -113,7 +113,7 @@ void RenderSystem::addSceneNode (RenderComponent* rendComp, AnimatedMeshComponen
 		animnode->getMaterial(0).SpecularColor = SColor(0,0,0,0);
 
 		animnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
-
+		
 		animnode->addShadowVolumeSceneNode();
 		
 		animnode->setAnimationSpeed(70);

@@ -8,6 +8,7 @@
 
 #include <GameComponent.h>
 #include <ComponentSystem.h>
+#include <WorldManager.h>
 
 class ObjectManager {
 private:
@@ -17,6 +18,7 @@ private:
 	int objectID;
 	int objectCount;
 
+	WorldManager* worldManager;
 public:
 	static ObjectManager manager;
 	

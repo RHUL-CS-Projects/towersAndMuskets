@@ -21,7 +21,7 @@ void FaceDirectionSystem::update ( float timestep ) {
 
 
 void FaceDirectionSystem::draw ( float timestep ) {
-    ComponentSystem::draw ( timestep );
+    
 }
 
 

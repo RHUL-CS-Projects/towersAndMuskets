@@ -10,6 +10,43 @@ using namespace core;
 using namespace gui;
 
 bool EventReceiver::OnEvent ( const SEvent& event ) {
+	if (event.EventType == EEVENT_TYPE::EET_GUI_EVENT) {
+		int id = event.GUIEvent.Caller->getID();
+		IGUIEnvironment* guiEnv = Context.device->getGUIEnvironment();
+		
+		switch (event.GUIEvent.EventType){
+			case EGUI_EVENT_TYPE::EGET_BUTTON_CLICKED:
+				
+				switch (id) {
+					case BUTTON_ID_QUADTREE:
+						DebugValues::DRAW_QUADTREE = !DebugValues::DRAW_QUADTREE;
+						Context.txtQuadtree->setText((DebugValues::DRAW_QUADTREE) ? L"ON" : L"OFF");
+						break;
+					case BUTTON_ID_PATHS:
+						DebugValues::DRAW_PATHS = !DebugValues::DRAW_PATHS;
+						Context.txtPaths->setText((DebugValues::DRAW_PATHS) ? L"ON" : L"OFF");
+						break;
+					case BUTTON_ID_STEER:
+						DebugValues::DRAW_STEER = !DebugValues::DRAW_STEER;
+						Context.txtSteer->setText((DebugValues::DRAW_STEER) ? L"ON" : L"OFF");
+						break;
+					case BUTTON_ID_STENCIL:
+						DebugValues::STENCIL_ENABLED = !DebugValues::STENCIL_ENABLED;
+						Context.txtStencil->setText((DebugValues::STENCIL_ENABLED) ? L"ON" : L"OFF");
+						RenderManager::renderManager.getDriver()->disableFeature(video::EVDF_STENCIL_BUFFER);
+						break;
+					case BUTTON_ID_GRIDWORLD:
+						DebugValues::DRAW_GRIDWORLD = !DebugValues::DRAW_GRIDWORLD;
+						Context.txtGridWorld->setText((DebugValues::DRAW_GRIDWORLD) ? L"ON" : L"OFF");
+						break;
+				}
+				
+				break;
+			default:
+				break;
+		}
+	}
+	
 	if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
 		switch (event.MouseInput.Event) {
 			case EMIE_LMOUSE_PRESSED_DOWN:
@@ -34,32 +71,6 @@ bool EventReceiver::OnEvent ( const SEvent& event ) {
 			default:
 				break;
 		}
-	}
-
-	if (event.EventType == EEVENT_TYPE::EET_GUI_EVENT) {
-		int id = event.GUIEvent.Caller->getID();
-		IGUIEnvironment* guiEnv = Context.device->getGUIEnvironment();
-		
-		
-		switch (event.GUIEvent.EventType){
-			case EGUI_EVENT_TYPE::EGET_BUTTON_CLICKED:
-				
-				switch (id) {
-					case BUTTON_ID_QUADTREE:
-						DebugValues::DRAW_QUADTREE = !DebugValues::DRAW_QUADTREE;
-						Context.txtQuadtree->setText((DebugValues::DRAW_QUADTREE) ? L"ON" : L"OFF");
-						break;
-					case BUTTON_ID_PATHS:
-						DebugValues::DRAW_PATHS = !DebugValues::DRAW_PATHS;
-						Context.txtPaths->setText((DebugValues::DRAW_PATHS) ? L"ON" : L"OFF");
-						break;
-				}
-				
-				break;
-			default:
-				break;
-		}
-		
 	}
 	
 	return false;
