@@ -36,6 +36,8 @@ ObjectManager::ObjectManager() {
 	worldManager = new WorldManager(4, irr::core::recti(0,0,480,480));
 	
 	worldManager->setPassable(irr::core::rectf(300, 300, 360, 400), false);
+	worldManager->setPassable(irr::core::rectf(30, 50, 80, 70), false);
+	worldManager->setPassable(irr::core::rectf(200, 300, 250, 320), false);
 }
 
 ObjectManager::~ObjectManager() {
