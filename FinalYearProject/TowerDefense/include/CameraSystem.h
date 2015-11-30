@@ -9,6 +9,10 @@
 #include <AnimatedMeshComponent.h>
 #include <TransformComponent.h>
 
+/**
+ * System for updating the position of the camera to the current
+ * active camera component's position
+ */
 class CameraSystem : public ComponentSystem {	
 public:
 	CameraSystem() : ComponentSystem("CameraSystem") {}
