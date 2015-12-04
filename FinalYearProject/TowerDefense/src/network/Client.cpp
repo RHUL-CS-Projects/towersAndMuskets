@@ -2,7 +2,6 @@
 #include <iostream>
 #include <string>
 #include <sfml/SFML/Network.hpp>
-#include <pthread.h>
 #include <thread>
 
 using namespace std;
