@@ -31,6 +31,11 @@ public:
 	void addNode(irr::core::vector3df position);
 	
 	/**
+	 * Adds a waypoint to the beginning of the path
+	 */
+	void addNodeFront(irr::core::vector3df position);
+	
+	/**
 	 * Resets the path and then adds the new waypoint
 	 */
 	void addNodeToNew(irr::core::vector3df position);

@@ -12,15 +12,6 @@ private:
 	// Pointer to the grid
 	short *grid;
 	
-	// The width of the grid
-	int gridWidth;
-	
-	// The height of the grid
-	int gridHeight;
-	
-	// The size of each grid square
-	float gridSize;
-	
 	// Rectangle boundary of the edges of the world
 	irr::core::recti worldBounds;
 	
@@ -34,6 +25,15 @@ private:
 	 */
 	int getGridXY(int x, int y);
 public:
+	
+	// The width of the grid
+	int gridWidth;
+	
+	// The height of the grid
+	int gridHeight;
+	
+	// The size of each grid square
+	float gridSize;
 	
 	/**
 	 * Initialises the grid
@@ -58,6 +58,12 @@ public:
 	 * Checks if a position in the world is passable on the grid
 	 */
 	bool checkPassable(irr::core::vector3df worldPosition);
+	
+	/**
+	 * Checks if a position in the world is passable on the grid using
+	 * actual grid coordinates
+	 */
+	bool checkPassableGrixCoords(int x, int y);
 	
 	/**
 	 * Checks if a rectangle area is colliding with the world
