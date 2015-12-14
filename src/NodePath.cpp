@@ -11,6 +11,16 @@ void NodePath::addNode(irr::core::vector3df position) {
 }
 
 /**
+* Adds a waypoint to the beginning of the path
+*/
+void NodePath::addNodeFront ( irr::core::vector3df position ) {
+	if (waypoints.size() == 0)
+		currentNode = 0;
+	
+	waypoints.insert(waypoints.begin(), position);
+}
+
+/**
  * Reset the path and then add the new node
  */
 void NodePath::addNodeToNew ( irr::core::vector3df position ) {

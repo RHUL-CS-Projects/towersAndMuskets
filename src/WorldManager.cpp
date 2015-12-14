@@ -81,11 +81,19 @@ bool WorldManager::checkColliding ( rectf bounds ) {
  * Check if a position on the map is empty or impassable
  */
 bool WorldManager::checkPassable ( vector3df worldPosition ) {
-	int flooredX = (int)floor(worldPosition.X);
-	int flooredY = (int)floor(worldPosition.Z);
+	int flooredX = (int)floor(worldPosition.X/gridSize);
+	int flooredY = (int)floor(worldPosition.Z/gridSize);
 	
-	return getGridXY(flooredX, flooredY);
+	return getGridXY(flooredX, flooredY) == 0;
 }
+
+/**
+ * Check if a position on the map is empty or impassable using grid coordinates
+ */
+bool WorldManager::checkPassableGrixCoords ( int x, int y ) {
+	return getGridXY(x,y) == 0;
+}
+
 
 /**
  * Draw the world grid as an overlay

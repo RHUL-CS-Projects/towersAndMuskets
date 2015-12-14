@@ -95,10 +95,10 @@ void basicGraphics() {
 // 	terrain->overrideLODDistance(4, 14000);
 	
 // 	device->getCursorControl()->setVisible(false);
-	
+
 	// Add soldiers
-	for (int i = 0; i < 10; i++) {
-		for (int j = 0; j < 10; j++) {
+	for (int i = 0; i < 1; i++) {
+		for (int j = 0; j < 1; j++) {
 			int obj1 = ObjectManager::manager.createObject();
 			ObjectManager::manager.attachComponent(obj1, new TransformComponent(vector3df(128 + i*15+3,0,128 + j*15+3)));
 			ObjectManager::manager.attachComponent(obj1, new AnimatedMeshComponent("humantest.x", "ManTexture.png", vector3df(0,0,0)));

@@ -8,6 +8,7 @@
 #include <PathMovementComponent.h>
 #include <SteeringComponent.h>
 #include <TransformComponent.h>
+#include <PathFinder.h>
 
 #include <irrlicht/irrlicht.h>
 
@@ -68,13 +69,18 @@ void RTSMovementSystem::update ( float timestep ) {
 			if (steerComp == nullptr)
 				continue;
 			
-			if (steerComp->path.ended())
+			/*if (steerComp->path.ended())
 				steerComp->path.resetPath();
 			
 			if (steerComp->path.getWaypoints().size() == 0)
 				steerComp->path.addNode(transComp->worldPosition);
 			
-			steerComp->path.addNode(point);
+			steerComp->path.addNode(point);*/
+			
+			steerComp->path.resetPath();
+			
+			PathFinder pathFinder(mgr->worldManager);
+			steerComp->path = pathFinder.findPath(transComp->worldPosition, point);
 		}
 	} else {
 		if (!EventReceiver::getMouseState()->rightPressed)

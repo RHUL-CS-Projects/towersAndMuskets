@@ -33,11 +33,12 @@ private:
 	// Number of objects in the game
 	int objectCount;
 
-	// Reference to the world manager for drawing the world grid
-	WorldManager* worldManager;
 public:
 	// Static reference to the game's object manager
 	static ObjectManager manager;
+	
+	// Reference to the world manager for drawing the world grid
+	WorldManager* worldManager;
 	
 	ObjectManager();
 	~ObjectManager();

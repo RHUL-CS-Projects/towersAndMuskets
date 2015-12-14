@@ -43,6 +43,7 @@ set (SOURCES
   src/Quadtree.cpp
   src/DebugValues.cpp
   src/WorldManager.cpp
+  src/PathFinder.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)
