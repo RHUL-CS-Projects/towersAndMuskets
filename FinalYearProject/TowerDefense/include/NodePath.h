@@ -19,6 +19,7 @@ private:
 	int currentNode = -1;
 	
 public:
+	NodePath() {};
 	
 	/**
 	 * Returns the current node on the path

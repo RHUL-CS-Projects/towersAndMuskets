@@ -63,7 +63,7 @@ public:
 	 * Checks if a position in the world is passable on the grid using
 	 * actual grid coordinates
 	 */
-	bool checkPassableGrixCoords(int x, int y);
+	bool checkPassableGridCoords(int x, int y);
 	
 	/**
 	 * Checks if a rectangle area is colliding with the world

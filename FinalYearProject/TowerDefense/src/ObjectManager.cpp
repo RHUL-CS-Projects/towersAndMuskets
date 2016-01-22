@@ -33,7 +33,7 @@ ObjectManager::ObjectManager() {
 	systems.push_back(new FaceDirectionSystem());
 	systems.push_back(new RTSMovementSystem());
 	
-	worldManager = new WorldManager(16, irr::core::recti(0,0,480,480));
+	worldManager = new WorldManager(8, irr::core::recti(0,0,480,480));
 	
 	worldManager->setPassable(irr::core::rectf(300, 300, 360, 400), false);
 	worldManager->setPassable(irr::core::rectf(30, 50, 80, 70), false);

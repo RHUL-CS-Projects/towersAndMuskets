@@ -139,7 +139,7 @@ void SteeringSystem::draw ( float timestep ) {
 			
 			if (DebugValues::DRAW_PATHS) {
 				m.Lighting = false;
-				m.Thickness = 1.0f;
+				m.Thickness = 2.0f;
 				RenderManager::renderManager.getDriver()->setMaterial(m);
 				RenderManager::renderManager.getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
 				
@@ -147,8 +147,10 @@ void SteeringSystem::draw ( float timestep ) {
 				for (int i = 1; i < steerComp->path.getWaypoints().size(); i++) {
 					node = steerComp->path.getWaypoints()[i];
 					prevNode = steerComp->path.getWaypoints()[i-1];
-					RenderManager::renderManager.getDriver()->draw3DLine(prevNode+vector3df(0,1,0), node+vector3df(0,1,0), SColor(130,255,0,0));			
+					RenderManager::renderManager.getDriver()->draw3DLine(prevNode+vector3df(0,1,0), node+vector3df(0,1,0), SColor(80,255,255,255));	
+					RenderManager::renderManager.getDriver()->draw3DLine(prevNode+vector3df(0,1,0), prevNode+vector3df(0,5,0), SColor(130,255,255,0));	
 				}
+				RenderManager::renderManager.getDriver()->draw3DLine(node+vector3df(0,1,0), node+vector3df(0,5,0), SColor(130,255,255,0));	
 			}
 		}
 	}
