@@ -90,7 +90,7 @@ bool WorldManager::checkPassable ( vector3df worldPosition ) {
 /**
  * Check if a position on the map is empty or impassable using grid coordinates
  */
-bool WorldManager::checkPassableGrixCoords ( int x, int y ) {
+bool WorldManager::checkPassableGridCoords ( int x, int y ) {
 	return getGridXY(x,y) == 0;
 }
 

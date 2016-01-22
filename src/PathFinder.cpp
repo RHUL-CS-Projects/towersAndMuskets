@@ -38,89 +38,100 @@ NodePath PathFinder::findPath ( vector3df start, vector3df end ) {
 
 
 NodePath PathFinder::findPath ( int startX, int startY, int endX, int endY ) {
+	NodePath path;
+	int gridWidth = worldManager->gridWidth;
+	int gridHeight = worldManager->gridHeight;
+	
 	vector<PathFindNode*> openList;
 	vector<PathFindNode*> closedList;
-	vector<PathFindNode*> neighbours;
+	PathFindNode nodes[gridWidth][gridHeight];
 	
-	int startG = 0;
-	int startH = calcHValue(startX, startY, endX, endY);
-	PathFindNode* start = makeNode(nullptr, startX, startY, calcFValue(startG, startH), startG, startH);
-	PathFindNode* current = start;
+	// Initialise start node
+	nodes[startX][startY].h = calcHValue(startX, startY, endX, endY);
+	nodes[startX][startY].f = nodes[startX][startY].h;
+	nodes[startX][startY].g = 0;
+	nodes[startX][startY].parent = nullptr;
+	nodes[startX][startY].x = startX;
+	nodes[startX][startY].y = startY;
 	
-	PathFindNode* end = makeNode(nullptr, endX, endY, 0, 0, 0);
-
-	openList.push_back(start);
+	// Initliase end node
+	nodes[endX][endY].f = 0;
+	nodes[endX][endY].g = 0;
+	nodes[endX][endY].h = 0;
+	nodes[endX][endY].parent = nullptr;
+	nodes[endX][endY].x = endX;
+	nodes[endX][endY].y = endY;
+	
+	int currentX = startX;
+	int currentY = startY;
+	openList.push_back(&nodes[startX][startY]);
+	
+	int indexOfLowestF = 0;
+	bool foundPath = false;
 	
 	while (openList.size() > 0) {
-		//vector<PathFindNode*>::iterator itOpen = min_element(openList.begin(), openList.end(), PComp<PathFindNode>);
-		int smallestFIndex = indexOfSmallestF(openList);
+		indexOfLowestF = indexOfSmallestF(openList);
+		PathFindNode* current = openList.at(indexOfLowestF);
+		currentX = current->x;
+		currentY = current->y;
 		
-		//current = openList.at(itOpen - openList.begin());
-		//openList.erase(itOpen);
-		
-		current = openList.at(smallestFIndex);
-		openList.erase(openList.begin() + smallestFIndex);
-		
-		closedList.push_back(current);
-		neighbours = getNeighbours(current, endX, endY);
-		
-		std::cout << current->x << ", " << current->y << ", " << current->f << ",      " << end->x << ", " << end->y <<
-			",      " << openList.size() << ", " << closedList.size() << std::endl;
-		
-		if (*current == *end) {
-			// End reached
-			end->parent = current->parent;
+		if (currentX == endX && currentY == endY) {
+			foundPath = true;
 			break;
 		}
 		
-		for (PathFindNode* n : neighbours) {
-			// Node is already in the closed list
-			//if (find(closedList.begin(), closedList.end(), n) != closedList.end())
-			if (containsNode(n, closedList) > -1)
-				continue;
-			
-			//itOpen = find(openList.begin(), openList.end(), n);
-			
-			// Check if node is not already in open list
-			//if (itOpen == openList.end()) {
-			int inOpen = containsNode(n, openList);
-			
-			if (inOpen < 0) {
-				// Add to open list
-				openList.push_back(n);
-				continue;
+		openList.erase(openList.begin() + indexOfLowestF);
+		closedList.push_back(current);
+		current->closed = true;
+		
+		// Iterate over neighbours
+		for (int xx = currentX-1; xx <= currentX+1; xx++) {
+			for (int yy = currentY-1; yy <= currentY+1; yy++) {
+				if (xx < 0 || xx >= worldManager->gridWidth || 
+					yy < 0 || yy >= worldManager->gridHeight)
+					continue;
+				
+				if (xx == currentX && yy == currentY) continue;
+				if (!worldManager->checkPassableGridCoords(xx,yy)) continue;
+				//if (xx != currentX && yy != currentY) continue;
+				
+				if (nodes[xx][yy].closed) continue;
+				nodes[xx][yy].x = xx;
+				nodes[xx][yy].y = yy;
+				
+				int tempG = current->g + ((xx == currentX || yy == currentY) ? 10 : 14);
+				
+				if (!nodes[xx][yy].open) {
+					openList.push_back(&nodes[xx][yy]);
+					nodes[xx][yy].open = true;
+				} else if (tempG >= nodes[xx][yy].g || nodes[xx][yy].g < 0) {
+					continue;
+				}
+				
+				nodes[xx][yy].g = tempG;
+				nodes[xx][yy].parent = current;
+				nodes[xx][yy].h = calcHValue(xx,yy,endX,endY);
+				nodes[xx][yy].f = nodes[xx][yy].g + nodes[xx][yy].h;
 			}
-			
-			//PathFindNode* fromOpen = openList.at(itOpen - openList.begin());
-			PathFindNode* fromOpen = openList.at(inOpen);
-			
-			if (n->g >= fromOpen->g)
-				continue;	// New path to this node is not shorter
-			
-			fromOpen->g = n->g;
-			fromOpen->parent = current;
-			fromOpen->f = calcFValue(fromOpen->g, fromOpen->h);
 		}
 	}
 	
-	NodePath path;
-
-	PathFindNode* node = end;
-	 while (!(*node == *start)) {
-		std::cout << "here " << node->x << ", " << node->y << ",      " << node->parent->x << ", " << node->parent->y << std::endl;
-		path.addNodeFront(vector3df((node->x + 0.5f)*worldManager->gridSize, 0, (node->y + 0.5f)*worldManager->gridSize));
-		node = node->parent;
+	if (foundPath) {
+		PathFindNode* current = &nodes[currentX][currentY];
+		while (currentX != startX || currentY != startY) {
+			path.addNodeFront(vector3df(currentX * worldManager->gridSize + worldManager->gridSize/2, 0, currentY * worldManager->gridSize + worldManager->gridSize/2));
+			current = current->parent;
+			currentX = current->x;
+			currentY = current->y;
+		}
 	}
-	path.addNodeFront(vector3df((start->x + 0.5f)*worldManager->gridSize, 0, (start->y + 0.5f)*worldManager->gridSize));
-	
-	std::cout << "size " << path.getWaypoints().size() << std::endl;
+	path.addNodeFront(vector3df(startX * worldManager->gridSize + worldManager->gridSize/2, 0, startY * worldManager->gridSize + worldManager->gridSize/2));
 	
 	return path;
 }
 
 
 int PathFinder::costFromNode ( int x, int y, int prevX, int prevY ) {
-	
 	if (prevX == x && prevY == y) 
 		return 0;  // No movement
 	else if (prevX == x || prevY == y) 
@@ -150,86 +161,53 @@ int PathFinder::manhattanDistance ( int fromX, int fromY, int endX, int endY ) {
 }
 
 
-PathFindNode* PathFinder::makeNode ( PathFindNode* parent, int x, int y, int f, int g, int h ) {
-	PathFindNode* node = new PathFindNode();
-	
-	node->parent = parent;
-	node->x = x;
-	node->y = y;
-	node->f = f;
-	node->g = g;
-	node->h = h;
-		
-	return node;
+PathFindNode PathFinder::makeNode ( PathFindNode parent, int x, int y, int f, int g, int h ) {
+	PathFindNode newNode;
+	return newNode;
 }
-
-
-vector< PathFindNode* > PathFinder::getNeighbours ( PathFindNode* current, int endX, int endY ) {
-	vector<PathFindNode*> nodes;
-	int x = current->x;
-	int y = current->y;
-
-	
-	for (int xx = x-1; xx <= x+1; xx++) {
-		for (int yy = y-1; yy <= y+1; yy++) {
-			// Check within grid
-			if (xx < 0 || yy < 0 || xx >= worldManager->gridWidth || yy >= worldManager->gridHeight)
-				continue;
-			
-			if (xx != x && yy < y && !worldManager->checkPassableGrixCoords(x, y-1))
-				continue;
-			
-			if (xx != x && yy > y && !worldManager->checkPassableGrixCoords(x, y+1))
-				continue;
-			
-			if (yy != y && xx < x && !worldManager->checkPassableGrixCoords(x-1, y))
-				continue;
-			
-			
-			if (yy != y && xx > x && !worldManager->checkPassableGrixCoords(x+1, y))
-				continue;
-			
-			// Check passable
-			if (!worldManager->checkPassableGrixCoords(xx, yy))
-				continue;
-			
-			// Check not current node
-			if (xx == x && yy == y)
-				continue;
-			
-			int gVal = current->g + calcGValue(xx, yy, x, y);
-			int hVal = calcHValue(xx, yy, endX, endY);
-			nodes.push_back(makeNode(current, xx, yy, calcFValue(gVal, hVal), gVal, hVal));
-					
-		}
-	}
-	
-	return nodes;
-}
-
-
-int PathFinder::containsNode ( PathFindNode* node, std::vector< PathFindNode* > nodes ) {
-	for (int i = 0; i < nodes.size(); i++) {
-		if (*nodes.at(i) == *node)
-			return i;
-	}
-	
-	return -1;
-}
-
 
 int PathFinder::indexOfSmallestF ( std::vector< PathFindNode* > nodes ) {
 	int f = -1;
 	int index = 0;
-	
 	for (int i = 0; i < nodes.size(); i++) {
-		if (f == -1 || nodes.at(i)->f < f) {
+		if (f < 0 || nodes.at(i)->f < f) {
 			f = nodes.at(i)->f;
 			index = i;
 		}
 	}
-	
 	return index;
 }
+
+/*vector< PathFindNode* > PathFinder::getNeighbours ( PathFindNode nodes[][], int x, int y ) {
+	vector<PathFindNode*> neighbours;
+	
+	
+}*/
+
+
+/*int PathFinder::containsNode ( PathFindNode* node, std::vector< PathFindNode* > nodes ) {
+
+}
+*/
+
+
+/*std::vector< PathFindNode* > PathFinder::getNeighboursJPS ( PathFindNode* current, int endX, int endY ) {
+
+}*/
+
+
+/*PathFindNode* PathFinder::jump ( int x, int y, int fromX, int fromY, int endX, int endY ) {
+
+}*/
+
+
+
+
+
+
+
+
+
+
 
 

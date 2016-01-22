@@ -17,6 +17,14 @@ struct PathFindNode {
 	int f;
 	int g;
 	int h;
+	bool closed;
+	bool open;
+	
+	PathFindNode() {
+		closed = false;
+		open = false;
+		g = -1;
+	}
 };
 
 /**
@@ -60,7 +68,7 @@ private:
 	/**
 	 * Constructs a node from parameters
 	 */
-	PathFindNode* makeNode(PathFindNode* parent, int x, int y, int f, int g, int h);
+	PathFindNode makeNode(PathFindNode parent, int x, int y, int f, int g, int h);
 	
 	/**
 	 * Returns a NodePath from a start position to an end position
@@ -70,11 +78,28 @@ private:
 	/**
 	 * Returns a vector of neighbouring nodes to a given node
 	 */
-	std::vector<PathFindNode*> getNeighbours(PathFindNode* current, int endX, int endY);
+	//std::vector<PathFindNode*> getNeighbours(PathFindNode nodes[][], int x, int y);
 	
+	/**
+	 * Finds the index of the node with the smallest f value in a list
+	 */
 	int indexOfSmallestF(std::vector<PathFindNode*> nodes);
 	
-	int containsNode(PathFindNode* node, std::vector<PathFindNode*> nodes);
+	/**
+	 * Checks if a node is contained within a list and returns its index if yes,
+	 * and -1 if no
+	 */
+	//int containsNode(PathFindNode* node, std::vector<PathFindNode*> nodes);
+	
+	/**
+	 * Use the jump method to find neighbours for the jump-point search optimisation
+	 */
+	//std::vector<PathFindNode*> getNeighboursJPS(PathFindNode* current, int endX, int endY);
+	
+	/**
+	 * Jump to adjacent nodes in a given direction
+	 */
+	//PathFindNode* jump(int x, int y, int fromX, int fromY, int endX, int endY);
 public:
 	
 	/**
