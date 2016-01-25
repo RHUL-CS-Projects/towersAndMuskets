@@ -11,6 +11,9 @@
 #include <ctime>
 
 #include <TowerDefenseEngine.h>
+#include <random>
+#include <sfml/SFML/Main.hpp>
+#include <sfml/SFML/Audio.hpp>
 
 using namespace std;
 using namespace chrono;
@@ -37,6 +40,18 @@ void basicGraphics() {
 	IVideoDriver* driver = RenderManager::renderManager.getDriver();
 	ISceneManager* smgr = RenderManager::renderManager.getSceneManager();
 	IGUIEnvironment* guienv = RenderManager::renderManager.getGUIEnvironment();
+	
+	// Initialise SFML
+	SoundBuffer sndGunshot1;
+	if (!sndGunshot1.loadFromFile("res/sounds/musketshot.ogg"))
+		cout << "Sound not loaded" << endl;
+	
+	Sound snd;
+	snd.setBuffer(sndGunshot1);
+	snd.setRelativeToListener(false);
+	snd.setAttenuation(0.05f);
+	snd.setPosition(128, 0, 128);
+	snd.play();
 	
 	smgr->setShadowColor(video::SColor(80,0,0,0));
 	smgr->setAmbientLight(SColorf(0.8f, 0.8f, 0.8f));
@@ -101,11 +116,23 @@ void basicGraphics() {
 		for (int j = 0; j < 1; j++) {
 			int obj1 = ObjectManager::manager.createObject();
 			ObjectManager::manager.attachComponent(obj1, new TransformComponent(vector3df(128 + i*15+3,0,128 + j*15+3)));
-			ObjectManager::manager.attachComponent(obj1, new AnimatedMeshComponent("humantest.x", "ManTexture.png", vector3df(0,0,0)));
+			
+			if (rand()%2 == 0)
+				ObjectManager::manager.attachComponent(obj1, new AnimatedMeshComponent("humantest.x", "ManTexture2.png", vector3df(0,0,0)));
+			else
+				ObjectManager::manager.attachComponent(obj1, new AnimatedMeshComponent("humantest.x", "ManTexture.png", vector3df(0,0,0)));
 			
 			AnimatorComponent* animComp = new AnimatorComponent();
-			animComp->addAnimation("IDLE", 0, 61, 50);
-			animComp->addAnimation("WALK", 62, 142, 90);
+			animComp->addAnimation("IDLE", 157, 275, 15);
+			//animComp->addAnimation("IDLE", 0, 62, 30);
+			animComp->addAnimation("WALK", 63, 142, 90);
+			animComp->addAnimation("TAKEAIM", 143, 153, 30);
+			animComp->addAnimation("AIM", 154, 156, 30);
+			animComp->addAnimation("SHOOT", 157, 165, 30);
+			animComp->addAnimation("RELOAD", 166, 275, 30);
+			animComp->addAnimation("REST", 276, 287, 30);
+			animComp->addAnimation("DEATH1", 288, 313, 30);
+			
 			ObjectManager::manager.attachComponent(obj1, animComp);
 			
 			ObjectManager::manager.attachComponent(obj1, new RenderComponent(true));
@@ -166,6 +193,8 @@ void basicGraphics() {
 	EventReceiver eventReceiver(context);
 	device->setEventReceiver(&eventReceiver);
 	
+	int sndCounter = -4;
+	
 	while (device->run()) {
 		currentTime = gameClock.getElapsedTime().asMicroseconds();
 		
@@ -223,9 +252,19 @@ void basicGraphics() {
 			
 			ObjectManager::manager.updateSystems(0);
 			
+			Listener::setPosition(camX, cameraHeight, camZ);
+			vector3df lookvec = (camera->getPosition() - camera->getTarget()).normalize();
+			Listener::setDirection(lookvec.X, lookvec.Y, lookvec.Z);
+			
 			nextTick += tickTime;
 			loops++;
 			tickCounter++;
+			sndCounter++;
+			
+			if (sndCounter > 472) {
+				sndCounter = 0;
+				snd.play();
+			}
 		}
 		
 		ObjectManager::manager.drawSystems(0);

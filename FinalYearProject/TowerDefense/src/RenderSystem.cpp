@@ -38,7 +38,7 @@ void RenderSystem::update ( float timestep ) {
 			
 			// Check all renderable objects have been added to scene
 			if (rendComp->sceneNode == nullptr) {
-				addSceneNode(rendComp, animComp, transComp);
+				addSceneNode(rendComp, animComp, transComp, i);
 				
 				// Initialise the object's animation if it has an AnimatorComponent
 				AnimatorComponent* animatorComp = mgr->getObjectComponent<AnimatorComponent>(i, "AnimatorComponent");
@@ -97,7 +97,7 @@ void RenderSystem::draw ( float timestep ) {
 	RenderManager::renderManager.getSceneManager()->drawAll();
 }
 
-void RenderSystem::addSceneNode (RenderComponent* rendComp, AnimatedMeshComponent* animComp, TransformComponent* transComp ) {
+void RenderSystem::addSceneNode (RenderComponent* rendComp, AnimatedMeshComponent* animComp, TransformComponent* transComp, int id ) {
 	irr::video::IVideoDriver* driver = RenderManager::renderManager.getDriver();
 	irr::scene::ISceneManager* smgr = RenderManager::renderManager.getSceneManager();
 	
@@ -118,8 +118,15 @@ void RenderSystem::addSceneNode (RenderComponent* rendComp, AnimatedMeshComponen
 		
 		animnode->setAnimationSpeed(70);
 		animnode->setFrameLoop(62, 142);
-		animnode->setCurrentFrame(62 + rand() % (142-64));
+		animnode->setCurrentFrame(0 + rand() % 62);
+		
+		ITriangleSelector* selector = smgr->createTriangleSelector(animnode);
+		animnode->setTriangleSelector(selector);
+		animnode->setID(id);
 	}
+	
+	//terrain->setTriangleSelector(terrainSelector);
+	//terrain->setName("MainTerrain");
 	
 	rendComp->sceneNode = animnode;
 }
