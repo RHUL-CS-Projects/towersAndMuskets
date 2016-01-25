@@ -33,7 +33,11 @@ NodePath PathFinder::findPath ( vector3df start, vector3df end ) {
 	int endX = (int)floor(end.X/worldManager->gridSize);
 	int endY = (int)floor(end.Z/worldManager->gridSize);
 	
-	return findPath(startX, startY, endX, endY);
+	NodePath path = findPath(startX, startY, endX, endY);
+	path.addNodeFront(start);
+	path.addNode(end);
+	
+	return path;
 }
 
 
@@ -119,13 +123,14 @@ NodePath PathFinder::findPath ( int startX, int startY, int endX, int endY ) {
 	if (foundPath) {
 		PathFindNode* current = &nodes[currentX][currentY];
 		while (currentX != startX || currentY != startY) {
-			path.addNodeFront(vector3df(currentX * worldManager->gridSize + worldManager->gridSize/2, 0, currentY * worldManager->gridSize + worldManager->gridSize/2));
+			if (currentX != endX || currentY != endY)
+				path.addNodeFront(vector3df(currentX * worldManager->gridSize + worldManager->gridSize/2, 0, currentY * worldManager->gridSize + worldManager->gridSize/2));
 			current = current->parent;
 			currentX = current->x;
 			currentY = current->y;
 		}
 	}
-	path.addNodeFront(vector3df(startX * worldManager->gridSize + worldManager->gridSize/2, 0, startY * worldManager->gridSize + worldManager->gridSize/2));
+	//path.addNodeFront(vector3df(startX * worldManager->gridSize + worldManager->gridSize/2, 0, startY * worldManager->gridSize + worldManager->gridSize/2));
 	
 	return path;
 }

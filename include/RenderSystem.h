@@ -18,7 +18,7 @@ private:
 	/**
 	 * Adds a scene node to the scene manager for an object
 	 */
-	void addSceneNode(RenderComponent* rendComp, AnimatedMeshComponent* animComp, TransformComponent* transComp);
+	void addSceneNode(RenderComponent* rendComp, AnimatedMeshComponent* animComp, TransformComponent* transComp, int id);
 public:
 	RenderSystem() : ComponentSystem("RenderSystem") {}
 	

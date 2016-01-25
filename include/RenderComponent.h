@@ -3,6 +3,7 @@
 
 #include <GameComponent.h>
 #include <irrlicht/irrlicht.h>
+#include <RenderManager.h>
 
 /**
  * Component that stores an Irrlicht scene node for rendering
