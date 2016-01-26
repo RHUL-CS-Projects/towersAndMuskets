@@ -7,6 +7,8 @@ using namespace irr;
 using namespace core;
 using namespace std;
 
+bool pathFound;
+
 /**
 * Comparison operator for Nodes
 */
@@ -33,9 +35,13 @@ NodePath PathFinder::findPath ( vector3df start, vector3df end ) {
 	int endX = (int)floor(end.X/worldManager->gridSize);
 	int endY = (int)floor(end.Z/worldManager->gridSize);
 	
+	pathFound = false;
 	NodePath path = findPath(startX, startY, endX, endY);
-	path.addNodeFront(start);
-	path.addNode(end);
+	
+	if (pathFound) {
+		path.addNodeFront(start);
+		path.addNode(end);
+	}
 	
 	return path;
 }
@@ -129,6 +135,7 @@ NodePath PathFinder::findPath ( int startX, int startY, int endX, int endY ) {
 			currentX = current->x;
 			currentY = current->y;
 		}
+		pathFound = true;
 	}
 	//path.addNodeFront(vector3df(startX * worldManager->gridSize + worldManager->gridSize/2, 0, startY * worldManager->gridSize + worldManager->gridSize/2));
 	

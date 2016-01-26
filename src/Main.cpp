@@ -112,24 +112,23 @@ void basicGraphics() {
 // 	device->getCursorControl()->setVisible(false);
 
 	// Add soldiers
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 1; j++) {
 			int obj1 = ObjectManager::manager.createObject();
 			ObjectManager::manager.attachComponent(obj1, new TransformComponent(vector3df(128 + i*15+3,0,128 + j*15+3)));
 			
-			if (rand()%2 == 0)
+			if (i % 2 == 0)
 				ObjectManager::manager.attachComponent(obj1, new AnimatedMeshComponent("humantest.x", "ManTexture2.png", vector3df(0,0,0)));
 			else
 				ObjectManager::manager.attachComponent(obj1, new AnimatedMeshComponent("humantest.x", "ManTexture.png", vector3df(0,0,0)));
 			
 			AnimatorComponent* animComp = new AnimatorComponent();
-			animComp->addAnimation("IDLE", 157, 275, 15);
-			//animComp->addAnimation("IDLE", 0, 62, 30);
+			animComp->addAnimation("IDLE", 0, 62, 30);
 			animComp->addAnimation("WALK", 63, 142, 90);
-			animComp->addAnimation("TAKEAIM", 143, 153, 30);
+			animComp->addAnimation("TAKEAIM", 143, 153, 20);
 			animComp->addAnimation("AIM", 154, 156, 30);
 			animComp->addAnimation("SHOOT", 157, 165, 30);
-			animComp->addAnimation("RELOAD", 166, 275, 30);
+			animComp->addAnimation("RELOAD", 166, 275, 20);
 			animComp->addAnimation("REST", 276, 287, 30);
 			animComp->addAnimation("DEATH1", 288, 313, 30);
 			
@@ -138,7 +137,7 @@ void basicGraphics() {
 			ObjectManager::manager.attachComponent(obj1, new RenderComponent(true));
 			ObjectManager::manager.attachComponent(obj1, new SelectableComponent());
 			ObjectManager::manager.attachComponent(obj1, new FaceDirectionComponent(0, 0.08f));
-			ObjectManager::manager.attachComponent(obj1, new RTSMovementComponent());
+			ObjectManager::manager.attachComponent(obj1, new RTSLogicComponent(i % 2));
 			ObjectManager::manager.attachComponent(obj1, new SteeringComponent(0.2, 80));
 		}
 	}
@@ -263,7 +262,7 @@ void basicGraphics() {
 			
 			if (sndCounter > 472) {
 				sndCounter = 0;
-				snd.play();
+				//snd.play();
 			}
 		}
 		

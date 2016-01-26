@@ -85,16 +85,16 @@ void SteeringSystem::update ( float timestep ) {
 		
 		if (rendComp != nullptr && animComp != nullptr) {
 			if (steerComp->path.ended() && steerComp->velocity.getLength() < 0.03) {
-				animComp->setAnimation("IDLE", rendComp->sceneNode);
+				//animComp->setAnimation("IDLE", rendComp->sceneNode);
 			} else {
-				animComp->setAnimation("WALK", rendComp->sceneNode);
+				//animComp->setAnimation("WALK", rendComp->sceneNode);
 			}
 		}
 		
 		// Update facing direction if necessary
 		FaceDirectionComponent* faceComp = mgr->getObjectComponent<FaceDirectionComponent>(i, "FaceDirectionComponent");
 		
-		if (faceComp != nullptr && (!steerComp->path.ended() || steerComp->velocity.getLength() > 0.01))
+		if (faceComp != nullptr && (!steerComp->path.ended() && steerComp->velocity.getLength() > 0.01))
 			faceComp->targetYRot = radToDeg(atan2(-steerComp->velocity.X,-steerComp->velocity.Z));
 	}
 	
