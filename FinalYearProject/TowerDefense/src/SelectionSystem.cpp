@@ -25,27 +25,26 @@ void SelectionSystem::update ( float timestep ) {
 		} else {
 			mousePos = vector2d<int>(mouseState.position.X, mouseState.position.Y);
 		}
-		
-		selectObjects();
 	} else {
-		dragging = false;
-	}
-	
-	if (mouseState.leftPressed) {
-		// Calculate click point on terrain
-		ISceneCollisionManager* colmgr = RenderManager::renderManager.getSceneManager()->getSceneCollisionManager();
-		line3df ray = colmgr->getRayFromScreenCoordinates(EventReceiver::getMouseState()->position);
+		if (dragging) {
+			selectObjects();
+			dragging = false;
 		
-		vector3df point;
-		triangle3df triangle;
-		ISceneNode* node;
-		
-		ObjectManager* mgr = &ObjectManager::manager;
-		std::list<int> objects = mgr->getObjectsWithComponent("SelectableComponent");
-		
-		for (int i : objects) {
-			if (colmgr->getCollisionPoint(ray, RenderManager::renderManager.getSceneManager()->getSceneNodeFromId(i)->getTriangleSelector(), point, triangle, node))
-				mgr->getObjectComponent<SelectableComponent>(i, "SelectableComponent")->selected = true;
+			// Calculate click point on terrain
+			ISceneCollisionManager* colmgr = RenderManager::renderManager.getSceneManager()->getSceneCollisionManager();
+			line3df ray = colmgr->getRayFromScreenCoordinates(EventReceiver::getMouseState()->position);
+			
+			vector3df point;
+			triangle3df triangle;
+			ISceneNode* node;
+			
+			ObjectManager* mgr = &ObjectManager::manager;
+			std::list<int> objects = mgr->getObjectsWithComponent("SelectableComponent");
+			
+			for (int i : objects) {
+				if (colmgr->getCollisionPoint(ray, RenderManager::renderManager.getSceneManager()->getSceneNodeFromId(i)->getTriangleSelector(), point, triangle, node))
+					mgr->getObjectComponent<SelectableComponent>(i, "SelectableComponent")->selected = true;
+			}
 		}
 	}
 }

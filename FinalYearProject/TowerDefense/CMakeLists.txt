@@ -37,7 +37,7 @@ set (SOURCES
   src/EventReceiver.cpp
   src/PathMovementSystem.cpp
   src/FaceDirectionSystem.cpp
-  src/RTSMovementSystem.cpp
+  src/RTSLogicSystem.cpp
   src/NodePath.cpp
   src/SteeringSystem.cpp
   src/Quadtree.cpp

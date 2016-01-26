@@ -11,7 +11,7 @@
 #include <SelectionSystem.h>
 #include <PathMovementSystem.h>
 #include <FaceDirectionSystem.h>
-#include <RTSMovementSystem.h>
+#include <RTSLogicSystem.h>
 #include <SteeringSystem.h>
 #include <DebugValues.h>
 
@@ -31,7 +31,7 @@ ObjectManager::ObjectManager() {
 	systems.push_back(new SelectionSystem());
 	systems.push_back(new SteeringSystem());
 	systems.push_back(new FaceDirectionSystem());
-	systems.push_back(new RTSMovementSystem());
+	systems.push_back(new RTSLogicSystem());
 	
 	worldManager = new WorldManager(8, irr::core::recti(0,0,480,480));
 	

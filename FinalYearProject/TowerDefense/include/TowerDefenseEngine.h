@@ -19,8 +19,8 @@
 #include <RenderComponent.h>
 #include <RenderManager.h>
 #include <RenderSystem.h>
-#include <RTSMovementComponent.h>
-#include <RTSMovementSystem.h>
+#include <RTSLogicComponent.h>
+#include <RTSLogicSystem.h>
 #include <SelectableComponent.h>
 #include <SelectionSystem.h>
 #include <Server.h>
