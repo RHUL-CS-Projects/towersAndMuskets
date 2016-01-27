@@ -70,7 +70,7 @@ public:
 	template <class T>
 	T* getObjectComponent( int id, std::string componentName ) {
 		if (!objectExists(id)) {
-			std::cerr << "Get Object Component Failed: Object with ID=" << id << " does not exist!" << std::endl;
+			std::cout << "Get Object Component Failed: Object with ID=" << id << " does not exist!" << std::endl;
 			return nullptr;
 		}
 		

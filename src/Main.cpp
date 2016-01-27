@@ -42,16 +42,15 @@ void basicGraphics() {
 	IGUIEnvironment* guienv = RenderManager::renderManager.getGUIEnvironment();
 	
 	// Initialise SFML
-	SoundBuffer sndGunshot1;
-	if (!sndGunshot1.loadFromFile("res/sounds/musketshot.ogg"))
+	SoundBuffer bufGunshot1;
+	if (!bufGunshot1.loadFromFile("res/sounds/musketshot.ogg"))
 		cout << "Sound not loaded" << endl;
 	
-	Sound snd;
-	snd.setBuffer(sndGunshot1);
-	snd.setRelativeToListener(false);
-	snd.setAttenuation(0.05f);
-	snd.setPosition(128, 0, 128);
-	snd.play();
+	Sound sndGunshot1;
+	sndGunshot1.setBuffer(bufGunshot1);
+	sndGunshot1.setRelativeToListener(false);
+	sndGunshot1.setAttenuation(0.1f);
+	sndGunshot1.setPosition(128, 0, 128);
 	
 	smgr->setShadowColor(video::SColor(80,0,0,0));
 	smgr->setAmbientLight(SColorf(0.8f, 0.8f, 0.8f));
@@ -112,15 +111,12 @@ void basicGraphics() {
 // 	device->getCursorControl()->setVisible(false);
 
 	// Add soldiers
-	for (int i = 0; i < 3; i++) {
-		for (int j = 0; j < 1; j++) {
+	for (int i = 0; i < 5; i++) {
+		for (int j = 0; j < 5; j++) {
 			int obj1 = ObjectManager::manager.createObject();
-			ObjectManager::manager.attachComponent(obj1, new TransformComponent(vector3df(128 + i*15+3,0,128 + j*15+3)));
+			ObjectManager::manager.attachComponent(obj1, new TransformComponent(vector3df(16 + i*15+3,0,128 + j*15+3)));
 			
-			if (i % 2 == 0)
-				ObjectManager::manager.attachComponent(obj1, new AnimatedMeshComponent("humantest.x", "ManTexture2.png", vector3df(0,0,0)));
-			else
-				ObjectManager::manager.attachComponent(obj1, new AnimatedMeshComponent("humantest.x", "ManTexture.png", vector3df(0,0,0)));
+			ObjectManager::manager.attachComponent(obj1, new AnimatedMeshComponent("humantest.x", "ManTexture.png", vector3df(0,0,0)));
 			
 			AnimatorComponent* animComp = new AnimatorComponent();
 			animComp->addAnimation("IDLE", 0, 62, 30);
@@ -130,15 +126,44 @@ void basicGraphics() {
 			animComp->addAnimation("SHOOT", 157, 165, 30);
 			animComp->addAnimation("RELOAD", 166, 275, 20);
 			animComp->addAnimation("REST", 276, 287, 30);
-			animComp->addAnimation("DEATH1", 288, 313, 30);
+			animComp->addAnimation("DEATH1", 288, 313, 20);
+			
+			ObjectManager::manager.attachComponent(obj1, animComp);
+			
+			ObjectManager::manager.attachComponent(obj1, new RenderComponent(true));
+			//ObjectManager::manager.attachComponent(obj1, new SelectableComponent());
+			ObjectManager::manager.attachComponent(obj1, new FaceDirectionComponent(0, 0.08f));
+			ObjectManager::manager.attachComponent(obj1, new RTSLogicComponent(0, 1, sndGunshot1, 60));
+			ObjectManager::manager.attachComponent(obj1, new SteeringComponent(0.2, 80));
+			ObjectManager::manager.attachComponent(obj1, new HealthComponent(10, 10));
+		}
+	}
+	
+	for (int i = 0; i < 5; i++) {
+		for (int j = 0; j < 5; j++) {
+			int obj1 = ObjectManager::manager.createObject();
+			ObjectManager::manager.attachComponent(obj1, new TransformComponent(vector3df(256 + i*15+3,0,128 + j*15+3)));
+			
+			ObjectManager::manager.attachComponent(obj1, new AnimatedMeshComponent("humantest.x", "ManTexture2.png", vector3df(0,0,0)));
+			
+			AnimatorComponent* animComp = new AnimatorComponent();
+			animComp->addAnimation("IDLE", 0, 62, 30);
+			animComp->addAnimation("WALK", 63, 142, 90);
+			animComp->addAnimation("TAKEAIM", 143, 153, 20);
+			animComp->addAnimation("AIM", 154, 156, 30);
+			animComp->addAnimation("SHOOT", 157, 165, 30);
+			animComp->addAnimation("RELOAD", 166, 275, 20);
+			animComp->addAnimation("REST", 276, 287, 30);
+			animComp->addAnimation("DEATH1", 288, 313, 20);
 			
 			ObjectManager::manager.attachComponent(obj1, animComp);
 			
 			ObjectManager::manager.attachComponent(obj1, new RenderComponent(true));
 			ObjectManager::manager.attachComponent(obj1, new SelectableComponent());
 			ObjectManager::manager.attachComponent(obj1, new FaceDirectionComponent(0, 0.08f));
-			ObjectManager::manager.attachComponent(obj1, new RTSLogicComponent(i % 2));
+			ObjectManager::manager.attachComponent(obj1, new RTSLogicComponent(1, 1, sndGunshot1, 60));
 			ObjectManager::manager.attachComponent(obj1, new SteeringComponent(0.2, 80));
+			ObjectManager::manager.attachComponent(obj1, new HealthComponent(10, 10));
 		}
 	}
 	
@@ -258,12 +283,6 @@ void basicGraphics() {
 			nextTick += tickTime;
 			loops++;
 			tickCounter++;
-			sndCounter++;
-			
-			if (sndCounter > 472) {
-				sndCounter = 0;
-				//snd.play();
-			}
 		}
 		
 		ObjectManager::manager.drawSystems(0);

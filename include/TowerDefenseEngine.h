@@ -12,6 +12,7 @@
 #include <FaceDirectionComponent.h>
 #include <FaceDirectionSystem.h>
 #include <GameComponent.h>
+#include <HealthComponent.h>
 #include <NodePath.h>
 #include <ObjectManager.h>
 #include <PathMovementComponent.h>
