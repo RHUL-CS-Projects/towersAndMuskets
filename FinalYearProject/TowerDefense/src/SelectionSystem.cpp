@@ -38,13 +38,20 @@ void SelectionSystem::update ( float timestep ) {
 			triangle3df triangle;
 			ISceneNode* node;
 			
-			ObjectManager* mgr = &ObjectManager::manager;
+			int hitID = -1;
+			if ((hitID = colmgr->getSceneNodeFromRayBB(ray)->getID()) > -1) {	
+				if (ObjectManager::manager.getObjectComponent<SelectableComponent>(hitID, "SelectableComponent") != nullptr) {	
+					ObjectManager::manager.getObjectComponent<SelectableComponent>(hitID, "SelectableComponent")->selected = true;
+				}
+			}
+			
+			/*ObjectManager* mgr = &ObjectManager::manager;
 			std::list<int> objects = mgr->getObjectsWithComponent("SelectableComponent");
 			
 			for (int i : objects) {
 				if (colmgr->getCollisionPoint(ray, RenderManager::renderManager.getSceneManager()->getSceneNodeFromId(i)->getTriangleSelector(), point, triangle, node))
 					mgr->getObjectComponent<SelectableComponent>(i, "SelectableComponent")->selected = true;
-			}
+			}*/
 		}
 	}
 }

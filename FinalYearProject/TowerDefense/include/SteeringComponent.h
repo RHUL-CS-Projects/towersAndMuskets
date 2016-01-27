@@ -28,7 +28,7 @@ public:
 	float maxSpeed;
 	
 	// Radius threshold for marking a path node as visited
-	float radius = 2;
+	float radius = 4;
 	
 	// The object's mass used when calculating the turn rate
 	float mass;
