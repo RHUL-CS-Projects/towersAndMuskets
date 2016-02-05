@@ -13,11 +13,11 @@
 struct SAppContext
 {
     irr::IrrlichtDevice *device;
-	irr::gui::IGUIStaticText* txtQuadtree;
+	/*irr::gui::IGUIStaticText* txtQuadtree;
 	irr::gui::IGUIStaticText* txtPaths;
 	irr::gui::IGUIStaticText* txtSteer;
 	irr::gui::IGUIStaticText* txtStencil;
-	irr::gui::IGUIStaticText* txtGridWorld;
+	irr::gui::IGUIStaticText* txtGridWorld;*/
 };
 
 /**

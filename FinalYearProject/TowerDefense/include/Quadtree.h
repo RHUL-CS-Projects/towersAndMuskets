@@ -50,6 +50,8 @@ private:
 	 * by checking its collision box with the node's bounding rectangle
 	 */
 	int getIndex(ObjectData obj);
+	
+	std::list<int> getObjectsInBox(std::list<int>& returnObjects, irr::core::rectf box);
 public:	
 	
 	/**
@@ -73,6 +75,8 @@ public:
 	 * this object should be stored
 	 */
 	std::list<int> getObjects(std::list<int>& returnObjects, int id, irr::core::vector3df pos, float rad);
+	
+	std::list<int> getObjectsInRange(std::list<int>& returnObjects, irr::core::vector3df pos, float distance);
 	
 	/**
 	 * Draws the tree and its child nodes to the screen for debugging

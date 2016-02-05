@@ -10,7 +10,7 @@ using namespace core;
 using namespace gui;
 
 bool EventReceiver::OnEvent ( const SEvent& event ) {
-	if (event.EventType == EEVENT_TYPE::EET_GUI_EVENT) {
+	/*if (event.EventType == EEVENT_TYPE::EET_GUI_EVENT) {
 		int id = event.GUIEvent.Caller->getID();
 		IGUIEnvironment* guiEnv = Context.device->getGUIEnvironment();
 		
@@ -45,7 +45,7 @@ bool EventReceiver::OnEvent ( const SEvent& event ) {
 			default:
 				break;
 		}
-	}
+	}*/
 	
 	if (event.EventType == irr::EET_MOUSE_INPUT_EVENT) {
 		switch (event.MouseInput.Event) {

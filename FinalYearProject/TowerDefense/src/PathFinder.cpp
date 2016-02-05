@@ -2,8 +2,10 @@
 #include <queue>
 #include <algorithm>
 #include <iostream>
+#include <RenderManager.h>
 
 using namespace irr;
+using namespace scene;
 using namespace core;
 using namespace std;
 
@@ -129,8 +131,12 @@ NodePath PathFinder::findPath ( int startX, int startY, int endX, int endY ) {
 	if (foundPath) {
 		PathFindNode* current = &nodes[currentX][currentY];
 		while (currentX != startX || currentY != startY) {
-			if (currentX != endX || currentY != endY)
-				path.addNodeFront(vector3df(currentX * worldManager->gridSize + worldManager->gridSize/2, 0, currentY * worldManager->gridSize + worldManager->gridSize/2));
+			if (currentX != endX || currentY != endY) {
+				float worldX = currentX * worldManager->gridSize + worldManager->gridSize/2;
+				float worldZ = currentY * worldManager->gridSize + worldManager->gridSize/2;
+				int yPos = ((ITerrainSceneNode*)RenderManager::renderManager.getSceneManager()->getSceneNodeFromName("MainTerrain"))->getHeight(worldX, worldZ);
+				path.addNodeFront(vector3df(worldX, yPos, worldZ));
+			}
 			current = current->parent;
 			currentX = current->x;
 			currentY = current->y;

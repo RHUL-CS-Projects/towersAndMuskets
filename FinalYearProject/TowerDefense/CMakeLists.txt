@@ -44,6 +44,8 @@ set (SOURCES
   src/DebugValues.cpp
   src/WorldManager.cpp
   src/PathFinder.cpp
+  src/Game.cpp
+  src/StateMainMenu.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)

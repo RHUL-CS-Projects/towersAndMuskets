@@ -83,7 +83,7 @@ void basicGraphics() {
 		-1, 
 		vector3df(0,0,0),
 		vector3df(0,0,0),
-		vector3df(2,0.5f,2),
+		vector3df(2,0.2f,2),
 		SColor(255,255,255,255),
 		5,
 		scene::ETPS_17,
@@ -192,7 +192,7 @@ void basicGraphics() {
 	IGUIStaticText* lblTickFrame = guienv->addStaticText(L"TICKS: 0, FRAMES: 0", recti(10,10,120,30));
 	lblTickFrame->setTextAlignment(gui::EGUIA_UPPERLEFT, gui::EGUIA_CENTER);
 	
-	guienv->addStaticText(L"DEBUG CONTROLS", recti(10,30,90,50))->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
+	/*guienv->addStaticText(L"DEBUG CONTROLS", recti(10,30,90,50))->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 	
 	guienv->addButton(recti(10,50,120,80), 0, GUI_IDS::BUTTON_ID_QUADTREE, L"QUADTREE");
 	context.txtQuadtree = guienv->addStaticText(L"OFF", recti(125,50,140,80));
@@ -212,12 +212,10 @@ void basicGraphics() {
 	
 	guienv->addButton(recti(10,210,120,240), 0, GUI_IDS::BUTTON_ID_GRIDWORLD, L"WORLD GRID");
 	context.txtGridWorld = guienv->addStaticText(L"OFF", recti(125,210,140,240));
-	context.txtGridWorld->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
+	context.txtGridWorld->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);*/
 	
 	EventReceiver eventReceiver(context);
 	device->setEventReceiver(&eventReceiver);
-	
-	int sndCounter = -4;
 	
 	while (device->run()) {
 		currentTime = gameClock.getElapsedTime().asMicroseconds();
@@ -310,6 +308,13 @@ void basicGraphics() {
 	device->drop();
 }
 
+void runGame() {
+	Game game;
+	game.init();
+	game.run();
+	game.dispose();
+}
+
 int main() {
 	struct sigaction sigIntHandler;
 	sigIntHandler.sa_handler = signalExit;
@@ -332,7 +337,9 @@ int main() {
 		
 		client.connectToServer(input);
 	}*/
-	basicGraphics();
+	//basicGraphics();
+	
+	runGame();
 	
 	return 0;
 }

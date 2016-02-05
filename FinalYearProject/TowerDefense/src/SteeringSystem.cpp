@@ -11,6 +11,7 @@
 #include <DebugValues.h>
 
 using namespace irr;
+using namespace scene;
 using namespace core;
 using namespace video;
 
@@ -77,7 +78,8 @@ void SteeringSystem::update ( float timestep ) {
 		}
 		
 		transComp->worldPosition += steerComp->velocity;
-		transComp->worldPosition.Y = 0;
+		transComp->worldPosition.Y = 
+		((ITerrainSceneNode*)RenderManager::renderManager.getSceneManager()->getSceneNodeFromName("MainTerrain"))->getHeight(transComp->worldPosition.X, transComp->worldPosition.Z);
 		
 		// Animate the object appropriately (TEMPORARY)
 		RenderComponent* rendComp = mgr->getObjectComponent<RenderComponent>(i, "RenderComponent");

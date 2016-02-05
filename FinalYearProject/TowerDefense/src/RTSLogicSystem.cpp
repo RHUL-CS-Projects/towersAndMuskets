@@ -13,6 +13,7 @@
 #include <RenderComponent.h>
 #include <FaceDirectionComponent.h>
 #include <HealthComponent.h>
+#include <Quadtree.h>
 
 #include <irrlicht/irrlicht.h>
 
@@ -25,6 +26,7 @@ using namespace scene;
 vector3df terrainPoint;
 int clickedObject = -1;
 vector3df objectPoint;
+Quadtree root(0, rectf(0, 0, 480, 480));
 
 void RTSLogicSystem::update ( float timestep ) {
 	clickedObject = -1;
@@ -62,8 +64,22 @@ void RTSLogicSystem::update ( float timestep ) {
     // Get the object object manager
 	ObjectManager* mgr = &ObjectManager::manager;
 	
-	// Get all objects with an RTSMovementComponent
+	// Get all objects with an RTSLogicComponent
 	std::list<int> objects = mgr->getObjectsWithComponent("RTSLogicComponent");
+	
+	// Build quadtree for range checking
+	root.clear();
+	for (int i : objects) {
+		// Check the object has a transform
+		TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
+		
+		if (transComp == nullptr)
+			continue;
+		
+		vector3df pos = transComp->worldPosition;
+		
+		root.insert(i, pos, 1);
+	}
 	
 	// Iterate over objects
 	for (int i : objects) {
@@ -166,13 +182,13 @@ void RTSLogicSystem::stateAttacking ( ObjectManager* mgr, int id, RTSLogicCompon
 		}
 		
 		if (animComp->currentAnimation == "SHOOT") {
-			if (rtsComp->shootCounter <= 0 && floor(rendComp->sceneNode->getFrameNr()) == rendComp->sceneNode->getStartFrame() + rtsComp->attackActionFrame) {
+			if (rtsComp->shootCounter <= 0/* && floor(rendComp->sceneNode->getFrameNr()) == rendComp->sceneNode->getStartFrame() + rtsComp->attackActionFrame*/) {
 				rtsComp->shootSound.setPosition(transComp->worldPosition.X, transComp->worldPosition.Y, transComp->worldPosition.Z);
 				rtsComp->shootSound.play();
 				rtsComp->shootCounter = rand() % rtsComp->shootDelay;
 
 				if (healthComp != nullptr)
-					healthComp->health -= 5;
+					healthComp->health -= 4;
 			}
 			
 			if (rendComp->sceneNode->getFrameNr() >= rendComp->sceneNode->getEndFrame()) {
@@ -241,13 +257,15 @@ void RTSLogicSystem::stateIdle ( ObjectManager* mgr, int id, RTSLogicComponent* 
 	if (rtsComp->attackTargetID == -1) {
 		// Get all objects with an RTSMovementComponent
 		std::list<int> objects = mgr->getObjectsWithComponent("RTSLogicComponent");
-		TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(id, "TransformComponent");
+		//std::list<int> objects;
+		//TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(id, "TransformComponent");
+		//root.getObjectsInRange(objects, transComp->worldPosition, 140);
 		
 		for (int i : objects) {
 			if (i == id) continue;
 			TransformComponent* otherTransComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
 			
-			if (transComp->worldPosition.getDistanceFromSQ(otherTransComp->worldPosition) < 19600) {
+			//if (transComp->worldPosition.getDistanceFromSQ(otherTransComp->worldPosition) < 19600) {
 				RTSLogicComponent* otherRTSComp = mgr->getObjectComponent<RTSLogicComponent>(i, "RTSLogicComponent");
 				
 				if (rtsComp->teamID == -1 || otherRTSComp == nullptr || rtsComp->teamID != otherRTSComp->teamID) {
@@ -257,7 +275,7 @@ void RTSLogicSystem::stateIdle ( ObjectManager* mgr, int id, RTSLogicComponent* 
 					
 					break;
 				}
-			}
+			//}
 		}
 	}
 	
@@ -265,9 +283,10 @@ void RTSLogicSystem::stateIdle ( ObjectManager* mgr, int id, RTSLogicComponent* 
 	AnimatorComponent* animComp = mgr->getObjectComponent<AnimatorComponent>(id, "AnimatorComponent");
 
 	if (rendComp != nullptr && animComp != nullptr) {
-		rendComp->sceneNode->setLoopMode(true);
-		if (steerComp->path.ended() && steerComp->velocity.getLength() < 0.03)
+		if (steerComp->path.ended() && steerComp->velocity.getLength() < 0.03) {
 			animComp->setAnimation("IDLE", rendComp->sceneNode);
+			rendComp->sceneNode->setLoopMode(true);
+		}
 	}
 }
 
@@ -301,8 +320,10 @@ void RTSLogicSystem::stateMoveToAttack ( ObjectManager* mgr, int id, RTSLogicCom
 	AnimatorComponent* animComp = mgr->getObjectComponent<AnimatorComponent>(id, "AnimatorComponent");
 	
 	if (rendComp != nullptr && animComp != nullptr) {
-		if (!steerComp->path.ended())
+		if (!steerComp->path.ended()) {
 			animComp->setAnimation("WALK", rendComp->sceneNode);
+			rendComp->sceneNode->setLoopMode(true);
+		}
 	}
 }
 
@@ -373,6 +394,29 @@ void RTSLogicSystem::stateWalking ( ObjectManager* mgr, int id, RTSLogicComponen
 	} else {
 		if (steerComp != nullptr && steerComp->path.ended())
 			rtsComp->currentState = IDLE;
+	}
+	
+	// Get all objects with an RTSMovementComponent
+	std::list<int> objects = mgr->getObjectsWithComponent("RTSLogicComponent");
+	//std::list<int> objects;
+	//TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(id, "TransformComponent");
+	//root.getObjectsInRange(objects, transComp->worldPosition, 140);
+	
+	for (int i : objects) {
+		if (i == id) continue;
+		TransformComponent* otherTransComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
+		
+		//if (transComp->worldPosition.getDistanceFromSQ(otherTransComp->worldPosition) < 19600) {
+			RTSLogicComponent* otherRTSComp = mgr->getObjectComponent<RTSLogicComponent>(i, "RTSLogicComponent");
+			
+			if (rtsComp->teamID == -1 || otherRTSComp == nullptr || rtsComp->teamID != otherRTSComp->teamID) {
+				rtsComp->attackTargetID = i;
+				setPath(mgr, id, otherTransComp->worldPosition);
+				rtsComp->currentState = MOVE_TO_ATTACK;
+				
+				break;
+			}
+		//}
 	}
 	
 	RenderComponent* rendComp = mgr->getObjectComponent<RenderComponent>(id, "RenderComponent");
