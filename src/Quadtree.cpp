@@ -149,6 +149,35 @@ std::list< int > Quadtree::getObjects ( std::list< int >& returnObjects, int id,
 	return returnObjects;
 }
 
+std::list<int> Quadtree::getObjectsInRange(std::list<int>& returnObjects, irr::core::vector3df pos, float distance) {
+	distance *= 2;
+	irr::core::rectf rect(pos.X - distance/2, pos.Z - distance/2, pos.X + distance/2, pos.Z + distance/2);
+	
+	return getObjectsInBox(returnObjects, rect);
+}
+
+
+std::list<int> Quadtree::getObjectsInBox(std::list<int>& returnObjects, irr::core::rectf box) {
+	if (!bounds.isRectCollided(box)) {
+		return returnObjects;
+	}
+	
+	for (ObjectData o : objects) {
+		if (box.isPointInside(irr::core::vector2df(o.pos.X, o.pos.Z)))
+			returnObjects.push_back(o.id);
+	}
+	
+	if (nodes[0] == nullptr)
+		return returnObjects;
+	
+	nodes[0]->getObjectsInBox(returnObjects, box);
+	nodes[1]->getObjectsInBox(returnObjects, box);
+	nodes[2]->getObjectsInBox(returnObjects, box);
+	nodes[3]->getObjectsInBox(returnObjects, box);
+	
+	return returnObjects;
+}
+
 /**
  * Recursively draw the quadtree
  */

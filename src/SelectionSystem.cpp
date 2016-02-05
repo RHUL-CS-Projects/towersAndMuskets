@@ -17,6 +17,20 @@ using namespace scene;
 void SelectionSystem::update ( float timestep ) {
 	EventReceiver::SMouseState mouseState = *EventReceiver::getMouseState();
 
+	// Calculate click point on terrain
+	ISceneCollisionManager* colmgr = RenderManager::renderManager.getSceneManager()->getSceneCollisionManager();
+	line3df ray = colmgr->getRayFromScreenCoordinates(EventReceiver::getMouseState()->position);
+	
+	vector3df point;
+	triangle3df triangle;
+	ISceneNode* node;
+	
+	int hitID = -1;
+	if ((hitID = colmgr->getSceneNodeFromRayBB(ray)->getID()) > -1) {	
+		std::cout << "mouse over" << std::endl;
+	}
+	
+	
 	if (mouseState.leftPressed) {
 		if (!dragging) {
 			dragging = true;

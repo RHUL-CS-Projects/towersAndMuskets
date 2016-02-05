@@ -11,7 +11,9 @@
 #include <EventReceiver.h>
 #include <FaceDirectionComponent.h>
 #include <FaceDirectionSystem.h>
+#include <Game.h>
 #include <GameComponent.h>
+#include <GameState.h>
 #include <HealthComponent.h>
 #include <NodePath.h>
 #include <ObjectManager.h>
@@ -25,6 +27,7 @@
 #include <SelectableComponent.h>
 #include <SelectionSystem.h>
 #include <Server.h>
+#include <StateMainMenu.h>
 #include <SteeringComponent.h>
 #include <TransformComponent.h>
 

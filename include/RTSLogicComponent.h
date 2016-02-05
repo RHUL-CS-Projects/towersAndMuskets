@@ -5,7 +5,7 @@
 #include <sfml/SFML/Audio.hpp>
 #include <random>
 
-enum RTS_UNIT_STATE { IDLE, WALKING, MOVE_TO_ATTACK, ATTACKING, RELOADING, DEAD }; 
+enum RTS_UNIT_STATE { IDLE=0, WALKING, MOVE_TO_ATTACK, ATTACKING, RELOADING, DEAD }; 
 
 /**
  * Component to control the logic/AI of units by controlling their states
