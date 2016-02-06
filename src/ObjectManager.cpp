@@ -15,7 +15,7 @@
 #include <SteeringSystem.h>
 #include <DebugValues.h>
 
-ObjectManager ObjectManager::manager;
+//ObjectManager ObjectManager::manager;
 
 using namespace std;
 
@@ -193,18 +193,18 @@ void ObjectManager::updateSystems ( float timestep ) {
  * Render all component systems.
  */
 void ObjectManager::drawSystems ( float timestep ) {
-	RenderManager::renderManager.getDriver()->beginScene(true, true, irr::video::SColor(255,159,200,214));
+	//Game::game.getRendMgr()->getDriver()->beginScene(true, true, irr::video::SColor(255,159,200,214));
 	
 	for (ComponentSystem* system : systems) {
 		system->draw(timestep);
 	}
 	
-	RenderManager::renderManager.getGUIEnvironment()->drawAll();
+	Game::game.getRendMgr()->getGUIEnvironment()->drawAll();
 	
 	if (DebugValues::DRAW_GRIDWORLD)
 		worldManager->draw(timestep);
 	
-	RenderManager::renderManager.getDriver()->endScene();
+	//Game::game.getRendMgr()->getDriver()->endScene();
 }
 
 

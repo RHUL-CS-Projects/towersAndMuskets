@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <RenderManager.h>
+#include <Game.h>
 
 using namespace irr;
 using namespace scene;
@@ -134,7 +135,7 @@ NodePath PathFinder::findPath ( int startX, int startY, int endX, int endY ) {
 			if (currentX != endX || currentY != endY) {
 				float worldX = currentX * worldManager->gridSize + worldManager->gridSize/2;
 				float worldZ = currentY * worldManager->gridSize + worldManager->gridSize/2;
-				int yPos = ((ITerrainSceneNode*)RenderManager::renderManager.getSceneManager()->getSceneNodeFromName("MainTerrain"))->getHeight(worldX, worldZ);
+				int yPos = ((ITerrainSceneNode*)Game::game.getRendMgr()->getSceneManager()->getSceneNodeFromName("MainTerrain"))->getHeight(worldX, worldZ);
 				path.addNodeFront(vector3df(worldX, yPos, worldZ));
 			}
 			current = current->parent;

@@ -12,11 +12,11 @@ using namespace io;
 using namespace gui;
 
 void CameraSystem::update ( float timestep ) {
-    ISceneManager* smgr = RenderManager::renderManager.getSceneManager();
+    ISceneManager* smgr = Game::game.getRendMgr()->getSceneManager();
 	ICameraSceneNode* camera = smgr->getActiveCamera();
 	
 	// Get the object manager
-	ObjectManager* mgr = &ObjectManager::manager;
+	ObjectManager* mgr = Game::game.getObjMgr();
 	
 	std::list<int> cameraObjects = mgr->getObjectsWithComponent("CameraComponent");
 	

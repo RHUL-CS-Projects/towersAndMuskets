@@ -14,7 +14,7 @@
 #include <FaceDirectionComponent.h>
 #include <HealthComponent.h>
 #include <Quadtree.h>
-
+#include <Game.h>
 #include <irrlicht/irrlicht.h>
 
 using namespace irr;
@@ -37,16 +37,16 @@ void RTSLogicSystem::update ( float timestep ) {
 		rightMousePressed = true;
 		
 		// Calculate click point on terrain
-		ISceneCollisionManager* colmgr = RenderManager::renderManager.getSceneManager()->getSceneCollisionManager();
+		ISceneCollisionManager* colmgr = Game::game.getRendMgr()->getSceneManager()->getSceneCollisionManager();
 		line3df ray = colmgr->getRayFromScreenCoordinates(EventReceiver::getMouseState()->position);
 		
 		triangle3df triangle;
 		ISceneNode* node;
 		
 		// Check if the user clicked on terrain or object
-		colmgr->getCollisionPoint(ray, RenderManager::renderManager.getSceneManager()->getSceneNodeFromName("MainTerrain")->getTriangleSelector(), terrainPoint, triangle, node);
+		colmgr->getCollisionPoint(ray, Game::game.getRendMgr()->getSceneManager()->getSceneNodeFromName("MainTerrain")->getTriangleSelector(), terrainPoint, triangle, node);
 		
-		ObjectManager* mgr = &ObjectManager::manager;
+		ObjectManager* mgr = Game::game.getObjMgr();
 		std::list<int> objects = mgr->getObjectsWithComponent("RenderComponent");
 		
 		int hitID = -1;
@@ -62,7 +62,7 @@ void RTSLogicSystem::update ( float timestep ) {
 	}
 	
     // Get the object object manager
-	ObjectManager* mgr = &ObjectManager::manager;
+	ObjectManager* mgr = Game::game.getObjMgr();
 	
 	// Get all objects with an RTSLogicComponent
 	std::list<int> objects = mgr->getObjectsWithComponent("RTSLogicComponent");

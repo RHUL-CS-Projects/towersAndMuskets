@@ -1,6 +1,7 @@
 #include <StateMainMenu.h>
 #include <irrlicht/irrlicht.h>
 #include <string>
+#include <StatePlaying.h>
 
 using namespace std;
 using namespace irr;
@@ -42,6 +43,7 @@ void StateMainMenu::onNotify ( int id, int eventID ) {
 		case btnPlay:
 			//cout << "play clicked" << endl;
 			sndClickSound.play();
+			Game::game.pushState(new StatePlaying());
 			break;
 		case btnOptions:
 			//cout << "options clicked" << endl;

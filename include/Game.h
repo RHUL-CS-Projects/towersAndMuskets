@@ -36,7 +36,6 @@ public:
 	
 	ObjectManager* getObjMgr();
 	RenderManager* getRendMgr();
-	irr::gui::IGUIEnvironment* getGUIEnv();
 };
 
 #endif

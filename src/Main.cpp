@@ -33,7 +33,7 @@ void signalExit(int s) {
 	client.disconnect();
 }
 
-void basicGraphics() {
+/*void basicGraphics() {
 	RenderManager::renderManager.init(L"Tower Defense");
 	
 	IrrlichtDevice* device = RenderManager::renderManager.getDevice();
@@ -211,7 +211,7 @@ void basicGraphics() {
 	
 	guienv->addButton(recti(10,210,120,240), 0, GUI_IDS::BUTTON_ID_GRIDWORLD, L"WORLD GRID");
 	context.txtGridWorld = guienv->addStaticText(L"OFF", recti(125,210,140,240));
-	context.txtGridWorld->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);*/
+	context.txtGridWorld->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER);
 	
 	EventReceiver eventReceiver(context);
 	device->setEventReceiver(&eventReceiver);
@@ -305,7 +305,7 @@ void basicGraphics() {
 	}
 	
 	device->drop();
-}
+}*/
 
 void runGame() {
 	Game::game.init();

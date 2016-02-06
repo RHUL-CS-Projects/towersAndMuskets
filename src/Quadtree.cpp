@@ -2,6 +2,7 @@
 #include <iostream>
 #include <RenderManager.h>
 #include <irrlicht/irrlicht.h>
+#include <Game.h>
 
 Quadtree::Quadtree ( int level, irr::core::rectf bounds ) {
 	this->level = level;
@@ -186,30 +187,30 @@ void Quadtree::draw() {
 	irr::video::SMaterial m;
 	m.Lighting = false;
 	m.Thickness = 1.0f;
-	RenderManager::renderManager.getDriver()->setMaterial(m);
-	RenderManager::renderManager.getDriver()->setTransform(irr::video::ETS_WORLD, irr::core::IdentityMatrix);
+	Game::game.getRendMgr()->getDriver()->setMaterial(m);
+	Game::game.getRendMgr()->getDriver()->setTransform(irr::video::ETS_WORLD, irr::core::IdentityMatrix);
 	
 	irr::video::SColorHSL col(100 * (1.0-(1.0/maxLevels*level)), 100, 50);
 	irr::video::SColorf colRGBf;
 	col.toRGB(colRGBf);
 	irr::video::SColor colRGB = colRGBf.toSColor();
 	
-	RenderManager::renderManager.getDriver()->draw3DLine(
+	Game::game.getRendMgr()->getDriver()->draw3DLine(
 		irr::core::vector3df(bounds.UpperLeftCorner.X, 1+level/6.0, bounds.UpperLeftCorner.Y),
 		irr::core::vector3df(bounds.UpperLeftCorner.X + bounds.getWidth(), 1+level/6.0, bounds.UpperLeftCorner.Y),
 		colRGB);
 	
-	RenderManager::renderManager.getDriver()->draw3DLine(
+	Game::game.getRendMgr()->getDriver()->draw3DLine(
 		irr::core::vector3df(bounds.UpperLeftCorner.X, 1+level/6.0, bounds.UpperLeftCorner.Y),
 		irr::core::vector3df(bounds.UpperLeftCorner.X, 1+level/6.0, bounds.UpperLeftCorner.Y + bounds.getHeight()),
 		colRGB);
 	
-	RenderManager::renderManager.getDriver()->draw3DLine(
+	Game::game.getRendMgr()->getDriver()->draw3DLine(
 		irr::core::vector3df(bounds.LowerRightCorner.X, 1+level/6.0, bounds.LowerRightCorner.Y),
 		irr::core::vector3df(bounds.LowerRightCorner.X - bounds.getWidth(), 1+level/6.0, bounds.LowerRightCorner.Y),
 		colRGB);
 	
-	RenderManager::renderManager.getDriver()->draw3DLine(
+	Game::game.getRendMgr()->getDriver()->draw3DLine(
 		irr::core::vector3df(bounds.LowerRightCorner.X, 1+level/6.0, bounds.LowerRightCorner.Y),
 		irr::core::vector3df(bounds.LowerRightCorner.X, 1+level/6.0, bounds.LowerRightCorner.Y - bounds.getHeight()),
 		colRGB);
