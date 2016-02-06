@@ -25,6 +25,8 @@ private:
 public:
 	Game() {}
 	
+	static Game game;
+	
 	void init();
 	void run();
 	void dispose();
@@ -34,6 +36,7 @@ public:
 	
 	ObjectManager* getObjMgr();
 	RenderManager* getRendMgr();
+	irr::gui::IGUIEnvironment* getGUIEnv();
 };
 
 #endif

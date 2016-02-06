@@ -15,6 +15,8 @@ using namespace gui;
 using namespace chrono;
 using namespace sf;
 
+Game Game::game;
+
 void Game::init() {
 	rendManager.init(L"Tower Defense");
 	
@@ -126,3 +128,6 @@ RenderManager* Game::getRendMgr() {
 	return &rendManager;
 }
 
+IGUIEnvironment* Game::getGUIEnv() {
+	return guienv;
+}

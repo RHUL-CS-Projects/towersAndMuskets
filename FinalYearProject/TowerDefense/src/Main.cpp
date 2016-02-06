@@ -41,7 +41,6 @@ void basicGraphics() {
 	ISceneManager* smgr = RenderManager::renderManager.getSceneManager();
 	IGUIEnvironment* guienv = RenderManager::renderManager.getGUIEnvironment();
 	
-	// Initialise SFML
 	SoundBuffer bufGunshot1;
 	if (!bufGunshot1.loadFromFile("res/sounds/musketshot.ogg"))
 		cout << "Sound not loaded" << endl;
@@ -309,10 +308,11 @@ void basicGraphics() {
 }
 
 void runGame() {
-	Game game;
-	game.init();
-	game.run();
-	game.dispose();
+	Game::game.init();
+	Game::game.run();
+	
+	cout << "Game Exited" << endl;
+	Game::game.dispose();
 }
 
 int main() {
