@@ -7,9 +7,7 @@ class StatePlaying : public GameState {
 private:
 	
 public:
-	StatePlaying () : GameState() {
-	
-	}
+	StatePlaying ();
 	
 	virtual void update();
 	virtual void render(irr::video::IVideoDriver* driver);

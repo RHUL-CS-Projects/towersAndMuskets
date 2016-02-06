@@ -12,7 +12,7 @@ using namespace video;
 using namespace io;
 using namespace gui;
 
-RenderManager RenderManager::renderManager;
+//RenderManager RenderManager::renderManager;
 std::string const RenderManager::resPath = "./res";
 
 RenderManager::RenderManager() {

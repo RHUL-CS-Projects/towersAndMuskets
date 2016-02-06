@@ -1,5 +1,6 @@
 #include <WorldManager.h>
 #include <RenderManager.h>
+#include <Game.h>
 
 using namespace irr;
 using namespace core;
@@ -103,8 +104,8 @@ void WorldManager::draw ( float timestep ) {
 	m.Lighting = false;
 	m.Thickness = 2.0f;
 	m.setFlag(video::EMF_BLEND_OPERATION, true);
-	RenderManager::renderManager.getDriver()->setMaterial(m);
-	RenderManager::renderManager.getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
+	Game::game.getRendMgr()->getDriver()->setMaterial(m);
+	Game::game.getRendMgr()->getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
 
 	float offset = 0.1;
 	
@@ -118,22 +119,22 @@ void WorldManager::draw ( float timestep ) {
 				col.setAlpha(255);
 			}
 			
-			RenderManager::renderManager.getDriver()->draw3DLine(
+			Game::game.getRendMgr()->getDriver()->draw3DLine(
 			irr::core::vector3df(x*gridSize+offset, 0.1, y*gridSize+offset),
 			irr::core::vector3df(x*gridSize+gridSize-offset, 0.1, y*gridSize+offset),
 			col);
 
-			RenderManager::renderManager.getDriver()->draw3DLine(
+			Game::game.getRendMgr()->getDriver()->draw3DLine(
 			irr::core::vector3df(x*gridSize+offset, 0.1, y*gridSize+offset),
 			irr::core::vector3df(x*gridSize+offset, 0.1, y*gridSize+gridSize-offset),
 			col);
 			
-			RenderManager::renderManager.getDriver()->draw3DLine(
+			Game::game.getRendMgr()->getDriver()->draw3DLine(
 			irr::core::vector3df(x*gridSize+offset, 0.1, y*gridSize+gridSize-offset),
 			irr::core::vector3df(x*gridSize+gridSize-offset, 0.1, y*gridSize+gridSize-offset),
 			col);
 			
-			RenderManager::renderManager.getDriver()->draw3DLine(
+			Game::game.getRendMgr()->getDriver()->draw3DLine(
 			irr::core::vector3df(x*gridSize+gridSize-offset, 0.1, y*gridSize+offset),
 			irr::core::vector3df(x*gridSize+gridSize-offset, 0.1, y*gridSize+gridSize-offset),
 			col);

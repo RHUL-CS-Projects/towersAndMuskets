@@ -15,8 +15,8 @@ using namespace gui;
 
 void RenderSystem::update ( float timestep ) {
 	// Get the object manager
-	ObjectManager* mgr = &ObjectManager::manager;
-	irr::scene::ISceneManager* smgr = RenderManager::renderManager.getSceneManager();
+	ObjectManager* mgr = Game::game.getObjMgr();
+	irr::scene::ISceneManager* smgr = Game::game.getRendMgr()->getSceneManager();
 	
 	// Get all renderable objects
 	std::list<int> renderables = mgr->getObjectsWithComponent("RenderComponent");
@@ -62,7 +62,7 @@ void RenderSystem::update ( float timestep ) {
 				if (selectComp->sceneNode == nullptr) {
 					selectComp->sceneNode = smgr->addMeshSceneNode(selectComp->selectionMesh);
 					std::string texturePath = RenderManager::resPath + "/materials/textures/Selected.png";
-					ITexture* texture = RenderManager::renderManager.getDriver()->getTexture(texturePath.c_str());
+					ITexture* texture = Game::game.getRendMgr()->getDriver()->getTexture(texturePath.c_str());
 					
 					selectComp->sceneNode->setMaterialTexture(0, texture);
 					selectComp->sceneNode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
@@ -94,12 +94,12 @@ void RenderSystem::update ( float timestep ) {
 
 
 void RenderSystem::draw ( float timestep ) {
-	RenderManager::renderManager.getSceneManager()->drawAll();
+	Game::game.getRendMgr()->getSceneManager()->drawAll();
 }
 
 void RenderSystem::addSceneNode (RenderComponent* rendComp, AnimatedMeshComponent* animComp, TransformComponent* transComp, int id ) {
-	irr::video::IVideoDriver* driver = RenderManager::renderManager.getDriver();
-	irr::scene::ISceneManager* smgr = RenderManager::renderManager.getSceneManager();
+	irr::video::IVideoDriver* driver = Game::game.getRendMgr()->getDriver();
+	irr::scene::ISceneManager* smgr = Game::game.getRendMgr()->getSceneManager();
 	
 	IAnimatedMeshSceneNode* animnode = smgr->addAnimatedMeshSceneNode(animComp->mesh);
 	if (animnode) {

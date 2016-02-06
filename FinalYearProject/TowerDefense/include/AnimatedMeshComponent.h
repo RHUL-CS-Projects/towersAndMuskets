@@ -4,6 +4,7 @@
 #include <irrlicht/irrlicht.h>
 #include <GameComponent.h>
 #include <RenderManager.h>
+#include <Game.h>
 
 /**
  * Component for storing animated 3D mesh data, as well as its
@@ -36,8 +37,8 @@ public:
 		meshRotOffY = meshRotOffset.Y;
 		meshRotOffZ = meshRotOffset.Z;
 		
-		mesh = RenderManager::renderManager.getSceneManager()->getMesh(meshPath.c_str());
-		texture = RenderManager::renderManager.getDriver()->getTexture(texturePath.c_str());
+		mesh = Game::game.getRendMgr()->getSceneManager()->getMesh(meshPath.c_str());
+		texture = Game::game.getRendMgr()->getDriver()->getTexture(texturePath.c_str());
 	}
 };
 

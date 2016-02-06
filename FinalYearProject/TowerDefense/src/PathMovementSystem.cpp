@@ -10,6 +10,7 @@
 #include <FaceDirectionComponent.h>
 #include <RenderComponent.h>
 #include <AnimatorComponent.h>
+#include <Game.h>
 
 using namespace irr;
 using namespace core;
@@ -21,7 +22,7 @@ using namespace video;
  */
 void PathMovementSystem::update ( float timestep ) {
 	// Get the object manager
-	ObjectManager* mgr = &ObjectManager::manager;
+	ObjectManager* mgr = Game::game.getObjMgr();
 	
 	// Get all objects with a PathMovementComponent
 	std::list<int> objects = mgr->getObjectsWithComponent("PathMovementComponent");
@@ -92,7 +93,7 @@ void PathMovementSystem::update ( float timestep ) {
 void PathMovementSystem::draw ( float timestep ) {
 
 	// Get the object manager
-	ObjectManager* mgr = &ObjectManager::manager;
+	ObjectManager* mgr = Game::game.getObjMgr();
 	
 	// Get all objects with a PathMovementComponent
 	std::list<int> objects = mgr->getObjectsWithComponent("PathMovementComponent");
@@ -114,15 +115,15 @@ void PathMovementSystem::draw ( float timestep ) {
 		if (pathComp->waypoints.size() <= 0)
 			continue;
 		
-		IVideoDriver* driver =  RenderManager::renderManager.getDriver();	
+		IVideoDriver* driver =  Game::game.getRendMgr()->getDriver();	
 		
 		std::queue<vector3df> copyQueue = pathComp->waypoints;
 		
 		SMaterial m;
 		m.Lighting = false;
 		m.Thickness = 1.0f;
-		RenderManager::renderManager.getDriver()->setMaterial(m);
-		RenderManager::renderManager.getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
+		Game::game.getRendMgr()->getDriver()->setMaterial(m);
+		Game::game.getRendMgr()->getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
 		
 		vector3df prevNode = transComp->worldPosition;
 		vector3df node;

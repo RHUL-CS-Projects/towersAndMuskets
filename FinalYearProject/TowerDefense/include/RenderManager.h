@@ -18,7 +18,7 @@ private:
 	
 public:
 	// Static reference to the renderManager
-	static RenderManager renderManager;
+	//static RenderManager renderManager;
 	
 	// The top level path to the resource folder
 	static std::string const resPath;

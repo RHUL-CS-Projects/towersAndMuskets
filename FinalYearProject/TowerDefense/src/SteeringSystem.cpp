@@ -9,6 +9,7 @@
 #include <RenderComponent.h>
 #include <Quadtree.h>
 #include <DebugValues.h>
+#include <Game.h>
 
 using namespace irr;
 using namespace scene;
@@ -17,7 +18,7 @@ using namespace video;
 
 void SteeringSystem::update ( float timestep ) {
 	// Get the object manager
-	ObjectManager* mgr = &ObjectManager::manager;
+	ObjectManager* mgr = Game::game.getObjMgr();
 	
 	// Get objects with steering components
 	std::list<int> objects = mgr->getObjectsWithComponent("SteeringComponent");
@@ -79,7 +80,7 @@ void SteeringSystem::update ( float timestep ) {
 		
 		transComp->worldPosition += steerComp->velocity;
 		transComp->worldPosition.Y = 
-		((ITerrainSceneNode*)RenderManager::renderManager.getSceneManager()->getSceneNodeFromName("MainTerrain"))->getHeight(transComp->worldPosition.X, transComp->worldPosition.Z);
+		((ITerrainSceneNode*)Game::game.getRendMgr()->getSceneManager()->getSceneNodeFromName("MainTerrain"))->getHeight(transComp->worldPosition.X, transComp->worldPosition.Z);
 		
 		// Animate the object appropriately (TEMPORARY)
 		RenderComponent* rendComp = mgr->getObjectComponent<RenderComponent>(i, "RenderComponent");
@@ -106,7 +107,7 @@ void SteeringSystem::update ( float timestep ) {
 
 void SteeringSystem::draw ( float timestep ) {
 	// Get the object manager
-	ObjectManager* mgr = &ObjectManager::manager;
+	ObjectManager* mgr = Game::game.getObjMgr();
 	
 	// Get objects with steering components
 	std::list<int> objects = mgr->getObjectsWithComponent("SteeringComponent");
@@ -126,33 +127,33 @@ void SteeringSystem::draw ( float timestep ) {
 			if (DebugValues::DRAW_STEER) {
 				m.Lighting = false;
 				m.Thickness = 2.0f;
-				RenderManager::renderManager.getDriver()->setMaterial(m);
-				RenderManager::renderManager.getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
+				Game::game.getRendMgr()->getDriver()->setMaterial(m);
+				Game::game.getRendMgr()->getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
 				if (!steerComp->path.ended())
 					steerComp->prevTargetDir = (steerComp->path.getCurrentNode() - transComp->worldPosition).normalize() * 10;
 				vector3df velToTarget = steerComp->prevTargetDir;
 				vector3df vel = steerComp->velocity;
 				vel = vel.normalize() * 10;
 				
-				RenderManager::renderManager.getDriver()->draw3DLine(transComp->worldPosition+vector3df(0,5,0), transComp->worldPosition+vector3df(0,5,0)+velToTarget, SColor(255,0,255,0));
-				RenderManager::renderManager.getDriver()->draw3DLine(transComp->worldPosition+vector3df(0,4,0), transComp->worldPosition+vector3df(0,4,0)+vel, SColor(255,0,0,255));
+				Game::game.getRendMgr()->getDriver()->draw3DLine(transComp->worldPosition+vector3df(0,5,0), transComp->worldPosition+vector3df(0,5,0)+velToTarget, SColor(255,0,255,0));
+				Game::game.getRendMgr()->getDriver()->draw3DLine(transComp->worldPosition+vector3df(0,4,0), transComp->worldPosition+vector3df(0,4,0)+vel, SColor(255,0,0,255));
 			}
 			
 			
 			if (DebugValues::DRAW_PATHS) {
 				m.Lighting = false;
 				m.Thickness = 2.0f;
-				RenderManager::renderManager.getDriver()->setMaterial(m);
-				RenderManager::renderManager.getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
+				Game::game.getRendMgr()->getDriver()->setMaterial(m);
+				Game::game.getRendMgr()->getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
 				
 				vector3df node, prevNode;
 				for (int i = 1; i < steerComp->path.getWaypoints().size(); i++) {
 					node = steerComp->path.getWaypoints()[i];
 					prevNode = steerComp->path.getWaypoints()[i-1];
-					RenderManager::renderManager.getDriver()->draw3DLine(prevNode+vector3df(0,1,0), node+vector3df(0,1,0), SColor(80,255,255,255));	
-					RenderManager::renderManager.getDriver()->draw3DLine(prevNode+vector3df(0,1,0), prevNode+vector3df(0,5,0), SColor(130,255,255,0));	
+					Game::game.getRendMgr()->getDriver()->draw3DLine(prevNode+vector3df(0,1,0), node+vector3df(0,1,0), SColor(80,255,255,255));	
+					Game::game.getRendMgr()->getDriver()->draw3DLine(prevNode+vector3df(0,1,0), prevNode+vector3df(0,5,0), SColor(130,255,255,0));	
 				}
-				RenderManager::renderManager.getDriver()->draw3DLine(node+vector3df(0,1,0), node+vector3df(0,5,0), SColor(130,255,255,0));	
+				Game::game.getRendMgr()->getDriver()->draw3DLine(node+vector3df(0,1,0), node+vector3df(0,5,0), SColor(130,255,255,0));	
 			}
 		}
 	}
@@ -161,8 +162,8 @@ void SteeringSystem::draw ( float timestep ) {
 		SMaterial m;
 		m.Lighting = false;
 		m.Thickness = 2.0f;
-		RenderManager::renderManager.getDriver()->setMaterial(m);
-		RenderManager::renderManager.getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
+		Game::game.getRendMgr()->getDriver()->setMaterial(m);
+		Game::game.getRendMgr()->getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
 		
 		Quadtree collisionTree(0, rectf(0, 0, 480, 480));
 		buildQuadtree(objects, collisionTree);
@@ -212,7 +213,7 @@ void SteeringSystem::avoid ( vector3df avoidPos, SteeringComponent* steerComp, T
  */
 void SteeringSystem::buildQuadtree ( std::list< int > objects, Quadtree& root ) {
 	// Get the object manager
-	ObjectManager* mgr = &ObjectManager::manager;
+	ObjectManager* mgr = Game::game.getObjMgr();
 	
 	root.clear();
 

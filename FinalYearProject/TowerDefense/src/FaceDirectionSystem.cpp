@@ -2,10 +2,11 @@
 #include <ObjectManager.h>
 #include <FaceDirectionComponent.h>
 #include <list>
+#include <Game.h>
 
 void FaceDirectionSystem::update ( float timestep ) {
     // Get the object manager
-	ObjectManager* mgr = &ObjectManager::manager;
+	ObjectManager* mgr = Game::game.getObjMgr();
 	
 	// Get objects with FaceDirectionComponents
 	std::list<int> objects = mgr->getObjectsWithComponent("FaceDirectionComponent");

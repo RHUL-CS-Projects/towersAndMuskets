@@ -7,6 +7,7 @@
 #include <list>
 #include <TransformComponent.h>
 #include <SelectableComponent.h>
+#include <Game.h>
 
 using namespace sf;
 using namespace irr;
@@ -18,7 +19,7 @@ void SelectionSystem::update ( float timestep ) {
 	EventReceiver::SMouseState mouseState = *EventReceiver::getMouseState();
 
 	// Calculate click point on terrain
-	ISceneCollisionManager* colmgr = RenderManager::renderManager.getSceneManager()->getSceneCollisionManager();
+	ISceneCollisionManager* colmgr = Game::game.getRendMgr()->getSceneManager()->getSceneCollisionManager();
 	line3df ray = colmgr->getRayFromScreenCoordinates(EventReceiver::getMouseState()->position);
 	
 	vector3df point;
@@ -45,7 +46,7 @@ void SelectionSystem::update ( float timestep ) {
 			dragging = false;
 		
 			// Calculate click point on terrain
-			ISceneCollisionManager* colmgr = RenderManager::renderManager.getSceneManager()->getSceneCollisionManager();
+			ISceneCollisionManager* colmgr = Game::game.getRendMgr()->getSceneManager()->getSceneCollisionManager();
 			line3df ray = colmgr->getRayFromScreenCoordinates(EventReceiver::getMouseState()->position);
 			
 			vector3df point;
@@ -54,8 +55,8 @@ void SelectionSystem::update ( float timestep ) {
 			
 			int hitID = -1;
 			if ((hitID = colmgr->getSceneNodeFromRayBB(ray)->getID()) > -1) {	
-				if (ObjectManager::manager.getObjectComponent<SelectableComponent>(hitID, "SelectableComponent") != nullptr) {	
-					ObjectManager::manager.getObjectComponent<SelectableComponent>(hitID, "SelectableComponent")->selected = true;
+				if (Game::game.getObjMgr()->getObjectComponent<SelectableComponent>(hitID, "SelectableComponent") != nullptr) {	
+					Game::game.getObjMgr()->getObjectComponent<SelectableComponent>(hitID, "SelectableComponent")->selected = true;
 				}
 			}
 			
@@ -77,13 +78,13 @@ void SelectionSystem::draw ( float timestep ) {
 		SMaterial m;
 		m.Lighting = false;
 		m.Thickness = 1.0f;
-		RenderManager::renderManager.getDriver()->setMaterial(m);
-		RenderManager::renderManager.getDriver()->draw2DRectangleOutline(drawRect, SColor(150,255,255,255));
+		Game::game.getRendMgr()->getDriver()->setMaterial(m);
+		Game::game.getRendMgr()->getDriver()->draw2DRectangleOutline(drawRect, SColor(150,255,255,255));
 	}
 }
 
 void SelectionSystem::selectObjects() {
-	ObjectManager* mgr = &ObjectManager::manager;
+	ObjectManager* mgr = Game::game.getObjMgr();
 	
 	// Get all selectable objects
 	std::list<int> objects = mgr->getObjectsWithComponent("SelectableComponent");
@@ -115,13 +116,13 @@ void SelectionSystem::selectObjects() {
 
 vector2di SelectionSystem::worldToScreen ( vector3df point ) {
 	
-	matrix4 viewMatrix = RenderManager::renderManager.getSceneManager()->getActiveCamera()->getViewMatrix();
-	matrix4 projMatrix = RenderManager::renderManager.getSceneManager()->getActiveCamera()->getProjectionMatrix();
+	matrix4 viewMatrix = Game::game.getRendMgr()->getSceneManager()->getActiveCamera()->getViewMatrix();
+	matrix4 projMatrix = Game::game.getRendMgr()->getSceneManager()->getActiveCamera()->getProjectionMatrix();
 	
-	matrix4 worldMatrix = RenderManager::renderManager.getDriver()->getTransform(video::ETS_WORLD);
+	matrix4 worldMatrix = Game::game.getRendMgr()->getDriver()->getTransform(video::ETS_WORLD);
 	
-	u32 width = RenderManager::renderManager.getDriver()->getScreenSize().Width;
-	u32 height = RenderManager::renderManager.getDriver()->getScreenSize().Height;
+	u32 width = Game::game.getRendMgr()->getDriver()->getScreenSize().Width;
+	u32 height = Game::game.getRendMgr()->getDriver()->getScreenSize().Height;
 	
 	matrix4 viewProjMatrix = projMatrix * viewMatrix;
 	

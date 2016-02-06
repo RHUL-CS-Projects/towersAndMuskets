@@ -127,7 +127,3 @@ ObjectManager* Game::getObjMgr() {
 RenderManager* Game::getRendMgr() {
 	return &rendManager;
 }
-
-IGUIEnvironment* Game::getGUIEnv() {
-	return guienv;
-}
