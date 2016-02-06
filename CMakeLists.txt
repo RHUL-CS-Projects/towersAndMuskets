@@ -46,6 +46,7 @@ set (SOURCES
   src/PathFinder.cpp
   src/Game.cpp
   src/StateMainMenu.cpp
+  src/GuiElement.cpp 
 )
 
 #set(BUILD_SHARED_LIBS OFF)
