@@ -37,17 +37,17 @@ void StateMainMenu::transitionOut() {
 
 void StateMainMenu::onNotify ( int id, int eventID ) {
     if (eventID == mouseOver) {
-		sndRolloverSound.play();
+		sndRolloverSound->play();
 	} else {
 		switch (id) {
 		case btnPlay:
 			//cout << "play clicked" << endl;
-			sndClickSound.play();
+			sndClickSound->play();
 			Game::game.pushState(new StatePlaying());
 			break;
 		case btnOptions:
 			//cout << "options clicked" << endl;
-			sndClickSound.play();
+			sndClickSound->play();
 			break;
 		case btnQuit:
 			//cout << "quit clicked" << endl;

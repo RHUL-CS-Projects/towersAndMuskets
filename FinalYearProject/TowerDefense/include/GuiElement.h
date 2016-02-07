@@ -16,8 +16,8 @@ protected:
 	std::string text;
 	std::string fontpath;
 	int id;
-	bool mouseClicked = false;
-	bool mouseOver = false;
+	bool mouseClicked;
+	bool mouseOver;
 	
 public:
 	GuiElement(int x, int y, int width, int height, std::string text, std::string fontpath, irr::video::SColor col, int id = 0);

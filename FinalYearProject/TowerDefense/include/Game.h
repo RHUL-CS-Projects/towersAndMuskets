@@ -7,6 +7,7 @@
 #include <irrlicht/irrlicht.h>
 #include <list>
 #include <GameState.h>
+#include <GameResources.h>
 
 class Game {
 private:
@@ -26,6 +27,7 @@ public:
 	Game() {}
 	
 	static Game game;
+	GameResources resources;
 	
 	void init();
 	void run();
@@ -33,6 +35,7 @@ public:
 	
 	void pushState(GameState* state);
 	void popState();
+	GameState* currentState();
 	
 	ObjectManager* getObjMgr();
 	RenderManager* getRendMgr();

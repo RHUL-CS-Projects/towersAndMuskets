@@ -16,9 +16,10 @@ public:
 	/**
 	 * Initialises the object's speed and mass
 	 */
-	SteeringComponent(float maxSpeed, float mass) : GameComponent("SteeringComponent") {
+	SteeringComponent(float maxSpeed, float mass, float radius = 4) : GameComponent("SteeringComponent") {
 		this->maxSpeed = maxSpeed;
 		this->mass = mass;
+		this->radius = radius;
 	}
 	
 	// The path to be followed
@@ -28,7 +29,7 @@ public:
 	float maxSpeed;
 	
 	// Radius threshold for marking a path node as visited
-	float radius = 4;
+	float radius;
 	
 	// The object's mass used when calculating the turn rate
 	float mass;

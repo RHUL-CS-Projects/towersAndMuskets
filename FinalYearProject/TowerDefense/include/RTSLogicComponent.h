@@ -16,7 +16,7 @@ private:
 public:
 	RTSLogicComponent() : GameComponent("RTSLogicComponent") {}
 	
-	RTSLogicComponent(int team, int actionFrame, sf::Sound shoot, int shootDelay) : GameComponent("RTSLogicComponent") {
+	RTSLogicComponent(int team, int actionFrame, sf::Sound* shoot, int shootDelay) : GameComponent("RTSLogicComponent") {
 		teamID = team;
 		attackActionFrame = actionFrame;
 		shootSound = shoot;
@@ -30,7 +30,7 @@ public:
 	int attackTargetID = -1;
 	int teamID = -1;
 	int attackActionFrame;
-	sf::Sound shootSound;
+	sf::Sound* shootSound;
 	int shootDelay;
 	int shootCounter;
 };

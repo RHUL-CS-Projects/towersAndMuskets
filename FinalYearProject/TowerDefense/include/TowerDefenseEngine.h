@@ -15,19 +15,25 @@
 #include <GameComponent.h>
 #include <GameState.h>
 #include <HealthComponent.h>
+#include <InteractionMenu.h>
+#include <MapGenerator.h>
 #include <NodePath.h>
+#include <ObjectFactory.h>
 #include <ObjectManager.h>
+#include <ObjectPlacer.h>
 #include <PathMovementComponent.h>
 #include <PathMovementSystem.h>
 #include <RenderComponent.h>
 #include <RenderManager.h>
 #include <RenderSystem.h>
+#include <RTSCamera.h>
 #include <RTSLogicComponent.h>
 #include <RTSLogicSystem.h>
 #include <SelectableComponent.h>
 #include <SelectionSystem.h>
 #include <Server.h>
 #include <StateMainMenu.h>
+#include <StaticMeshComponent.h>
 #include <SteeringComponent.h>
 #include <TransformComponent.h>
 

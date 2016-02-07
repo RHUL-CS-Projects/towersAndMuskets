@@ -30,21 +30,29 @@ void RenderSystem::update ( float timestep ) {
 				continue;
 			
 			AnimatedMeshComponent* animComp = mgr->getObjectComponent<AnimatedMeshComponent>(i, "AnimatedMeshComponent");
+			StaticMeshComponent* meshComp = mgr->getObjectComponent<StaticMeshComponent>(i, "StaticMeshComponent");
 			TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
 			
 			// Check that each object has a transform and mesh
-			if (animComp == nullptr || transComp == nullptr)
+			if (transComp == nullptr || (meshComp == nullptr && animComp == nullptr))
 				continue;
 			
 			// Check all renderable objects have been added to scene
-			if (rendComp->sceneNode == nullptr) {
-				addSceneNode(rendComp, animComp, transComp, i);
+			if (rendComp->sceneNode == nullptr || rendComp->sceneNodeStatic == nullptr) {
 				
-				// Initialise the object's animation if it has an AnimatorComponent
-				AnimatorComponent* animatorComp = mgr->getObjectComponent<AnimatorComponent>(i, "AnimatorComponent");
+				if (animComp != nullptr && rendComp->sceneNode == nullptr)
+					addAnimatedSceneNode(rendComp, animComp, transComp, i);
 				
-				if (animatorComp != nullptr) {
-					animatorComp->setAnimation(animatorComp->currentAnimation, rendComp->sceneNode);
+				if (meshComp != nullptr && rendComp->sceneNodeStatic == nullptr)
+					addStaticSceneNode(rendComp, meshComp, transComp, i);
+				
+				if (animComp != nullptr) {
+					// Initialise the object's animation if it has an AnimatorComponent
+					AnimatorComponent* animatorComp = mgr->getObjectComponent<AnimatorComponent>(i, "AnimatorComponent");
+					
+					if (animatorComp != nullptr) {
+						animatorComp->setAnimation(animatorComp->currentAnimation, rendComp->sceneNode);
+					}
 				}
 			}
 			
@@ -71,33 +79,54 @@ void RenderSystem::update ( float timestep ) {
 				}
 				
 				selectComp->sceneNode->setVisible(selectComp->selected);
-				selectComp->sceneNode->setPosition(transComp->worldPosition + vector3df(0,0.01f,0));			
+				selectComp->sceneNode->setPosition(transComp->worldPosition + vector3df(0,0.2f,0));			
 			}
 			
 			// Check if the object has a facing direction
 			FaceDirectionComponent* dirComp = mgr->getObjectComponent<FaceDirectionComponent>(i, "FaceDirectionComponent");
 			vector3df facingDirection(0,0,0);
-			vector3df meshRot(animComp->meshRotOffX, animComp->meshRotOffY, animComp->meshRotOffZ);
+			vector3df meshRot(0,0,0);
+			
+			if (animComp != nullptr)
+				meshRot = vector3df(animComp->meshRotOffX, animComp->meshRotOffY, animComp->meshRotOffZ);
+			else if (meshComp != nullptr)
+				meshRot = vector3df(meshComp->meshRotOffX, meshComp->meshRotOffY, meshComp->meshRotOffZ);
 			
 			if (dirComp != nullptr) {
 				facingDirection = vector3df(0, dirComp->currentYRot, 0);
-				rendComp->sceneNode->setRotation(facingDirection + meshRot);
+				
+				if (rendComp->sceneNode != nullptr)
+					rendComp->sceneNode->setRotation(facingDirection + meshRot);
+				
+				if (rendComp->sceneNodeStatic != nullptr)
+					rendComp->sceneNodeStatic->setRotation(facingDirection + meshRot);
 			} else {
-				rendComp->sceneNode->setRotation(transComp->rotation + meshRot);
+				if (rendComp->sceneNode != nullptr)
+					rendComp->sceneNode->setRotation(transComp->rotation + meshRot);
+				
+				if (rendComp->sceneNodeStatic != nullptr)
+					rendComp->sceneNodeStatic->setRotation(transComp->rotation + meshRot);
 			}
 			
-			rendComp->sceneNode->setPosition(transComp->worldPosition);
-			rendComp->sceneNode->setScale(transComp->scale);
+			if (rendComp->sceneNode != nullptr) {
+				rendComp->sceneNode->setPosition(transComp->worldPosition);
+				rendComp->sceneNode->setScale(transComp->scale);
+			}
+			
+			
+			if (rendComp->sceneNodeStatic != nullptr) {
+				rendComp->sceneNodeStatic->setPosition(transComp->worldPosition);
+				rendComp->sceneNodeStatic->setScale(transComp->scale);
+			}
 		}	
 	}
 }
-
 
 void RenderSystem::draw ( float timestep ) {
 	Game::game.getRendMgr()->getSceneManager()->drawAll();
 }
 
-void RenderSystem::addSceneNode (RenderComponent* rendComp, AnimatedMeshComponent* animComp, TransformComponent* transComp, int id ) {
+void RenderSystem::addAnimatedSceneNode (RenderComponent* rendComp, AnimatedMeshComponent* animComp, TransformComponent* transComp, int id ) {
 	irr::video::IVideoDriver* driver = Game::game.getRendMgr()->getDriver();
 	irr::scene::ISceneManager* smgr = Game::game.getRendMgr()->getSceneManager();
 	
@@ -125,13 +154,34 @@ void RenderSystem::addSceneNode (RenderComponent* rendComp, AnimatedMeshComponen
 		animnode->setID(id);
 	}
 	
-	//terrain->setTriangleSelector(terrainSelector);
-	//terrain->setName("MainTerrain");
-	
 	rendComp->sceneNode = animnode;
 }
 
+void RenderSystem::addStaticSceneNode (RenderComponent* rendComp, StaticMeshComponent* meshComp, TransformComponent* transComp, int id ) {
+	irr::video::IVideoDriver* driver = Game::game.getRendMgr()->getDriver();
+	irr::scene::ISceneManager* smgr = Game::game.getRendMgr()->getSceneManager();
+	
+	IMeshSceneNode* meshnode = smgr->addMeshSceneNode(meshComp->mesh);
+	if (meshnode) {
+		meshnode->setMaterialFlag(video::EMF_LIGHTING, true);
+		meshnode->setMaterialFlag(video::EMF_GOURAUD_SHADING, true);
 
+		meshnode->setMaterialTexture(0, meshComp->texture);
+		meshnode->setPosition(transComp->worldPosition);
+		meshnode->setRotation(transComp->rotation);
+		meshnode->setScale(transComp->scale);
+		meshnode->getMaterial(0).SpecularColor = SColor(0,0,0,0);
+
+		meshnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
+		meshnode->addShadowVolumeSceneNode();
+		
+		ITriangleSelector* selector = smgr->createTriangleSelector(meshComp->mesh, meshnode);
+		meshnode->setTriangleSelector(selector);
+		meshnode->setID(id);
+	}
+	
+	rendComp->sceneNodeStatic = meshnode;
+}
 
 
 

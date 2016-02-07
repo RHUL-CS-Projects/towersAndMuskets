@@ -7,6 +7,7 @@
 #include <RenderComponent.h>
 #include <AnimatedMeshComponent.h>
 #include <TransformComponent.h>
+#include <StaticMeshComponent.h>
 
 /**
  * Uses an object's mesh and transform components to render it to
@@ -16,9 +17,14 @@
 class RenderSystem : public ComponentSystem {
 private:
 	/**
-	 * Adds a scene node to the scene manager for an object
+	 * Adds an animated scene node to the scene manager for an object
 	 */
-	void addSceneNode(RenderComponent* rendComp, AnimatedMeshComponent* animComp, TransformComponent* transComp, int id);
+	void addAnimatedSceneNode(RenderComponent* rendComp, AnimatedMeshComponent* animComp, TransformComponent* transComp, int id);
+	
+	/**
+	 * Adds an animated scene node to the scene manager for an object
+	 */
+	void addStaticSceneNode(RenderComponent* rendComp, StaticMeshComponent* meshComp, TransformComponent* transComp, int id);
 public:
 	RenderSystem() : ComponentSystem("RenderSystem") {}
 	

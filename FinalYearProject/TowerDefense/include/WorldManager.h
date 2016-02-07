@@ -24,6 +24,11 @@ private:
 	 * Gets the value of the grid at an x and y location
 	 */
 	int getGridXY(int x, int y);
+	
+	/**
+	 * Gets the height of the terrain at a given location
+	 */
+	float terrainHeight(float x, float y);
 public:
 	
 	// The width of the grid

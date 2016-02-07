@@ -87,6 +87,7 @@ void Game::run() {
 }
 
 void Game::dispose() {
+	resources.freeSounds();
 	device->drop();
 }
 
@@ -100,7 +101,7 @@ void Game::updateStates() {
 }
 
 void Game::renderStates() {
-	driver->beginScene(true, true, irr::video::SColor(255,159,200,214));
+	driver->beginScene(true, true, irr::video::SColor(255,0,0,0));
 	
 	for (GameState* state : stateStack) {
 		state->render(driver);
@@ -126,4 +127,8 @@ ObjectManager* Game::getObjMgr() {
 
 RenderManager* Game::getRendMgr() {
 	return &rendManager;
+}
+
+GameState* Game::currentState() {
+	return stateStack.front();
 }
