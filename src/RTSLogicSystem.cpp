@@ -183,8 +183,8 @@ void RTSLogicSystem::stateAttacking ( ObjectManager* mgr, int id, RTSLogicCompon
 		
 		if (animComp->currentAnimation == "SHOOT") {
 			if (rtsComp->shootCounter <= 0/* && floor(rendComp->sceneNode->getFrameNr()) == rendComp->sceneNode->getStartFrame() + rtsComp->attackActionFrame*/) {
-				rtsComp->shootSound.setPosition(transComp->worldPosition.X, transComp->worldPosition.Y, transComp->worldPosition.Z);
-				rtsComp->shootSound.play();
+				rtsComp->shootSound->setPosition(transComp->worldPosition.X, transComp->worldPosition.Y, transComp->worldPosition.Z);
+				rtsComp->shootSound->play();
 				rtsComp->shootCounter = rand() % rtsComp->shootDelay;
 
 				if (healthComp != nullptr)
@@ -258,14 +258,14 @@ void RTSLogicSystem::stateIdle ( ObjectManager* mgr, int id, RTSLogicComponent* 
 		// Get all objects with an RTSMovementComponent
 		std::list<int> objects = mgr->getObjectsWithComponent("RTSLogicComponent");
 		//std::list<int> objects;
-		//TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(id, "TransformComponent");
+		TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(id, "TransformComponent");
 		//root.getObjectsInRange(objects, transComp->worldPosition, 140);
 		
 		for (int i : objects) {
 			if (i == id) continue;
 			TransformComponent* otherTransComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
 			
-			//if (transComp->worldPosition.getDistanceFromSQ(otherTransComp->worldPosition) < 19600) {
+			if (transComp->worldPosition.getDistanceFromSQ(otherTransComp->worldPosition) < 19600) {
 				RTSLogicComponent* otherRTSComp = mgr->getObjectComponent<RTSLogicComponent>(i, "RTSLogicComponent");
 				
 				if (rtsComp->teamID == -1 || otherRTSComp == nullptr || rtsComp->teamID != otherRTSComp->teamID) {
@@ -275,7 +275,7 @@ void RTSLogicSystem::stateIdle ( ObjectManager* mgr, int id, RTSLogicComponent* 
 					
 					break;
 				}
-			//}
+			}
 		}
 	}
 	
@@ -399,14 +399,14 @@ void RTSLogicSystem::stateWalking ( ObjectManager* mgr, int id, RTSLogicComponen
 	// Get all objects with an RTSMovementComponent
 	std::list<int> objects = mgr->getObjectsWithComponent("RTSLogicComponent");
 	//std::list<int> objects;
-	//TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(id, "TransformComponent");
+	TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(id, "TransformComponent");
 	//root.getObjectsInRange(objects, transComp->worldPosition, 140);
 	
 	for (int i : objects) {
 		if (i == id) continue;
 		TransformComponent* otherTransComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
 		
-		//if (transComp->worldPosition.getDistanceFromSQ(otherTransComp->worldPosition) < 19600) {
+		if (transComp->worldPosition.getDistanceFromSQ(otherTransComp->worldPosition) < 19600) {
 			RTSLogicComponent* otherRTSComp = mgr->getObjectComponent<RTSLogicComponent>(i, "RTSLogicComponent");
 			
 			if (rtsComp->teamID == -1 || otherRTSComp == nullptr || rtsComp->teamID != otherRTSComp->teamID) {
@@ -416,7 +416,7 @@ void RTSLogicSystem::stateWalking ( ObjectManager* mgr, int id, RTSLogicComponen
 				
 				break;
 			}
-		//}
+		}
 	}
 	
 	RenderComponent* rendComp = mgr->getObjectComponent<RenderComponent>(id, "RenderComponent");

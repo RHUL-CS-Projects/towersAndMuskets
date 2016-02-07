@@ -120,23 +120,23 @@ void WorldManager::draw ( float timestep ) {
 			}
 			
 			Game::game.getRendMgr()->getDriver()->draw3DLine(
-			irr::core::vector3df(x*gridSize+offset, 0.1, y*gridSize+offset),
-			irr::core::vector3df(x*gridSize+gridSize-offset, 0.1, y*gridSize+offset),
+			irr::core::vector3df(x*gridSize+offset, terrainHeight(x*gridSize+offset, y*gridSize+offset) + 0.1, y*gridSize+offset),
+			irr::core::vector3df(x*gridSize+gridSize-offset, terrainHeight(x*gridSize+gridSize-offset, y*gridSize+offset) + 0.1, y*gridSize+offset),
 			col);
 
 			Game::game.getRendMgr()->getDriver()->draw3DLine(
-			irr::core::vector3df(x*gridSize+offset, 0.1, y*gridSize+offset),
-			irr::core::vector3df(x*gridSize+offset, 0.1, y*gridSize+gridSize-offset),
+			irr::core::vector3df(x*gridSize+offset, terrainHeight(x*gridSize+offset, y*gridSize+offset) + 0.1, y*gridSize+offset),
+			irr::core::vector3df(x*gridSize+offset, terrainHeight(x*gridSize+offset, y*gridSize+gridSize-offset) + 0.1, y*gridSize+gridSize-offset),
 			col);
 			
 			Game::game.getRendMgr()->getDriver()->draw3DLine(
-			irr::core::vector3df(x*gridSize+offset, 0.1, y*gridSize+gridSize-offset),
-			irr::core::vector3df(x*gridSize+gridSize-offset, 0.1, y*gridSize+gridSize-offset),
+			irr::core::vector3df(x*gridSize+offset, terrainHeight(x*gridSize+offset, y*gridSize+gridSize-offset) + 0.1, y*gridSize+gridSize-offset),
+			irr::core::vector3df(x*gridSize+gridSize-offset, terrainHeight(x*gridSize+gridSize-offset, y*gridSize+gridSize-offset) + 0.1, y*gridSize+gridSize-offset),
 			col);
 			
 			Game::game.getRendMgr()->getDriver()->draw3DLine(
-			irr::core::vector3df(x*gridSize+gridSize-offset, 0.1, y*gridSize+offset),
-			irr::core::vector3df(x*gridSize+gridSize-offset, 0.1, y*gridSize+gridSize-offset),
+			irr::core::vector3df(x*gridSize+gridSize-offset, terrainHeight(x*gridSize+gridSize-offset, y*gridSize+offset) + 0.1, y*gridSize+offset),
+			irr::core::vector3df(x*gridSize+gridSize-offset, terrainHeight(x*gridSize+gridSize-offset, y*gridSize+gridSize-offset) + 0.1, y*gridSize+gridSize-offset),
 			col);
 		}
 	}
@@ -148,5 +148,10 @@ void WorldManager::draw ( float timestep ) {
 void WorldManager::dropWorld() {
 	delete grid;
 }
+
+float WorldManager::terrainHeight ( float x, float y ) {
+	return ((irr::scene::ITerrainSceneNode*)Game::game.getRendMgr()->getSceneManager()->getSceneNodeFromName("MainTerrain"))->getHeight(x, y);
+}
+
 
 

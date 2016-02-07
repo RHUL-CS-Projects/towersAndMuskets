@@ -17,6 +17,7 @@ public:
 	bool visible;
 	
 	// The object's scene node
+	irr::scene::ISceneNode* sceneNodeStatic = nullptr;
 	irr::scene::IAnimatedMeshSceneNode* sceneNode = nullptr;
 
 	RenderComponent() : GameComponent("RenderComponent") {}

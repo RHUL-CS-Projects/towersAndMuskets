@@ -48,6 +48,11 @@ set (SOURCES
   src/StateMainMenu.cpp
   src/GuiElement.cpp 
   src/StatePlaying.cpp
+  src/RTSCamera.cpp
+  src/InteractionMenu.cpp
+  src/GameResources.cpp
+  src/MapGenerator.cpp
+  src/ObjectPlacer.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)

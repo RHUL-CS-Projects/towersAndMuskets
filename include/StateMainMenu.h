@@ -19,10 +19,8 @@ enum MENU_BUTTONS {
 class StateMainMenu : public GameState, public GuiObserver {
 private:
 	std::list<GuiElement*> guiElements;
-	sf::SoundBuffer bufRolloverSound;
-	sf::SoundBuffer bufClickSound;
-	sf::Sound sndRolloverSound;
-	sf::Sound sndClickSound;
+	sf::Sound* sndRolloverSound;
+	sf::Sound* sndClickSound;
 	irr::video::ITexture* backImage;
 	
 public:
@@ -38,20 +36,9 @@ public:
 		
 		filepath = RenderManager::resPath + "/materials/textures/menuImage.jpg";
 		backImage = Game::game.getRendMgr()->getDriver()->getTexture(irr::io::path(filepath.c_str()));
-		
-		if (!bufRolloverSound.loadFromFile("res/sounds/click.ogg")) {
-			std::cout << "Sound click.ogg not loaded" << std::endl;
-		} else {
-			sndRolloverSound.setBuffer(bufRolloverSound);
-			sndRolloverSound.setVolume(50);
-		}
-		
-		if (!bufClickSound.loadFromFile("res/sounds/click2.ogg")) {
-			std::cout << "Sound click.ogg not loaded" << std::endl;
-		} else {
-			sndClickSound.setBuffer(bufClickSound);
-			sndClickSound.setVolume(50);
-		}
+
+		sndRolloverSound = Game::game.resources.loadSound("click.ogg");
+		sndClickSound = Game::game.resources.loadSound("click2.ogg");
 	}
 	
 	virtual void update();
