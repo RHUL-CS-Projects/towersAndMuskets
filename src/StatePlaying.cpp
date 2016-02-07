@@ -21,6 +21,9 @@ MapGenerator mapGenerator;
 ObjectPlacer objectPlacer;
 
 StatePlaying::StatePlaying() {
+	transparentDraw = false;
+	transparentUpdate = false;
+	
 	ISceneManager* smgr = Game::game.getRendMgr()->getSceneManager();
 	
 	smgr->setShadowColor(video::SColor(80,0,0,0));
@@ -43,7 +46,6 @@ StatePlaying::StatePlaying() {
 	sndGunshot1.setPosition(128, 0, 128);
 	
 	ObjectManager* objmgr = Game::game.getObjMgr();
-	
 	// Add soldiers
 	/*for (int i = 0; i < 5; i++) {
 		for (int j = 0; j < 5; j++) {

@@ -139,6 +139,11 @@ public:
 	 * Prints a list of all objects with a specific component to the terminal
 	 */
 	void printObjectsWithComponent(std::string componentName);
+	
+	/**
+	 * Destroys all game objects and their components
+	 */
+	void clearObjects();
 };
 
 #endif

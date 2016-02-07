@@ -103,22 +103,35 @@ void Game::updateStates() {
 void Game::renderStates() {
 	driver->beginScene(true, true, irr::video::SColor(255,0,0,0));
 	
-	for (GameState* state : stateStack) {
-		state->render(driver);
-		
-		if (!state->transparentDraw)
+	int bottom = 0;
+	for (int i = 0; i < stateStack.size(); i++) {
+		if (stateStack.at(i)->transparentDraw)
+			bottom++;
+		else
 			break;
+	}
+	
+	for (int i = bottom; i >= 0; i--) {
+		stateStack.at(i)->render(driver);
 	}
 	
 	driver->endScene();
 }
 
 void Game::pushState ( GameState* state ) {
-	stateStack.push_front(state);
+	stateStack.insert(stateStack.begin(), state);
 }
 
 void Game::popState() {
-	stateStack.pop_front();
+	GameState* current = currentState();
+	stateStack.erase(stateStack.begin());
+	delete current;
+}
+
+void Game::popStates ( int num ) {
+	for (int i = 0; i < num; i++) {
+		popState();
+	}
 }
 
 ObjectManager* Game::getObjMgr() {

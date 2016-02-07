@@ -5,6 +5,7 @@
 #include <iostream>
 #include <Game.h>
 #include <StatePlaying.h>
+#include <StatePauseMenu.h>
 
 using namespace irr;
 using namespace core;
@@ -25,6 +26,8 @@ void InteractionMenu::init ( int height, GameState* state ) {
 	guiElements.push_back(new GuiElement(40, top + 80, 100, 20, "Rock", filepath, SColor(50,255,255,255), 2));
 	guiElements.push_back(new GuiElement(160, top + 20, 100, 20, "EnemyUnit", filepath, SColor(50,255,255,255), 3));
 	guiElements.push_back(new GuiElement(160, top + 50, 100, 20, "PlayerUnit", filepath, SColor(50,255,255,255), 4));
+	
+	guiElements.push_back(new GuiElement(width - 130, top + 50, 100, 20, "Menu", filepath, SColor(50,255,255,255), 5));
 	
 	for (GuiElement* e : guiElements) {
 		e->registerObserver(this);
@@ -55,6 +58,9 @@ void InteractionMenu::onNotify ( int id, int eventID ) {
 			break;
 		case 4:
 			((StatePlaying*)parentState)->message(SET_PLACE_OBJECT_PLAYER_UNIT);
+			break;
+		case 5:
+			Game::game.pushState(new StatePauseMenu());
 			break;
 		}
 		sndClickSound->play();
