@@ -5,7 +5,7 @@
 #include <WorldManager.h>
 #include <RenderManager.h>
 #include <irrlicht/irrlicht.h>
-#include <list>
+#include <vector>
 #include <GameState.h>
 #include <GameResources.h>
 
@@ -19,7 +19,7 @@ private:
 	irr::scene::ISceneManager* smgr;
 	irr::gui::IGUIEnvironment* guienv;
 	
-	std::list<GameState*> stateStack;
+	std::vector<GameState*> stateStack;
 	
 	void updateStates();
 	void renderStates();
@@ -35,6 +35,7 @@ public:
 	
 	void pushState(GameState* state);
 	void popState();
+	void popStates(int num);
 	GameState* currentState();
 	
 	ObjectManager* getObjMgr();

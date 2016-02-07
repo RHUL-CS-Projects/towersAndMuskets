@@ -19,6 +19,13 @@ void MapGenerator::generateMap() {
 				placeTree(vector2df(x*2,y*2), smgr);
 		}
 	}
+	
+	for (int x = 0; x < 120; x++) {
+		for (int y = 0; y < 120; y++) {
+			if (rand() % 1000 == 0)
+				placeRock(vector2df(x*4,y*4), smgr);
+		}
+	}
 }
 
 void MapGenerator::placeTree ( vector2df pos, ISceneManager* smgr ) {
@@ -29,6 +36,16 @@ void MapGenerator::placeTree ( vector2df pos, ISceneManager* smgr ) {
 		yPos = terrain->getHeight(pos.X, pos.Y);
 	
 	ObjectFactory::addTree(vector3df(pos.X, yPos, pos.Y));
+}
+
+void MapGenerator::placeRock ( vector2df pos, ISceneManager* smgr ) {
+	ITerrainSceneNode* terrain = (ITerrainSceneNode*)smgr->getSceneNodeFromName("MainTerrain");
+	int yPos = 0;
+	
+	if (terrain != nullptr)
+		yPos = terrain->getHeight(pos.X, pos.Y);
+	
+	ObjectFactory::addRock(vector3df(pos.X, yPos, pos.Y));
 }
 
 void MapGenerator::addTerrain ( ISceneManager* smgr ) {

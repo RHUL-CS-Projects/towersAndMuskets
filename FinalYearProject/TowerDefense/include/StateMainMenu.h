@@ -39,6 +39,9 @@ public:
 
 		sndRolloverSound = Game::game.resources.loadSound("click.ogg");
 		sndClickSound = Game::game.resources.loadSound("click2.ogg");
+		
+		transparentDraw = false;
+		transparentUpdate = false;
 	}
 	
 	virtual void update();

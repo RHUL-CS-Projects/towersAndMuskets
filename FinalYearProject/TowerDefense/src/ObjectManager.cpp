@@ -268,7 +268,13 @@ void ObjectManager::printObjectsWithComponent ( std::string componentName ) {
 	cout << endl << endl;
 }
 
-
+/**
+ * Destroys all game objects and their components
+ */
+void ObjectManager::clearObjects() {
+	objectComponents->clear();
+	componentObjects.clear();
+}
 
 
 

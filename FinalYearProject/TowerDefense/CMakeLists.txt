@@ -53,6 +53,7 @@ set (SOURCES
   src/GameResources.cpp
   src/MapGenerator.cpp
   src/ObjectPlacer.cpp
+  src/StatePauseMenu.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)
