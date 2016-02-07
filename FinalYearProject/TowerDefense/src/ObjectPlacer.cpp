@@ -25,6 +25,21 @@ void ObjectPlacer::update() {
 	}
 	
 	sceneNode->setPosition(terrainPoint);
+	sceneNode->setRotation(vector3df(-90, 0, 0));
+	
+	if (EventReceiver::getMouseState()->leftPressed && !mousePressed && currentType != nullObject &&
+		EventReceiver::getMouseState()->position.Y < Game::game.getRendMgr()->getDriver()->getScreenSize().Height - 128) {
+		mousePressed = true;
+		place();
+	} 
+	
+	if (!EventReceiver::getMouseState()->leftPressed) {
+		mousePressed = false;
+	}
+	
+	if (EventReceiver::getMouseState()->rightPressed) {
+		setObjectType(nullObject);
+	}
 }
 
 void ObjectPlacer::setObjectType ( OBJECT_TYPES type ) {
@@ -32,7 +47,7 @@ void ObjectPlacer::setObjectType ( OBJECT_TYPES type ) {
 	
 	switch (currentType) {
 	case Tower:
-		colWidth = 2; colHeight = 2;
+		colWidth = 4; colHeight = 4;
 		setModelData("tower2.x", "TowerTexture.png");
 		sceneNode->setVisible(true);
 		addObject = &ObjectFactory::addTower;
@@ -68,7 +83,12 @@ void ObjectPlacer::setObjectType ( OBJECT_TYPES type ) {
 }
 
 bool ObjectPlacer::checkPlaceable ( vector3df pos ) {
-
+	if (colHeight == 0 || colWidth == 0)
+		return true;
+	
+	WorldManager* world = Game::game.getObjMgr()->worldManager;
+	
+	return !world->checkColliding(rectf(pos.X - colWidth / 2.0f, pos.Z - colHeight / 2.0f, pos.X + colWidth / 2.0f, pos.Z + colHeight / 2.0f));
 }
 
 void ObjectPlacer::render ( video::IVideoDriver* driver ) {
@@ -103,6 +123,16 @@ void ObjectPlacer::setModelData ( std::string meshName, std::string textureName 
 	sceneNode->setVisible(false);
 }
 
+void ObjectPlacer::place() {
+	if (checkPlaceable(terrainPoint)) {
+		WorldManager* world = Game::game.getObjMgr()->worldManager;
+	
+		if (colWidth != 0 && colHeight != 0)
+			world->setPassable(rectf(terrainPoint.X - colWidth / 2, terrainPoint.Z - colHeight / 2, terrainPoint.X + colWidth / 2, terrainPoint.Z + colHeight / 2), false);
+		
+		addObject(terrainPoint);
+	}
+}
 
 
 

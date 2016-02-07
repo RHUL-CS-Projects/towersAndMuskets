@@ -102,6 +102,7 @@ public:
 		
 		objmgr->attachComponent(id, animComp);
 		
+		objmgr->attachComponent(id, new SelectableComponent());
 		objmgr->attachComponent(id, new RenderComponent(true));
 		objmgr->attachComponent(id, new FaceDirectionComponent(0, 0.08f));
 		objmgr->attachComponent(id, new RTSLogicComponent(0, 1, Game::game.resources.loadSound("musketshot.ogg"), 60));

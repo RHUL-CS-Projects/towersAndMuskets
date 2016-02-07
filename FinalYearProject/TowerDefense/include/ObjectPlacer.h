@@ -20,6 +20,7 @@ class ObjectPlacer {
 	float colWidth = 0;
 	float colHeight = 0;
 	
+	bool mousePressed = false;
 	bool placeable = false;
 	irr::core::vector3df terrainPoint;
 	
@@ -28,6 +29,7 @@ class ObjectPlacer {
 	
 	bool checkPlaceable(irr::core::vector3df pos);
 	void setModelData(std::string meshName, std::string textureName);
+	void place();
 public:
 	void update();
 	void render(irr::video::IVideoDriver* driver);

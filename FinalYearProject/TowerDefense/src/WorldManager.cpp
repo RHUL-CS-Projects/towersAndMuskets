@@ -29,8 +29,8 @@ void WorldManager::setPassable ( rectf bounds, bool passable ) {
 	int topLeftX = (int)floor(bounds.UpperLeftCorner.X/gridSize);
 	int topLeftY = (int)floor(bounds.UpperLeftCorner.Y/gridSize);
 	
-	int bottomRightX = (int)floor(bounds.LowerRightCorner.X/gridSize);
-	int bottomRightY = (int)floor(bounds.LowerRightCorner.Y/gridSize);
+	int bottomRightX = (int)ceil(bounds.LowerRightCorner.X/gridSize);
+	int bottomRightY = (int)ceil(bounds.LowerRightCorner.Y/gridSize);
 	
 	topLeftX = clamp<int>(topLeftX, 0, gridWidth-1);
 	topLeftY = clamp<int>(topLeftY, 0, gridHeight-1);
