@@ -12,6 +12,7 @@ void StatePauseMenu::render ( irr::video::IVideoDriver* driver ) {
 	int right = Game::game.getRendMgr()->getDriver()->getScreenSize().Width;
 	
 	driver->draw2DRectangle(SColor(100, 0, 0, 0), recti(vector2di(0,0), vector2di(right,bottom)));
+	driver->draw2DRectangle(SColor(255, 90, 70, 60), recti(vector2di(right/2 - 120, bottom/2 - 40), vector2di(right/2 + 120, bottom/2 + 70)));
 	
 	for (GuiElement* e : guiElements) {
 		e->render(driver);

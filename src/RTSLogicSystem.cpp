@@ -184,6 +184,10 @@ void RTSLogicSystem::stateAttacking ( ObjectManager* mgr, int id, RTSLogicCompon
 		if (animComp->currentAnimation == "SHOOT") {
 			if (rtsComp->shootCounter <= 0/* && floor(rendComp->sceneNode->getFrameNr()) == rendComp->sceneNode->getStartFrame() + rtsComp->attackActionFrame*/) {
 				rtsComp->shootSound->setPosition(transComp->worldPosition.X, transComp->worldPosition.Y, transComp->worldPosition.Z);
+				
+				rtsComp->shootSound->setRelativeToListener(false);
+				rtsComp->shootSound->setAttenuation(0.1f);
+				rtsComp->shootSound->setVolume(50);
 				rtsComp->shootSound->play();
 				rtsComp->shootCounter = rand() % rtsComp->shootDelay;
 
