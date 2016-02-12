@@ -55,7 +55,8 @@ void Game::run() {
 		while (currentTime >= nextTick && loops < maxFrameSkip) {
 			
 			// Update game
-			updateStates();
+			if (stateStack.size() > 0)
+				updateStates();
 			
 			nextTick += tickTime;
 			loops++;
@@ -65,7 +66,8 @@ void Game::run() {
 		//objManager.drawSystems(0);
 		
 		// Render game
-		renderStates();
+		if (stateStack.size() > 0)
+			renderStates();
 		frameCounter++;
 
 		if (currentTime - updateTime >= 1000000.0) {

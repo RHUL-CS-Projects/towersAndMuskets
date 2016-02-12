@@ -44,6 +44,13 @@ public:
 		transparentUpdate = false;
 	}
 	
+	~StateMainMenu() {
+		while (guiElements.size() > 0) {
+			delete guiElements.front();
+			guiElements.pop_front();
+		}
+	}
+	
 	virtual void update();
 	virtual void render(irr::video::IVideoDriver* driver);
 	virtual void transitionIn();
