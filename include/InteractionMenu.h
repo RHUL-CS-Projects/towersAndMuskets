@@ -19,6 +19,13 @@ private:
 public:
 	InteractionMenu();
 	
+	~InteractionMenu() {
+		while (guiElements.size() > 0) {
+			delete guiElements.front();
+			guiElements.pop_front();
+		}
+	}
+	
 	void init(int height, GameState* state);
 	void update();
 	void render(irr::video::IVideoDriver* driver);

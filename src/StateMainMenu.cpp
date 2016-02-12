@@ -41,8 +41,7 @@ void StateMainMenu::onNotify ( int id, int eventID ) {
 	} else {
 		switch (id) {
 		case btnPlay:
-			//cout << "play clicked" << endl;
-			sndClickSound->play();
+			sndClickSound->play();		
 			Game::game.pushState(new StatePlaying());
 			break;
 		case btnOptions:

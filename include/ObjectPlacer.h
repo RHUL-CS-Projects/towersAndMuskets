@@ -31,6 +31,7 @@ class ObjectPlacer {
 	void setModelData(std::string meshName, std::string textureName);
 	void place();
 public:
+	void init();
 	void update();
 	void render(irr::video::IVideoDriver* driver);
 	void setObjectType(OBJECT_TYPES type);

@@ -4,6 +4,7 @@
 #include <GameState.h>
 #include <TowerDefenseEngine.h>
 #include <string>
+#include <sfml/SFML/Audio.hpp>
 
 enum MESSAGE_TYPES {
 	SET_PLACE_OBJECT_TOWER,
@@ -15,10 +16,17 @@ enum MESSAGE_TYPES {
 
 class StatePlaying : public GameState {
 private:
+	sf::SoundBuffer bufGunshot1;
+	sf::Sound sndGunshot1;
+
+	RTSCamera camera;
+	InteractionMenu interactionMenu;
+	MapGenerator mapGenerator;
+	ObjectPlacer objectPlacer;
 	
 public:
 	StatePlaying ();
-
+	
 	virtual void update();
 	virtual void render(irr::video::IVideoDriver* driver);
 	virtual void transitionIn();

@@ -9,6 +9,10 @@ using namespace core;
 using namespace scene;
 using namespace video;
 
+void ObjectPlacer::init() {
+	sceneNode = nullptr;
+}
+
 void ObjectPlacer::update() {
 	//Get mouse position on terrain
 	ISceneCollisionManager* colmgr = Game::game.getRendMgr()->getSceneManager()->getSceneCollisionManager();
