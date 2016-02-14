@@ -10,7 +10,10 @@ private:
 	float targetCamHeight;
 	float camX;
 	float camZ;
+	float targetCamX;
+	float targetCamZ;
 	float camRotY;
+	float targetCamRotY;
 	float camAngleXZ;
 	irr::scene::ICameraSceneNode* camera;
 

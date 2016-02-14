@@ -3,6 +3,7 @@
 
 #include <irrlicht/irrlicht.h>
 #include <string>
+#include <vector>
 
 enum OBJECT_TYPES {
 	nullObject,
@@ -10,7 +11,8 @@ enum OBJECT_TYPES {
 	Rock,
 	Tree,
 	EnemyUnit,
-	PlayerUnit
+	PlayerUnit,
+	PlayerCannon
 };
 
 class ObjectPlacer {
@@ -22,6 +24,7 @@ class ObjectPlacer {
 	
 	bool mousePressed = false;
 	bool placeable = false;
+	bool snap = false;
 	irr::core::vector3df terrainPoint;
 	
 	// Pointer to a function in the object factory
@@ -29,6 +32,7 @@ class ObjectPlacer {
 	
 	bool checkPlaceable(irr::core::vector3df pos);
 	void setModelData(std::string meshName, std::string textureName);
+	void setModelData(std::string meshName, std::vector<std::string> textureNames);
 	void place();
 public:
 	void init();

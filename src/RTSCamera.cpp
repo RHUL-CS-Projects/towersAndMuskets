@@ -13,8 +13,11 @@ RTSCamera::RTSCamera() {
 	targetCamHeight = 100;
 	camX = 100;
 	camZ = 100;
+	targetCamX = 100;
+	targetCamZ = 100;
 	camRotY = 45;
-	camAngleXZ = 1;
+	targetCamRotY = 45;
+	camAngleXZ = 1.2f;
 }
 
 void RTSCamera::addToScene() {
@@ -31,42 +34,43 @@ void RTSCamera::addToScene() {
 	projMatrix.buildProjectionMatrixPerspectiveFovLH(1.250f, 1280.0f/720.0f, 1, 10000.0f);
 	camera->setProjectionMatrix(projMatrix);
 }
+
 void RTSCamera::update() {
 	if (Game::game.getRendMgr()->getDevice()->isWindowActive()) {
 		// Camera controls
 		if (Keyboard::isKeyPressed(Keyboard::W)) {
-			camX += cos(camRotY);
-			camZ += sin(camRotY);
+			targetCamX += cos(camRotY) * 2;
+			targetCamZ += sin(camRotY) * 2;
 		}
 		
 		if (Keyboard::isKeyPressed(Keyboard::S)) {
-			camX -= cos(camRotY);
-			camZ -= sin(camRotY);
+			targetCamX -= cos(camRotY) * 2;
+			targetCamZ -= sin(camRotY) * 2;
 		}
 		
 		if (Keyboard::isKeyPressed(Keyboard::A)) {
-			camX += cos(camRotY + (90 * (PI/180))); 
-			camZ += sin(camRotY + (90 * (PI/180)));
+			targetCamX += cos(camRotY + (90 * (PI/180))) * 2; 
+			targetCamZ += sin(camRotY + (90 * (PI/180))) * 2;
 		}
 		
 		if (Keyboard::isKeyPressed(Keyboard::D)) {
-			camX += cos(camRotY - (90 * (PI/180))); 
-			camZ += sin(camRotY - (90 * (PI/180)));
+			targetCamX += cos(camRotY - (90 * (PI/180))) * 2; 
+			targetCamZ += sin(camRotY - (90 * (PI/180))) * 2;
 		}
 		
 		if (Keyboard::isKeyPressed(Keyboard::Q)) {
-			camRotY += 0.05f;
+			targetCamRotY += 0.05f;
 		}
 		
 		if (Keyboard::isKeyPressed(Keyboard::E)) {
-			camRotY -= 0.05f;
+			targetCamRotY -= 0.05f;
 		}
 	}
 	
 	if (EventReceiver::getMouseState()->wheelDelta < 0) {
 		EventReceiver::getMouseState()->wheelDelta = 0;
 		targetCamHeight += 10;
-		targetCamHeight = (targetCamHeight > 120) ? 120 : targetCamHeight;
+		targetCamHeight = (targetCamHeight > 200) ? 200 : targetCamHeight;
 	}
 	
 	if (EventReceiver::getMouseState()->wheelDelta > 0) {
@@ -76,9 +80,12 @@ void RTSCamera::update() {
 	}
 	
 	cameraHeight = cameraHeight + (targetCamHeight - cameraHeight) * 0.2f;
+	camRotY = camRotY + (targetCamRotY - camRotY) * 0.2f;
+	camX = camX + (targetCamX - camX) * 0.2f;
+	camZ = camZ + (targetCamZ - camZ) * 0.2f;
 	
 	camera->setPosition(vector3df(camX, cameraHeight, camZ));
-	camera->setTarget(vector3df(camX + cos(camRotY), cameraHeight - sin(camAngleXZ), camZ + sin(camRotY)));
+	camera->setTarget(vector3df(camX + cos(camRotY), cameraHeight - camAngleXZ, camZ + sin(camRotY)));
 	
 	Listener::setPosition(camX, cameraHeight, camZ);
 	vector3df lookvec = (camera->getPosition() - camera->getTarget()).normalize();

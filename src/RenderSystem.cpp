@@ -134,8 +134,18 @@ void RenderSystem::addAnimatedSceneNode (RenderComponent* rendComp, AnimatedMesh
 	if (animnode) {
 		animnode->setMaterialFlag(video::EMF_LIGHTING, true);
 		animnode->setMaterialFlag(video::EMF_GOURAUD_SHADING, true);
-
-		animnode->setMaterialTexture(0, animComp->texture);
+		
+		if (animComp->textures.size() == 1) {
+			animnode->setMaterialTexture(0, animComp->textures[0]); 
+		} else {
+			int layer = 0;
+			for (ITexture* texture : animComp->textures) {
+				//animnode->setMaterialTexture(layer, texture);
+				animnode->getMaterial(layer).setTexture(0, texture);
+				layer++;
+			}
+		}
+		
 		animnode->setPosition(transComp->worldPosition);
 		animnode->setRotation(transComp->rotation);
 		animnode->setScale(transComp->scale);
@@ -166,7 +176,17 @@ void RenderSystem::addStaticSceneNode (RenderComponent* rendComp, StaticMeshComp
 		meshnode->setMaterialFlag(video::EMF_LIGHTING, true);
 		meshnode->setMaterialFlag(video::EMF_GOURAUD_SHADING, true);
 
-		meshnode->setMaterialTexture(0, meshComp->texture);
+		if (meshComp->textures.size() == 1) {
+			meshnode->setMaterialTexture(0, meshComp->textures[0]); 
+		} else {
+			int layer = 0;
+			for (ITexture* texture : meshComp->textures) {
+				//animnode->setMaterialTexture(layer, texture);
+				meshnode->getMaterial(layer).setTexture(0, texture);
+				layer++;
+			}
+		}
+		
 		meshnode->setPosition(transComp->worldPosition);
 		meshnode->setRotation(transComp->rotation);
 		meshnode->setScale(transComp->scale);

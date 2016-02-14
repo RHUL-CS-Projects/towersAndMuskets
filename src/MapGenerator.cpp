@@ -36,6 +36,7 @@ void MapGenerator::placeTree ( vector2df pos, ISceneManager* smgr ) {
 		yPos = terrain->getHeight(pos.X, pos.Y);
 	
 	ObjectFactory::addTree(vector3df(pos.X, yPos, pos.Y));
+	Game::game.getObjMgr()->worldManager->setPassable(rectf(pos.X-0.5f, pos.Y-0.5f, pos.X+0.5f, pos.Y+0.5f), false);
 }
 
 void MapGenerator::placeRock ( vector2df pos, ISceneManager* smgr ) {
