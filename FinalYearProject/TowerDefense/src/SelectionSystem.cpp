@@ -28,7 +28,7 @@ void SelectionSystem::update ( float timestep ) {
 	
 	int hitID = -1;
 	if ((hitID = colmgr->getSceneNodeFromRayBB(ray)->getID()) > -1) {	
-		std::cout << "mouse over" << std::endl;
+		//std::cout << "mouse over" << std::endl;
 	}
 	
 	

@@ -109,6 +109,38 @@ public:
 		objmgr->attachComponent(id, new SteeringComponent(0.2, 80));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
 	}
+	
+	static int addPlayerCannon(irr::core::vector3df pos) {
+		ObjectManager* objmgr = Game::game.getObjMgr();
+		int id = objmgr->createObject();
+		
+		objmgr->attachComponent(id, new TransformComponent(pos));
+		
+		std::vector<std::string> textures;
+		textures.push_back("ManTexture.png");
+		textures.push_back("CannonTexture.png");
+		
+		objmgr->attachComponent(id, new AnimatedMeshComponent("cannon.x", textures, irr::core::vector3df(0,0,0)));
+		
+		AnimatorComponent* animComp = new AnimatorComponent();
+		animComp->addAnimation("IDLE", 0, 62, 30);
+		animComp->addAnimation("WALK", 63, 142, 90);
+		animComp->addAnimation("TAKEAIM", 143, 153, 20);
+		animComp->addAnimation("AIM", 154, 156, 30);
+		animComp->addAnimation("SHOOT", 157, 165, 30);
+		animComp->addAnimation("RELOAD", 166, 275, 20);
+		animComp->addAnimation("REST", 276, 287, 30);
+		animComp->addAnimation("DEATH1", 288, 313, 20);
+		
+		objmgr->attachComponent(id, animComp);
+		
+		objmgr->attachComponent(id, new SelectableComponent(3,3));
+		objmgr->attachComponent(id, new RenderComponent(true));
+		objmgr->attachComponent(id, new FaceDirectionComponent(0, 0.08f));
+		objmgr->attachComponent(id, new RTSLogicComponent(0, 1, Game::game.resources.loadSound("musketshot.ogg"), 60));
+		objmgr->attachComponent(id, new SteeringComponent(0.1, 80, 8));
+		objmgr->attachComponent(id, new HealthComponent(10, 10));
+	}
 };
 
 #endif

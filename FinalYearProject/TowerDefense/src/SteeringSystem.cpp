@@ -204,7 +204,7 @@ void SteeringSystem::avoid ( vector3df avoidPos, SteeringComponent* steerComp, T
 		steerForce = steerForce.normalize() * steerComp->maxSpeed;
 	steerForce /= steerComp->mass;
 	
-	steerComp->velocity += steerForce;
+	steerComp->velocity += steerForce*2;
 }
 
 /**

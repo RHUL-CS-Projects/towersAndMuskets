@@ -83,5 +83,8 @@ void StatePlaying::message ( int messageNum ) {
 	case SET_PLACE_OBJECT_PLAYER_UNIT:
 		objectPlacer.setObjectType(PlayerUnit);
 		break;
+	case SET_PLACE_OBJECT_PLAYER_CANNON:
+		objectPlacer.setObjectType(PlayerCannon);
+		break;
 	}
 }

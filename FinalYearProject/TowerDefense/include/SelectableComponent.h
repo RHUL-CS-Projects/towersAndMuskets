@@ -28,7 +28,10 @@ public:
 	// The scene node for rendering the selection circle
 	irr::scene::IMeshSceneNode* sceneNode = nullptr;
 	
-	SelectableComponent() : GameComponent("SelectableComponent") {}
+	SelectableComponent(float xScale = 1, float zScale = 1) : GameComponent("SelectableComponent") {
+		selectionXScale = xScale;
+		selectionZScale = zScale;
+	}
 };
 
 #endif

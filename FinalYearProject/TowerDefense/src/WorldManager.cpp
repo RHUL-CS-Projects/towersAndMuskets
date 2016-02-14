@@ -26,19 +26,20 @@ int WorldManager::getGridXY ( int x, int y ) {
  * to be either passable or impassable
  */
 void WorldManager::setPassable ( rectf bounds, bool passable ) {
-	int topLeftX = (int)floor(bounds.UpperLeftCorner.X/gridSize);
-	int topLeftY = (int)floor(bounds.UpperLeftCorner.Y/gridSize);
+	float x1 = bounds.LowerRightCorner.X < bounds.UpperLeftCorner.X ? bounds.LowerRightCorner.X : bounds.UpperLeftCorner.X;
+	float x2 = bounds.LowerRightCorner.X < bounds.UpperLeftCorner.X ? bounds.UpperLeftCorner.X : bounds.LowerRightCorner.X;
 	
-	int bottomRightX = (int)ceil(bounds.LowerRightCorner.X/gridSize);
-	int bottomRightY = (int)ceil(bounds.LowerRightCorner.Y/gridSize);
+	float y1 = bounds.LowerRightCorner.Y < bounds.UpperLeftCorner.Y ? bounds.LowerRightCorner.Y : bounds.UpperLeftCorner.Y;
+	float y2 = bounds.LowerRightCorner.Y < bounds.UpperLeftCorner.Y ? bounds.UpperLeftCorner.Y : bounds.LowerRightCorner.Y;
 	
-	topLeftX = clamp<int>(topLeftX, 0, gridWidth-1);
-	topLeftY = clamp<int>(topLeftY, 0, gridHeight-1);
-	bottomRightX = clamp<int>(bottomRightX, 0, gridWidth-1);
-	bottomRightY = clamp<int>(bottomRightY, 0, gridHeight-1);
+	int xx = (int)floor(x1/gridSize);
+	int yy = (int)floor(y1/gridSize);
 	
-	for (int x = topLeftX; x <= bottomRightX; x++) {
-		for (int y = topLeftY; y <= bottomRightY; y++) {
+	int xx2 = (int)ceil(x2/gridSize);
+	int yy2 = (int)ceil(y2/gridSize);
+
+	for (int x = xx; x < xx2; x++) {
+		for (int y = yy; y < yy2; y++) {
 			setGridXY(x, y, passable ? 0 : 1);
 		}
 	}
@@ -57,20 +58,21 @@ bool WorldManager::checkColliding ( vector3df worldPosition, float rad ) {
  * Check if a rectangular area is intersecting the world
  */
 bool WorldManager::checkColliding ( rectf bounds ) {
-	int topLeftX = (int)floor(bounds.UpperLeftCorner.X/gridSize);
-	int topLeftY = (int)floor(bounds.UpperLeftCorner.Y/gridSize);
+	float x1 = bounds.LowerRightCorner.X < bounds.UpperLeftCorner.X ? bounds.LowerRightCorner.X : bounds.UpperLeftCorner.X;
+	float x2 = bounds.LowerRightCorner.X < bounds.UpperLeftCorner.X ? bounds.UpperLeftCorner.X : bounds.LowerRightCorner.X;
 	
-	int bottomRightX = (int)floor(bounds.LowerRightCorner.X/gridSize);
-	int bottomRightY = (int)floor(bounds.LowerRightCorner.Y/gridSize);
+	float y1 = bounds.LowerRightCorner.Y < bounds.UpperLeftCorner.Y ? bounds.LowerRightCorner.Y : bounds.UpperLeftCorner.Y;
+	float y2 = bounds.LowerRightCorner.Y < bounds.UpperLeftCorner.Y ? bounds.UpperLeftCorner.Y : bounds.LowerRightCorner.Y;
 	
-	topLeftX = clamp<int>(topLeftX, 0, gridWidth-1);
-	topLeftY = clamp<int>(topLeftY, 0, gridHeight-1);
-	bottomRightX = clamp<int>(bottomRightX, 0, gridWidth-1);
-	bottomRightY = clamp<int>(bottomRightY, 0, gridHeight-1);
+	int xx = (int)floor(x1/gridSize);
+	int yy = (int)floor(y1/gridSize);
 	
-	for (int x = topLeftX; x <= bottomRightX; x++) {
-		for (int y = topLeftY; y <= bottomRightY; y++) {
-			if (getGridXY(x,y) > 0)
+	int xx2 = (int)ceil(x2/gridSize);
+	int yy2 = (int)ceil(y2/gridSize);
+
+	for (int x = xx; x < xx2; x++) {
+		for (int y = yy; y < yy2; y++) {
+			if (getGridXY(x, y))
 				return true;
 		}
 	}
