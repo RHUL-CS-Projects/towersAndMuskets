@@ -39,6 +39,9 @@ public:
 	
 	// The previous direction to the target (used when drawing debug overlay)
 	irr::core::vector3df prevTargetDir = irr::core::vector3df(0,0,0);
+	
+	// Whether the component is enabled. Allows other components to take control of unit movement/positioning
+	bool enabled = true;
 };
 
 #endif

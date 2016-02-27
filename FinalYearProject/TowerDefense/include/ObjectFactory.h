@@ -10,6 +10,7 @@
 #include <SelectableComponent.h>
 #include <FaceDirectionComponent.h>
 #include <AnimatedMeshComponent.h>
+#include <TowerComponent.h>
 #include <AnimatorComponent.h>
 #include <RTSLogicComponent.h>
 #include <HealthComponent.h>
@@ -51,6 +52,7 @@ public:
 		objmgr->attachComponent(id, new StaticMeshComponent("tower2.x", "TowerTexture.png", irr::core::vector3df(-90,0,0)));
 		objmgr->attachComponent(id, new RenderComponent(true));
 		objmgr->attachComponent(id, new SteeringComponent(0, 80));
+		objmgr->attachComponent(id, new TowerComponent());
 		
 		return id;
 	}
@@ -77,7 +79,7 @@ public:
 		
 		objmgr->attachComponent(id, new RenderComponent(true));
 		objmgr->attachComponent(id, new FaceDirectionComponent(0, 0.08f));
-		objmgr->attachComponent(id, new RTSLogicComponent(1, 1, Game::game.resources.loadSound("musketshot.ogg"), 60));
+		objmgr->attachComponent(id, new RTSLogicComponent(1, 1, Game::game.resources.loadSound("musketshot.ogg"), 60, false));
 		objmgr->attachComponent(id, new SteeringComponent(0.2, 80));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
 	}
@@ -105,7 +107,7 @@ public:
 		objmgr->attachComponent(id, new SelectableComponent());
 		objmgr->attachComponent(id, new RenderComponent(true));
 		objmgr->attachComponent(id, new FaceDirectionComponent(0, 0.08f));
-		objmgr->attachComponent(id, new RTSLogicComponent(0, 1, Game::game.resources.loadSound("musketshot.ogg"), 60));
+		objmgr->attachComponent(id, new RTSLogicComponent(0, 1, Game::game.resources.loadSound("musketshot.ogg"), 60, true));
 		objmgr->attachComponent(id, new SteeringComponent(0.2, 80));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
 	}
@@ -137,7 +139,7 @@ public:
 		objmgr->attachComponent(id, new SelectableComponent(3,3));
 		objmgr->attachComponent(id, new RenderComponent(true));
 		objmgr->attachComponent(id, new FaceDirectionComponent(0, 0.08f));
-		objmgr->attachComponent(id, new RTSLogicComponent(0, 1, Game::game.resources.loadSound("musketshot.ogg"), 60));
+		objmgr->attachComponent(id, new RTSLogicComponent(0, 1, Game::game.resources.loadSound("musketshot.ogg"), 60, false));
 		objmgr->attachComponent(id, new SteeringComponent(0.1, 80, 8));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
 	}

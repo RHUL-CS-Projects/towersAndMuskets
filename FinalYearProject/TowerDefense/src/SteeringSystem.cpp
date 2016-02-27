@@ -35,6 +35,9 @@ void SteeringSystem::update ( float timestep ) {
 		// Get the steering component
 		SteeringComponent* steerComp = mgr->getObjectComponent<SteeringComponent>(i, "SteeringComponent");
 		
+		if (!steerComp->enabled)
+			continue;
+			
 		// Check the object has a transform
 		TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
 		
