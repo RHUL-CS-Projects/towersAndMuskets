@@ -5,6 +5,7 @@
 #include <SelectableComponent.h>
 #include <FaceDirectionComponent.h>
 #include <AnimatorComponent.h>
+#include <DebugValues.h>
 
 using namespace irr;
 using namespace core;
@@ -124,6 +125,20 @@ void RenderSystem::update ( float timestep ) {
 
 void RenderSystem::draw ( float timestep ) {
 	Game::game.getRendMgr()->getSceneManager()->drawAll();
+	
+	if (DebugValues::DRAW_BOUNDING_BOXES) {
+		list<ISceneNode*> nodes = Game::game.getRendMgr()->getSceneManager()->getRootSceneNode()->getChildren();
+		
+		for (ISceneNode* n : nodes) {
+			SMaterial m;
+			m.Lighting = false;
+			m.Thickness = 1.0f;
+			Game::game.getRendMgr()->getDriver()->setMaterial(m);
+			Game::game.getRendMgr()->getDriver()->setTransform(video::ETS_WORLD, n->getAbsoluteTransformation());
+			
+			Game::game.getRendMgr()->getDriver()->draw3DBox(n->getBoundingBox(), SColor(255,255,0,0));
+		}
+	}
 }
 
 void RenderSystem::addAnimatedSceneNode (RenderComponent* rendComp, AnimatedMeshComponent* animComp, TransformComponent* transComp, int id ) {

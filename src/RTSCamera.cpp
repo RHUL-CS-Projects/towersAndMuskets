@@ -91,3 +91,6 @@ void RTSCamera::update() {
 	vector3df lookvec = (camera->getPosition() - camera->getTarget()).normalize();
 	Listener::setDirection(lookvec.X, lookvec.Y, lookvec.Z);
 }
+
+
+

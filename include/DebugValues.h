@@ -20,6 +20,9 @@ public:
 	
 	// Whether the stencil buffer should be enabled for Irrlicht's stencil shadows
 	static bool STENCIL_ENABLED;
+	
+	// Whether or not bounding boxes should be drawn
+	static bool DRAW_BOUNDING_BOXES;
 };
 
 #endif

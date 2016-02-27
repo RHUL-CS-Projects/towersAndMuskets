@@ -12,7 +12,7 @@ sf::Sound* GameResources::loadSound ( std::string sound ) {
 		
 		sf::Sound* loadedSound = new sf::Sound(*buffer);
 		soundBuffers.push_back(buffer);
-				loadedSound->setVolume(10);
+		loadedSound->setVolume(10);
 		loadedSounds.insert(std::pair<std::string, sf::Sound*>(sound, loadedSound));
 	}
 	
