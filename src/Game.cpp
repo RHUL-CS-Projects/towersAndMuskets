@@ -18,7 +18,7 @@ using namespace sf;
 Game Game::game;
 
 void Game::init() {
-	rendManager.init(L"Tower Defense");
+	rendManager.init(L"Tower Defence");
 	
 	device = rendManager.getDevice();
 	driver = rendManager.getDriver();
