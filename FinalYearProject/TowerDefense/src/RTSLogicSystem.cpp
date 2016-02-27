@@ -362,8 +362,10 @@ void RTSLogicSystem::stateMoveToAttack ( ObjectManager* mgr, int id ) {
 		return;
 	}
 	
+	float distSq = (mgr->worldManager->gridSize * currentRTSComp->rangeInSquares) * (mgr->worldManager->gridSize * currentRTSComp->rangeInSquares);
+	
 	// Start aiming at target
-	if (distanceToObjectSq(mgr, currentRTSComp->attackTargetID) < 10000) {
+	if (distanceToObjectSq(mgr, currentRTSComp->attackTargetID) < distSq) {
 		currentRTSComp->pathSet = false;
 		currentSteerComp->path.resetPath();
 		currentRTSComp->stateStack.pop();
@@ -390,7 +392,7 @@ void RTSLogicSystem::stateAttacking ( ObjectManager* mgr, int id ) {
 	// Reload
 	if (animationComplete()) {
 		HealthComponent* otherHealthComp = mgr->getObjectComponent<HealthComponent>(currentRTSComp->attackTargetID, "HealthComponent");
-		//otherHealthComp->health -= 4;
+		otherHealthComp->health -= currentRTSComp->attackDamage * ((currentRTSComp->garrissoned) ? 2 : 1);
 		currentRTSComp->shootSound->setPosition(currentTransComp->worldPosition.X, currentTransComp->worldPosition.Y, currentTransComp->worldPosition.Z);
 		currentRTSComp->shootSound->setVolume(100);
 		currentRTSComp->shootSound->setRelativeToListener(false);

@@ -34,6 +34,10 @@ public:
 	bool garrissoned = false;
 	bool canGarrisson = true;
 	
+	int attackDamage = 4;
+	int attackBonus = 1;
+	int rangeInSquares = 10;
+	
 	irr::core::vector3df terrainPoint;
 	bool pathSet = false;
 	
