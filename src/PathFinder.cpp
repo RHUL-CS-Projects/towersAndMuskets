@@ -4,6 +4,7 @@
 #include <iostream>
 #include <RenderManager.h>
 #include <Game.h>
+#include <StatePlaying.h>
 
 using namespace irr;
 using namespace scene;
@@ -44,6 +45,8 @@ NodePath PathFinder::findPath ( vector3df start, vector3df end ) {
 	if (pathFound) {
 		path.addNodeFront(start);
 		path.addNode(end);
+	} else {
+		((StatePlaying*)Game::game.currentState())->message(SHOW_MESSAGE_BAD, "Cannot move here");
 	}
 	
 	return path;

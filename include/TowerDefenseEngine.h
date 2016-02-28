@@ -18,6 +18,7 @@
 #include <InteractionMenu.h>
 #include <MapGenerator.h>
 #include <NodePath.h>
+#include <NotificationMessage.h>
 #include <ObjectFactory.h>
 #include <ObjectManager.h>
 #include <ObjectPlacer.h>

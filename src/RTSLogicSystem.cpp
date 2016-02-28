@@ -3,6 +3,7 @@
 #include <ObjectManager.h>
 #include <list>
 #include <RenderManager.h>
+#include <StatePlaying.h>
 
 #include <RTSLogicComponent.h>
 #include <SelectableComponent.h>
@@ -498,6 +499,7 @@ void RTSLogicSystem::stateClimbDown ( ObjectManager* mgr, int id ) {
 void RTSLogicSystem::stateClimbUp ( ObjectManager* mgr, int id ) {
 	setAnimation("IDLE", true);
 	if (!currentRTSComp->canGarrisson) {
+		((StatePlaying*)Game::game.currentState())->message(SHOW_MESSAGE_BAD, "This unit is too large to be garrissoned");
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(IDLE);
@@ -519,6 +521,7 @@ void RTSLogicSystem::stateClimbUp ( ObjectManager* mgr, int id ) {
 	}
 	
 	if (!foundSpace) {
+		((StatePlaying*)Game::game.currentState())->message(SHOW_MESSAGE_BAD, "Not enough space to garrisson this unit");
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(IDLE);
@@ -595,20 +598,16 @@ void RTSLogicSystem::stateGarrissoned ( ObjectManager* mgr, int id ) {
 void RTSLogicSystem::stateMoveToTower ( ObjectManager* mgr, int id ) {
 	setAnimation("WALK", true);
 	
+	if (!currentRTSComp->canGarrisson) {
+		((StatePlaying*)Game::game.currentState())->message(SHOW_MESSAGE_BAD, "This unit is too large to be garrissoned");
+		currentRTSComp->stateStack.pop();
+		currentRTSComp->stateStack.push(IDLE);
+		return;
+	}
+	
 	if (!currentRTSComp->pathSet) {
 		setPath(mgr, id, towerTargetPosition(mgr));
 		currentRTSComp->pathSet = true;
-	}
-	
-	// Start walking to position
-	if (selected() && rightMousePressed) {
-		currentRTSComp->towerID = -1;
-		currentRTSComp->pathSet = false;
-		
-		currentRTSComp->terrainPoint = terrainPoint;
-		currentRTSComp->stateStack.pop();
-		currentRTSComp->stateStack.push(WALKING);
-		return;
 	}
 	
 	// Start walking to attack target
@@ -629,6 +628,17 @@ void RTSLogicSystem::stateMoveToTower ( ObjectManager* mgr, int id ) {
 		
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(MOVE_TO_TOWER);
+		return;
+	}
+	
+	// Start walking to position
+	if (selected() && rightMousePressed) {
+		currentRTSComp->towerID = -1;
+		currentRTSComp->pathSet = false;
+		
+		currentRTSComp->terrainPoint = terrainPoint;
+		currentRTSComp->stateStack.pop();
+		currentRTSComp->stateStack.push(WALKING);
 		return;
 	}
 	

@@ -2,6 +2,8 @@
 #include <irrlicht/irrlicht.h>
 #include <Game.h>
 #include <ObjectFactory.h>
+#include <NoiseGenerator.h>
+#include <time.h>
 
 using namespace irr;
 using namespace scene;
@@ -26,6 +28,27 @@ void MapGenerator::generateMap() {
 				placeRock(vector2df(x*4,y*4), smgr);
 		}
 	}
+	
+	/*int mapWidth = Game::game.getObjMgr()->worldManager->gridWidth;
+	int mapHeight = Game::game.getObjMgr()->worldManager->gridHeight;
+	float gridSize = Game::game.getObjMgr()->worldManager->gridSize;
+	
+	srand(time(NULL));
+	NoiseGenerator gen;
+	std::cout << "Generating noise map... ";
+	gen.generatePerlinNoise(rand(), 480, 480);
+	std::cout << "Done" << std::endl;
+	
+	std::cout << "Building map... ";
+	for (int x = 0; x < mapWidth; x++) {
+		for (int y = 0; y < mapHeight; y++) {
+			float val = gen.getNoiseAt(x,y);
+
+			if (val < 0.5f)
+				placeTree(vector2df(x * gridSize, y * gridSize), smgr);
+		}
+	}
+	std::cout << "Done" << std::endl;*/
 }
 
 void MapGenerator::placeTree ( vector2df pos, ISceneManager* smgr ) {
@@ -35,8 +58,10 @@ void MapGenerator::placeTree ( vector2df pos, ISceneManager* smgr ) {
 	if (terrain != nullptr)
 		yPos = terrain->getHeight(pos.X, pos.Y);
 	
-	ObjectFactory::addTree(vector3df(pos.X, yPos, pos.Y));
-	Game::game.getObjMgr()->worldManager->setPassable(rectf(pos.X-0.5f, pos.Y-0.5f, pos.X+0.5f, pos.Y+0.5f), false);
+	if (Game::game.getObjMgr()->worldManager->checkPassable(vector3df(pos.X, yPos, pos.Y))) {
+		ObjectFactory::addTree(vector3df(pos.X, yPos, pos.Y));
+		Game::game.getObjMgr()->worldManager->setPassable(rectf(pos.X-0.5f, pos.Y-0.5f, pos.X+0.5f, pos.Y+0.5f), false);
+	}
 }
 
 void MapGenerator::placeRock ( vector2df pos, ISceneManager* smgr ) {
