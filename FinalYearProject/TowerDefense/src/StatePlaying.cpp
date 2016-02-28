@@ -29,6 +29,7 @@ StatePlaying::StatePlaying() {
 	
 	camera.addToScene();
 	interactionMenu.init(128, this);
+	messageDisplay.init(RenderManager::resPath + "/materials/textures/SerifFont.xml");
 	mapGenerator.generateMap();
 
 	if (!bufGunshot1.loadFromFile("res/sounds/musketshot.ogg"))
@@ -47,6 +48,7 @@ void StatePlaying::update() {
 	
 	camera.update();
 	interactionMenu.update();
+	messageDisplay.update();
 	objectPlacer.update();
 	Game::game.getObjMgr()->updateSystems(0);
 }
@@ -56,6 +58,7 @@ void StatePlaying::render ( irr::video::IVideoDriver* driver ) {
 
 	Game::game.getObjMgr()->drawSystems(0);
 	interactionMenu.render(driver);
+	messageDisplay.render(driver);
 }
 
 void StatePlaying::transitionIn() {
@@ -66,7 +69,7 @@ void StatePlaying::transitionOut() {
     GameState::transitionOut();
 }
 
-void StatePlaying::message ( int messageNum ) {
+void StatePlaying::message ( int messageNum, std::string message ) {
 	switch (messageNum) {
 	case SET_PLACE_OBJECT_TOWER:
 		objectPlacer.setObjectType(Tower);
@@ -85,6 +88,14 @@ void StatePlaying::message ( int messageNum ) {
 		break;
 	case SET_PLACE_OBJECT_PLAYER_CANNON:
 		objectPlacer.setObjectType(PlayerCannon);
+		break;
+	case SHOW_MESSAGE_GOOD:
+		messageDisplay.showMessage(message, SColor(255,0,255,0));
+		Game::game.resources.loadSound("goodsound.ogg")->play();
+		break;
+	case SHOW_MESSAGE_BAD:
+		messageDisplay.showMessage(message, SColor(255,255,0,0));
+		Game::game.resources.loadSound("badsound.ogg")->play();
 		break;
 	}
 }

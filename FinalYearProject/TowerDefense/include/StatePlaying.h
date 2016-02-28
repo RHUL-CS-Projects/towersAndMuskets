@@ -12,7 +12,9 @@ enum MESSAGE_TYPES {
 	SET_PLACE_OBJECT_ROCK,
 	SET_PLACE_OBJECT_ENEMY_UNIT,
 	SET_PLACE_OBJECT_PLAYER_UNIT,
-	SET_PLACE_OBJECT_PLAYER_CANNON
+	SET_PLACE_OBJECT_PLAYER_CANNON,
+	SHOW_MESSAGE_GOOD,
+	SHOW_MESSAGE_BAD
 };
 
 class StatePlaying : public GameState {
@@ -24,6 +26,7 @@ private:
 	InteractionMenu interactionMenu;
 	MapGenerator mapGenerator;
 	ObjectPlacer objectPlacer;
+	NotificationMessage messageDisplay;
 	
 public:
 	StatePlaying ();
@@ -32,7 +35,7 @@ public:
 	virtual void render(irr::video::IVideoDriver* driver);
 	virtual void transitionIn();
 	virtual void transitionOut();
-	void message(int messageNum);
+	void message(int messageNum, std::string message = "");
 };
 
 #endif

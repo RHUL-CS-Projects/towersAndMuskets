@@ -54,6 +54,8 @@ set (SOURCES
   src/MapGenerator.cpp
   src/ObjectPlacer.cpp
   src/StatePauseMenu.cpp
+  src/NotificationMessage.cpp
+  src/NoiseGenerator.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)
