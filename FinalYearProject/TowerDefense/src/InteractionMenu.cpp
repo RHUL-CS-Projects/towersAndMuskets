@@ -28,6 +28,10 @@ void InteractionMenu::init ( int height, GameState* state ) {
 	guiElements.push_back(new GuiElement(160, top + 50, 100, 20, "PlayerUnit", filepath, SColor(50,255,255,255), 4));
 	guiElements.push_back(new GuiElement(160, top + 80, 100, 20, "PlayerCannon", filepath, SColor(50,255,255,255), 5));
 	
+	guiElements.push_back(new GuiElement(400, top + 20, 100, 20, "Map1", filepath, SColor(50,255,255,255), 7));
+	guiElements.push_back(new GuiElement(400, top + 50, 100, 20, "Map2", filepath, SColor(50,255,255,255), 8));
+	guiElements.push_back(new GuiElement(400, top + 80, 100, 20, "Map3", filepath, SColor(50,255,255,255), 9));
+	
 	guiElements.push_back(new GuiElement(width - 130, top + 50, 100, 20, "Menu", filepath, SColor(50,255,255,255), 6));
 	
 	for (GuiElement* e : guiElements) {
@@ -66,6 +70,25 @@ void InteractionMenu::onNotify ( int id, int eventID ) {
 		case 6:
 			Game::game.pushState(new StatePauseMenu());
 			break;
+		case 7:
+			Game::game.getRendMgr()->getSceneManager()->clear();
+			Game::game.getObjMgr()->clearObjects();
+			Game::game.popStates(1);
+			Game::game.pushState(new StatePlaying("map1"));
+			break;
+		case 8:
+			Game::game.getRendMgr()->getSceneManager()->clear();
+			Game::game.getObjMgr()->clearObjects();
+			Game::game.popStates(1);
+			Game::game.pushState(new StatePlaying("map2"));
+			break;
+		case 9:
+			Game::game.getRendMgr()->getSceneManager()->clear();
+			Game::game.getObjMgr()->clearObjects();
+			Game::game.popStates(1);
+			Game::game.pushState(new StatePlaying("map3"));
+			break;
+		
 		}
 		sndClickSound->play();
 	}

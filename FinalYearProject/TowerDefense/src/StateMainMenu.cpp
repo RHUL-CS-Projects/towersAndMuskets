@@ -42,7 +42,7 @@ void StateMainMenu::onNotify ( int id, int eventID ) {
 		switch (id) {
 		case btnPlay:
 			sndClickSound->play();		
-			Game::game.pushState(new StatePlaying());
+			Game::game.pushState(new StatePlaying("map1"));
 			break;
 		case btnOptions:
 			//cout << "options clicked" << endl;
