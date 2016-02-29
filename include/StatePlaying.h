@@ -29,12 +29,13 @@ private:
 	NotificationMessage messageDisplay;
 	
 public:
-	StatePlaying ();
+	StatePlaying (std::string mapname);
 	
 	virtual void update();
 	virtual void render(irr::video::IVideoDriver* driver);
 	virtual void transitionIn();
 	virtual void transitionOut();
+	void loadMap(std::string mapname);
 	void message(int messageNum, std::string message = "");
 };
 

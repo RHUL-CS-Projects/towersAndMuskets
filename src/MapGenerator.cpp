@@ -4,18 +4,21 @@
 #include <ObjectFactory.h>
 #include <NoiseGenerator.h>
 #include <time.h>
+#include <unistd.h>
 
 using namespace irr;
 using namespace scene;
 using namespace core;
 using namespace video;
+using namespace io;
 
-void MapGenerator::generateMap() {
+void MapGenerator::generateMap(std::string mapname) {
 	ISceneManager* smgr = Game::game.getRendMgr()->getSceneManager();
-	
+
 	addTerrain(smgr);
+	loadMap(mapname);
 	
-	for (int x = 0; x < 240; x++) {
+	/*for (int x = 0; x < 240; x++) {
 		for (int y = 0; y < 240; y++) {
 			if (rand() % 400 == 0)
 				placeTree(vector2df(x*2,y*2), smgr);
@@ -27,7 +30,7 @@ void MapGenerator::generateMap() {
 			if (rand() % 1000 == 0)
 				placeRock(vector2df(x*4,y*4), smgr);
 		}
-	}
+	}*/
 	
 	/*int mapWidth = Game::game.getObjMgr()->worldManager->gridWidth;
 	int mapHeight = Game::game.getObjMgr()->worldManager->gridHeight;
@@ -49,6 +52,38 @@ void MapGenerator::generateMap() {
 		}
 	}
 	std::cout << "Done" << std::endl;*/
+}
+
+void MapGenerator::loadMap ( std::string mapname ) {
+	std::string filename = RenderManager::resPath + "/materials/textures/" + mapname + ".png";
+	IImage* mapTexture = Game::game.getRendMgr()->getDriver()->createImageFromFile(path(filename.c_str()));
+	
+	if (mapTexture != nullptr) {
+		std::cout << "Map '" << mapname << "' loaded successfully" << std::endl; 
+		float gridSize = Game::game.getObjMgr()->worldManager->gridSize;
+		ISceneManager* smgr = Game::game.getRendMgr()->getSceneManager();
+		
+		int objCount = 0;
+		int counter = 0;
+		
+		for (int x = 0; x < mapTexture->getDimension().Width; x++) {
+			for (int y = 0; y < mapTexture->getDimension().Height; y++) {
+				u32 data = mapTexture->getPixel(x,y).color;
+				
+				if (data == SColor(255,0,255,0).color) {
+					placeTree(vector2df(x * gridSize + gridSize/2, y * gridSize + gridSize/2), smgr);
+				}
+				
+				if (data == SColor(255,200,200,200).color) {
+					placeRock(vector2df(x * gridSize, y * gridSize), smgr);
+				}
+			}
+		}
+		
+		mapTexture->drop();
+	} else {
+		std::cout << "Map '" << mapname << "' could not be loaded at path " << filename << std::endl; 
+	}
 }
 
 void MapGenerator::placeTree ( vector2df pos, ISceneManager* smgr ) {

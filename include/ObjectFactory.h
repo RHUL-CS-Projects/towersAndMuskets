@@ -27,7 +27,6 @@ public:
 		objmgr->attachComponent(id, new TransformComponent(pos));
 		objmgr->attachComponent(id, new StaticMeshComponent("rock.x", "RockTexture.png", irr::core::vector3df(-90,0,0)));
 		objmgr->attachComponent(id, new RenderComponent(true));
-		objmgr->attachComponent(id, new SteeringComponent(0, 80, 8));
 		
 		return id;
 	}
@@ -39,7 +38,6 @@ public:
 		objmgr->attachComponent(id, new TransformComponent(pos));
 		objmgr->attachComponent(id, new StaticMeshComponent("tree.x", "TreeTexture.png", irr::core::vector3df(-90,0,0)));
 		objmgr->attachComponent(id, new RenderComponent(true));
-		objmgr->attachComponent(id, new SteeringComponent(0, 80));
 		
 		return id;
 	}

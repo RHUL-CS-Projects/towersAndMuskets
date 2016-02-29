@@ -86,6 +86,11 @@ public:
 	void draw(float timestep);
 	
 	void dropWorld(); // Delete grid
+	
+	/**
+	 * Clears all grid squares
+	 */
+	void clear();
 };
 
 #endif

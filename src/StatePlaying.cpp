@@ -12,26 +12,17 @@ using namespace video;
 using namespace sf;
 
 
-StatePlaying::StatePlaying() {
+StatePlaying::StatePlaying(std::string mapname) {
 	transparentDraw = false;
 	transparentUpdate = false;
-	
-	objectPlacer.init();
-	
 	ISceneManager* smgr = Game::game.getRendMgr()->getSceneManager();
 	
-	smgr->setShadowColor(video::SColor(80,0,0,0));
-	smgr->setAmbientLight(SColorf(0.8f, 0.8f, 0.8f));
-	vector3df lightdir = vector3df( 0.8f, -1, 0.8f ).normalize();
-	ILightSceneNode* light = smgr->addLightSceneNode(0, -lightdir * 10000, SColorf(1,1,1), 100000);
-	light->setLightType(video::ELT_DIRECTIONAL);
-	light->getLightData().Direction = lightdir;
-	
-	camera.addToScene();
+	objectPlacer.init();
 	interactionMenu.init(128, this);
 	messageDisplay.init(RenderManager::resPath + "/materials/textures/SerifFont.xml");
-	mapGenerator.generateMap();
 
+	loadMap(mapname);
+	
 	if (!bufGunshot1.loadFromFile("res/sounds/musketshot.ogg"))
 		std::cout << "Sound not loaded" << std::endl;
 
@@ -41,6 +32,25 @@ StatePlaying::StatePlaying() {
 	sndGunshot1.setPosition(128, 0, 128);
 	
 	ObjectManager* objmgr = Game::game.getObjMgr();
+}
+
+void StatePlaying::loadMap ( std::string mapname ) {
+	ISceneManager* smgr = Game::game.getRendMgr()->getSceneManager();
+	
+	Game::game.getObjMgr()->clearObjects();
+	Game::game.getObjMgr()->worldManager->clear();
+	smgr->clear();
+	
+	mapGenerator.generateMap(mapname);
+	
+	smgr->setShadowColor(video::SColor(80,0,0,0));
+	smgr->setAmbientLight(SColorf(0.8f, 0.8f, 0.8f));
+	vector3df lightdir = vector3df( 0.8f, -1, 0.8f ).normalize();
+	ILightSceneNode* light = smgr->addLightSceneNode(0, -lightdir * 10000, SColorf(1,1,1), 100000);
+	light->setLightType(video::ELT_DIRECTIONAL);
+	light->getLightData().Direction = lightdir;
+	
+	camera.addToScene();
 }
 
 void StatePlaying::update() {

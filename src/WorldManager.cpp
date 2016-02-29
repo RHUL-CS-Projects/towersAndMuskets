@@ -155,5 +155,13 @@ float WorldManager::terrainHeight ( float x, float y ) {
 	return ((irr::scene::ITerrainSceneNode*)Game::game.getRendMgr()->getSceneManager()->getSceneNodeFromName("MainTerrain"))->getHeight(x, y);
 }
 
+void WorldManager::clear() {
+	for (int x = 0; x < gridWidth; x++) {
+		for (int y = 0; y < gridHeight; y++) {
+			setGridXY(x,y,0);
+		}
+	}
+}
+
 
 
