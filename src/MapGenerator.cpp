@@ -77,6 +77,10 @@ void MapGenerator::loadMap ( std::string mapname ) {
 				if (data == SColor(255,200,200,200).color) {
 					placeRock(vector2df(x * gridSize, y * gridSize), smgr);
 				}
+				
+				if (data == SColor(255,255,255,0).color) {
+					placeGold(vector2df(x * gridSize, y * gridSize), smgr);
+				}
 			}
 		}
 		
@@ -107,6 +111,16 @@ void MapGenerator::placeRock ( vector2df pos, ISceneManager* smgr ) {
 		yPos = terrain->getHeight(pos.X, pos.Y);
 	
 	ObjectFactory::addRock(vector3df(pos.X, yPos, pos.Y));
+}
+
+void MapGenerator::placeGold ( vector2df pos, ISceneManager* smgr ) {
+	ITerrainSceneNode* terrain = (ITerrainSceneNode*)smgr->getSceneNodeFromName("MainTerrain");
+	int yPos = 0;
+	
+	if (terrain != nullptr)
+		yPos = terrain->getHeight(pos.X, pos.Y);
+	
+	ObjectFactory::addGold(vector3df(pos.X, yPos, pos.Y));
 }
 
 void MapGenerator::addTerrain ( ISceneManager* smgr ) {

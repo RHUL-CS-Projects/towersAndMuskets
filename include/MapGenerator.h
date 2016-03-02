@@ -9,6 +9,7 @@ private:
 	void addTerrain(irr::scene::ISceneManager* smgr);
 	void placeTree(irr::core::vector2df pos, irr::scene::ISceneManager* smgr);
 	void placeRock(irr::core::vector2df pos, irr::scene::ISceneManager* smgr);
+	void placeGold(irr::core::vector2df pos, irr::scene::ISceneManager* smgr);
 	void loadMap(std::string mapname);
 public:
 	void generateMap(std::string mapname);

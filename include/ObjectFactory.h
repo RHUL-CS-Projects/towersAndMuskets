@@ -31,6 +31,17 @@ public:
 		return id;
 	}
 	
+	static int addGold(irr::core::vector3df pos) {
+		ObjectManager* objmgr = Game::game.getObjMgr();
+		int id = objmgr->createObject();
+		
+		objmgr->attachComponent(id, new TransformComponent(pos));
+		objmgr->attachComponent(id, new StaticMeshComponent("rock.x", "GoldTexture.png", irr::core::vector3df(-90,0,0)));
+		objmgr->attachComponent(id, new RenderComponent(true));
+		
+		return id;
+	}
+	
 	static int addTree(irr::core::vector3df pos) {
 		ObjectManager* objmgr = Game::game.getObjMgr();
 		int id = objmgr->createObject();
