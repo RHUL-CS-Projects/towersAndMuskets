@@ -48,7 +48,12 @@ void SteeringSystem::update ( float timestep ) {
 			
 			seek(steerComp->path.getCurrentNode(), steerComp, transComp);
 			
-			if ((steerComp->path.getCurrentNode() - transComp->worldPosition).getLengthSQ() < 50) 
+			vector3df myPos = transComp->worldPosition;
+			vector3df nodePos = steerComp->path.getCurrentNode();
+			myPos.Y = 0;
+			nodePos.Y = 0;
+			
+			if ((nodePos - myPos).getLengthSQ() < 50) 
 				steerComp->path.nextNode();
 				
 		} else {

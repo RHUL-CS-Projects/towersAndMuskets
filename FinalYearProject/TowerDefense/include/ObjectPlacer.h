@@ -12,7 +12,8 @@ enum OBJECT_TYPES {
 	Tree,
 	EnemyUnit,
 	PlayerUnit,
-	PlayerCannon
+	PlayerCannon,
+	PlayerVillager
 };
 
 class ObjectPlacer {

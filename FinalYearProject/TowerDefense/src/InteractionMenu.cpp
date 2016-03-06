@@ -27,6 +27,7 @@ void InteractionMenu::init ( int height, GameState* state ) {
 	guiElements.push_back(new GuiElement(160, top + 20, 100, 20, "EnemyUnit", filepath, SColor(50,255,255,255), 3));
 	guiElements.push_back(new GuiElement(160, top + 50, 100, 20, "PlayerUnit", filepath, SColor(50,255,255,255), 4));
 	guiElements.push_back(new GuiElement(160, top + 80, 100, 20, "PlayerCannon", filepath, SColor(50,255,255,255), 5));
+	guiElements.push_back(new GuiElement(280, top + 20, 100, 20, "PlayerVillager", filepath, SColor(50,255,255,255), 10));
 	
 	guiElements.push_back(new GuiElement(400, top + 20, 100, 20, "Map1", filepath, SColor(50,255,255,255), 7));
 	guiElements.push_back(new GuiElement(400, top + 50, 100, 20, "Map2", filepath, SColor(50,255,255,255), 8));
@@ -88,7 +89,9 @@ void InteractionMenu::onNotify ( int id, int eventID ) {
 			Game::game.popStates(1);
 			Game::game.pushState(new StatePlaying("map3"));
 			break;
-		
+		case 10:
+			((StatePlaying*)parentState)->message(SET_PLACE_OBJECT_PLAYER_VILLAGER);
+			break;
 		}
 		sndClickSound->play();
 	}

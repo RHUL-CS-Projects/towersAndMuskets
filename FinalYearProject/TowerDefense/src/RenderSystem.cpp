@@ -6,6 +6,7 @@
 #include <FaceDirectionComponent.h>
 #include <AnimatorComponent.h>
 #include <DebugValues.h>
+#include <EventReceiver.h>
 
 using namespace irr;
 using namespace core;
@@ -124,7 +125,13 @@ void RenderSystem::update ( float timestep ) {
 }
 
 void RenderSystem::draw ( float timestep ) {
+	EventReceiver::renderCollisionBoxes();
+	
 	Game::game.getRendMgr()->getSceneManager()->drawAll();
+	
+	if (DebugValues::DRAW_PICK_BOXES)
+		Game::game.getRendMgr()->getDriver()->draw2DImage(EventReceiver::renderTarget, rect<s32>(0,0, 320, 320*16/9), rect<s32>(0, 0, EventReceiver::renderTarget->getSize().Width,
+			EventReceiver::renderTarget->getSize().Height));
 	
 	if (DebugValues::DRAW_BOUNDING_BOXES) {
 		list<ISceneNode*> nodes = Game::game.getRendMgr()->getSceneManager()->getRootSceneNode()->getChildren();
@@ -134,9 +141,9 @@ void RenderSystem::draw ( float timestep ) {
 			m.Lighting = false;
 			m.Thickness = 1.0f;
 			Game::game.getRendMgr()->getDriver()->setMaterial(m);
-			Game::game.getRendMgr()->getDriver()->setTransform(video::ETS_WORLD, n->getAbsoluteTransformation());
+			Game::game.getRendMgr()->getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix/*n->getAbsoluteTransformation()*/);
 			
-			Game::game.getRendMgr()->getDriver()->draw3DBox(n->getBoundingBox(), SColor(255,255,0,0));
+			Game::game.getRendMgr()->getDriver()->draw3DBox(n->getTransformedBoundingBox(), SColor(255,255,0,0));
 		}
 	}
 }
@@ -177,6 +184,22 @@ void RenderSystem::addAnimatedSceneNode (RenderComponent* rendComp, AnimatedMesh
 		ITriangleSelector* selector = smgr->createTriangleSelector(animnode);
 		animnode->setTriangleSelector(selector);
 		animnode->setID(id);
+		
+		aabbox3df box = animnode->getTransformedBoundingBox();
+		vector3df centre = box.getCenter();
+		vector3df size = box.getExtent();
+		
+		IMeshSceneNode* cube = smgr->addCubeSceneNode(1, 0, id, centre, vector3df(0,0,0), size);
+		cube->setMaterialFlag(video::EMF_LIGHTING, false);
+		smgr->getMeshManipulator()->setVertexColors(cube->getMesh(), SColor(id));
+		cube->setVisible(false);
+		
+		CollisionCube c;
+		c.cubeNode = cube;
+		c.parentNode = animnode;
+		c.parentPrevVisibility = true;
+		
+		EventReceiver::cubes.push_back(c);
 	}
 	
 	rendComp->sceneNode = animnode;
@@ -213,6 +236,22 @@ void RenderSystem::addStaticSceneNode (RenderComponent* rendComp, StaticMeshComp
 		ITriangleSelector* selector = smgr->createTriangleSelector(meshComp->mesh, meshnode);
 		meshnode->setTriangleSelector(selector);
 		meshnode->setID(id);
+		
+		aabbox3df box = meshnode->getTransformedBoundingBox();
+		vector3df centre = box.getCenter();
+		vector3df size = box.getExtent();
+		
+		IMeshSceneNode* cube = smgr->addCubeSceneNode(1, 0, id, centre, vector3df(0,0,0), size);
+		cube->setMaterialFlag(video::EMF_LIGHTING, false);
+		smgr->getMeshManipulator()->setVertexColors(cube->getMesh(), SColor(id));
+		cube->setVisible(false);
+		
+		CollisionCube c;
+		c.cubeNode = cube;
+		c.parentNode = meshnode;
+		c.parentPrevVisibility = true;
+		
+		EventReceiver::cubes.push_back(c);
 	}
 	
 	rendComp->sceneNodeStatic = meshnode;

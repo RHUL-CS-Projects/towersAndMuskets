@@ -101,6 +101,15 @@ void ObjectPlacer::setObjectType ( OBJECT_TYPES type ) {
 		sceneNode->setVisible(true);
 		addObject = &ObjectFactory::addPlayerCannon;
 		break;
+	case PlayerVillager:
+		colWidth = 0; colHeight = 0;
+		
+		textureNames.push_back("VillagerTexture.png");
+		
+		setModelData("humanteststatic.x", "VillagerTexture.png");
+		sceneNode->setVisible(true);
+		addObject = &ObjectFactory::addPlayerVillager;
+		break;
 	case nullObject:
 		sceneNode->setVisible(false);
 		break;

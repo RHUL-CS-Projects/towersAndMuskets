@@ -2,6 +2,7 @@
 #define EVENTRECEIVER_H
 
 #include <irrlicht/irrlicht.h>
+#include <list>
 
 // Code adapted from http://irrlicht.sourceforge.net/docu/example019.html
 
@@ -18,6 +19,12 @@ struct SAppContext
 	irr::gui::IGUIStaticText* txtSteer;
 	irr::gui::IGUIStaticText* txtStencil;
 	irr::gui::IGUIStaticText* txtGridWorld;*/
+};
+
+struct CollisionCube {
+	irr::scene::ISceneNode* cubeNode;
+	irr::scene::ISceneNode* parentNode;
+	bool parentPrevVisibility;
 };
 
 /**
@@ -71,6 +78,21 @@ public:
 	 * Returns the current mouse state struct
 	 */
 	static EventReceiver::SMouseState* getMouseState();
+	
+	/**
+	 * Get the ID of the object in the scene that the mouse is currently over
+	 */
+	static int getHoverObject();
+	
+	/**
+	 * 
+	 */
+	static void renderCollisionBoxes();
+	
+	static int hoverID;
+	static irr::video::ITexture* renderTarget;
+	static irr::video::IImage* renderImage;
+	static std::list<CollisionCube> cubes;
 };
 
 

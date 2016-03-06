@@ -99,6 +99,9 @@ void StatePlaying::message ( int messageNum, std::string message ) {
 	case SET_PLACE_OBJECT_PLAYER_CANNON:
 		objectPlacer.setObjectType(PlayerCannon);
 		break;
+	case SET_PLACE_OBJECT_PLAYER_VILLAGER:
+		objectPlacer.setObjectType(PlayerVillager);
+		break;
 	case SHOW_MESSAGE_GOOD:
 		messageDisplay.showMessage(message, SColor(255,0,255,0));
 		Game::game.resources.loadSound("goodsound.ogg")->play();

@@ -12,6 +12,7 @@
 #include <PathMovementSystem.h>
 #include <FaceDirectionSystem.h>
 #include <RTSLogicSystem.h>
+#include <RTSVillagerLogicSystem.h>
 #include <SteeringSystem.h>
 #include <DebugValues.h>
 
@@ -32,6 +33,7 @@ ObjectManager::ObjectManager() {
 	systems.push_back(new SteeringSystem());
 	systems.push_back(new FaceDirectionSystem());
 	systems.push_back(new RTSLogicSystem());
+	systems.push_back(new RTSVillagerLogicSystem());
 	
 	worldManager = new WorldManager(8, irr::core::recti(0,0,480,480));
 }

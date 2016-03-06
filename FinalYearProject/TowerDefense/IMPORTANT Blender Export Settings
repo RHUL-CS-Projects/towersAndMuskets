@@ -1,0 +1,20 @@
+Animated Meshes:
+
+[   ]  Export Selected Objects Only
+Coordinate... Left-Handed
+Up Axis: Y
+[ X ]  Export Meshes
+[ X ]  Export Normals
+[   ]  Flip Normals
+[ X ]  Export UV Coordinates
+[ X ]  Export Materials
+[   ]  Reference Active Images as Text...
+[   ]  Export Vertex Colors
+[ X ]  Export Skin Weights
+[   ]  Apply Modifiers
+[ X ]  Export Armature Bones
+[   ]  Export Rest Position
+[ X ]  Export Animations
+(Everything else unticked)
+
+Also note - Animation timeline must extend from 0 to end of all animations in NLA editor to work correctly
