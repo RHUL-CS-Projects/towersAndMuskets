@@ -4,6 +4,7 @@
 #include <chrono>
 #include <sfml/SFML/Window.hpp>
 #include <StateMainMenu.h>
+#include <DebugValues.h>
 
 using namespace std;
 using namespace irr;
@@ -24,6 +25,8 @@ void Game::init() {
 	driver = rendManager.getDriver();
 	smgr = rendManager.getSceneManager();
 	guienv = rendManager.getGUIEnvironment();
+	
+	device->setResizable(false);
 	
 	SAppContext context;
     context.device = device;
@@ -71,7 +74,8 @@ void Game::run() {
 		frameCounter++;
 
 		if (currentTime - updateTime >= 1000000.0) {
-			cout << "Ticks: " << tickCounter << ", Frames: " << frameCounter << endl;
+			if (DebugValues::PRINT_FPS)
+				cout << "Ticks: " << tickCounter << ", Frames: " << frameCounter << endl;
 			
 			std::wstring labelText;
 			labelText += L"TICKS: ";

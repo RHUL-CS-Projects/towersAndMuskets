@@ -23,6 +23,12 @@ public:
 	
 	// Whether or not bounding boxes should be drawn
 	static bool DRAW_BOUNDING_BOXES;
+	
+	// Whether or not the FPS counter should be printed into the console
+	static bool PRINT_FPS;
+	
+	// Whether or not the picking texture should be drawn
+	static bool DRAW_PICK_BOXES;
 };
 
 #endif

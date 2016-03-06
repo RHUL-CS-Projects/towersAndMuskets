@@ -44,29 +44,13 @@ void SelectionSystem::update ( float timestep ) {
 		if (dragging) {
 			selectObjects();
 			dragging = false;
-		
-			// Calculate click point on terrain
-			ISceneCollisionManager* colmgr = Game::game.getRendMgr()->getSceneManager()->getSceneCollisionManager();
-			line3df ray = colmgr->getRayFromScreenCoordinates(EventReceiver::getMouseState()->position);
-			
-			vector3df point;
-			triangle3df triangle;
-			ISceneNode* node;
-			
+
 			int hitID = -1;
-			if ((hitID = colmgr->getSceneNodeFromRayBB(ray)->getID()) > -1) {	
+			if ((hitID = EventReceiver::getHoverObject()) > -1) {	
 				if (Game::game.getObjMgr()->getObjectComponent<SelectableComponent>(hitID, "SelectableComponent") != nullptr) {	
 					Game::game.getObjMgr()->getObjectComponent<SelectableComponent>(hitID, "SelectableComponent")->selected = true;
 				}
 			}
-			
-			/*ObjectManager* mgr = &ObjectManager::manager;
-			std::list<int> objects = mgr->getObjectsWithComponent("SelectableComponent");
-			
-			for (int i : objects) {
-				if (colmgr->getCollisionPoint(ray, RenderManager::renderManager.getSceneManager()->getSceneNodeFromId(i)->getTriangleSelector(), point, triangle, node))
-					mgr->getObjectComponent<SelectableComponent>(i, "SelectableComponent")->selected = true;
-			}*/
 		}
 	}
 }

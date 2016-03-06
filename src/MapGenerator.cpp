@@ -110,7 +110,7 @@ void MapGenerator::placeRock ( vector2df pos, ISceneManager* smgr ) {
 	if (terrain != nullptr)
 		yPos = terrain->getHeight(pos.X, pos.Y);
 	
-	ObjectFactory::addRock(vector3df(pos.X, yPos, pos.Y));
+	ObjectFactory::addRock(vector3df(floor(pos.X), floor(yPos), floor(pos.Y)));
 }
 
 void MapGenerator::placeGold ( vector2df pos, ISceneManager* smgr ) {

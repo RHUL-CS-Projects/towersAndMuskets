@@ -6,8 +6,7 @@
 #include <random>
 #include <stack>
 #include <irrlicht/irrlicht.h>
-
-enum RTS_UNIT_STATE { IDLE=0, WALKING, MOVE_TO_ATTACK, ATTACKING, AIMING, TAKE_AIM, RELEASE_AIM, RELOADING, DEAD, MOVE_TO_TOWER, CLIMB_UP, CLIMB_DOWN, GARRISSONED }; 
+#include <Enums.h>
 
 /**
  * Component to control the logic/AI of units by controlling their states
@@ -18,7 +17,7 @@ private:
 public:
 	RTSLogicComponent() : GameComponent("RTSLogicComponent") {}
 	
-	RTSLogicComponent(int team, int actionFrame, sf::Sound* shoot, int shootDelay, bool canGarrisson) : GameComponent("RTSLogicComponent") {
+	RTSLogicComponent(int team, int actionFrame, sf::Sound* shoot, int shootDelay, bool canGarrissonm, int attackDamage = 4, int rangeInSquares = 10) : GameComponent("RTSLogicComponent") {
 		teamID = team;
 		attackActionFrame = actionFrame;
 		shootSound = shoot;
@@ -26,6 +25,8 @@ public:
 		
 		this->shootDelay = shootDelay;
 		shootCounter = rand() % shootDelay;
+		this->attackDamage = attackDamage;
+		this->rangeInSquares = rangeInSquares;
 	}
 	
 	int attackTargetID = -1;

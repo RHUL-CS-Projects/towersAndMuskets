@@ -56,6 +56,7 @@ set (SOURCES
   src/StatePauseMenu.cpp
   src/NotificationMessage.cpp
   src/NoiseGenerator.cpp
+  src/RTSVillagerLogicSystem.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)

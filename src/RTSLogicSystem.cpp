@@ -20,20 +20,13 @@
 #include <Quadtree.h>
 #include <Game.h>
 #include <irrlicht/irrlicht.h>
+#include <Enums.h>
 
 using namespace irr;
 using namespace core;
 using namespace video;
 using namespace io;
 using namespace scene;
-
-vector3df terrainPoint;
-int clickedObject = -1;
-int clickedTower = -1;
-vector3df objectPoint;
-Quadtree root(0, rectf(0, 0, 480, 480));
-bool rightMouseDown = false;
-bool rightMousePressed = false;
 
 void RTSLogicSystem::update ( float timestep ) {
 	updateClickPoints();
@@ -68,6 +61,9 @@ void RTSLogicSystem::update ( float timestep ) {
 		
 		currentState = currentRTSComp->stateStack.top();
 		bool selected = (currentSelectComp == nullptr) ? false : ((currentSelectComp->selected) ? true : false);
+		
+		if (currentHealthComp->health <= 0)
+			currentRTSComp->stateStack.push(DEAD);
 		
 		// Perform behaviours of current state
 		switch (currentState) {
@@ -165,10 +161,9 @@ void RTSLogicSystem::updateClickPoints() {
 		colmgr->getCollisionPoint(ray, Game::game.getRendMgr()->getSceneManager()->getSceneNodeFromName("MainTerrain")->getTriangleSelector(), terrainPoint, triangle, node);
 		
 		ObjectManager* mgr = Game::game.getObjMgr();
-		std::list<int> objects = mgr->getObjectsWithComponent("RenderComponent");
 		
 		int hitID = -1;
-		if ((hitID = colmgr->getSceneNodeFromRayBB(ray)->getID()) > -1) {	
+		if ((hitID = EventReceiver::getHoverObject()) > -1) {	
 			if (mgr->getObjectComponent<TransformComponent>(hitID, "TransformComponent") != nullptr) {	
 				if (mgr->getObjectComponent<HealthComponent>(hitID, "HealthComponent") != nullptr) {
 					clickedObject = hitID;
@@ -392,14 +387,6 @@ void RTSLogicSystem::stateAttacking ( ObjectManager* mgr, int id ) {
 	
 	// Reload
 	if (animationComplete()) {
-		HealthComponent* otherHealthComp = mgr->getObjectComponent<HealthComponent>(currentRTSComp->attackTargetID, "HealthComponent");
-		otherHealthComp->health -= currentRTSComp->attackDamage * ((currentRTSComp->garrissoned) ? 2 : 1);
-		currentRTSComp->shootSound->setPosition(currentTransComp->worldPosition.X, currentTransComp->worldPosition.Y, currentTransComp->worldPosition.Z);
-		currentRTSComp->shootSound->setVolume(100);
-		currentRTSComp->shootSound->setRelativeToListener(false);
-		currentRTSComp->shootSound->setAttenuation(0.1f);
-		currentRTSComp->shootSound->play();
-		
 		currentRTSComp->stateStack.pop();
 		return;
 	}
@@ -706,6 +693,15 @@ void RTSLogicSystem::stateAiming ( ObjectManager* mgr, int id ) {
 		currentRTSComp->shootCounter = currentRTSComp->shootDelay;
 		currentRTSComp->stateStack.push(RELOADING);
 		currentRTSComp->stateStack.push(ATTACKING);
+		
+		HealthComponent* otherHealthComp = mgr->getObjectComponent<HealthComponent>(currentRTSComp->attackTargetID, "HealthComponent");
+		otherHealthComp->health -= currentRTSComp->attackDamage * ((currentRTSComp->garrissoned) ? 2 : 1);
+		
+		currentRTSComp->shootSound->setPosition(currentTransComp->worldPosition.X, currentTransComp->worldPosition.Y, currentTransComp->worldPosition.Z);
+		currentRTSComp->shootSound->setVolume(100);
+		currentRTSComp->shootSound->setRelativeToListener(false);
+		currentRTSComp->shootSound->setAttenuation(0.1f);
+		currentRTSComp->shootSound->play();
 		return;
 	}
 }
