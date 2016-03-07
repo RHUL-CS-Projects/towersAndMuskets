@@ -64,3 +64,8 @@ std::vector< irr::core::vector3df > NodePath::getWaypoints() {
 	return waypoints;
 }
 
+
+bool NodePath::finalNode() {
+	return currentNode == waypoints.size()-1;
+}
+

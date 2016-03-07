@@ -223,7 +223,57 @@ void Quadtree::draw() {
 	}
 }
 
+int Quadtree::getNearest ( int id, irr::core::vector3df pos ) {
+	float x = pos.X;
+	float y = pos.Z;
+	
+	BestNode best;
+	best.distance = -1;
+	best.object.id = -1;
+	
+	best = nearest(x, y, id, best, this);
+	
+	return best.object.id;
+}
 
+Quadtree::BestNode Quadtree::nearest ( float x, float y, int id, Quadtree::BestNode best, Quadtree* node ) {
+	float x1 = node->bounds.UpperLeftCorner.X;
+	float y1 = node->bounds.UpperLeftCorner.Y;
+	float x2 = node->bounds.LowerRightCorner.X;
+	float y2 = node->bounds.LowerRightCorner.Y;
+
+	if (x < x1 - best.distance || x > x2 + best.distance || y < y1 - best.distance || y > y2 + best.distance) {
+		return best;
+	}
+	
+	for (ObjectData o : node->objects) {
+		if (o.id == id) continue;
+		
+		float dx = o.pos.X - x;
+		dx *= dx;
+		
+		float dy = o.pos.Z - y;
+		dy *= dy;
+		
+		float d = dx + dy;
+		
+		if (d < best.distance || best.distance < 0) {
+			best.distance = d;
+			best.object = o;
+		}
+	}
+	
+	Quadtree** children = node->nodes;
+	int rl = (2*x > x1 + x2) ? 1 : 0;
+	int bt = (2*y > y1 + y2) ? 1 : 0;
+	
+	if (children[bt*2+rl]) best = nearest(x, y, id, best, children[bt*2+rl]);
+	if (children[bt*2+(1-rl)]) best = nearest(x, y, id, best, children[bt*2+(1-rl)]);
+	if (children[(1-bt)*2+rl]) best = nearest(x, y, id, best, children[(1-bt)*2+rl]);
+	if (children[(1-bt)*2+(1-rl)]) best = nearest(x, y, id, best, children[(1-bt)*2+(1-rl)]);
+	
+	return best;
+}
 
 
 

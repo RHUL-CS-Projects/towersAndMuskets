@@ -13,6 +13,8 @@ public:
 	}
 	
 	RESOURCE_TYPE resType;
+	
+	int gatherSlots[8] = {-1, -1, -1, -1, -1, -1, -1, -1};
 };
 
 #endif

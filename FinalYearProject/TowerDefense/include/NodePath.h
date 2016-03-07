@@ -60,6 +60,11 @@ public:
 	 * Returns the list of all waypoints
 	 */
 	std::vector<irr::core::vector3df> getWaypoints();
+	
+	/**
+	 * Returns whether or not the path is currently at its final node
+	 */
+	bool finalNode();
 };
 
 

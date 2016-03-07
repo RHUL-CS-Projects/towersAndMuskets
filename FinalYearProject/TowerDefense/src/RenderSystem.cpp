@@ -130,7 +130,7 @@ void RenderSystem::draw ( float timestep ) {
 	Game::game.getRendMgr()->getSceneManager()->drawAll();
 	
 	if (DebugValues::DRAW_PICK_BOXES)
-		Game::game.getRendMgr()->getDriver()->draw2DImage(EventReceiver::renderTarget, rect<s32>(0,0, 320, 320*16/9), rect<s32>(0, 0, EventReceiver::renderTarget->getSize().Width,
+		Game::game.getRendMgr()->getDriver()->draw2DImage(EventReceiver::renderTarget, rect<s32>(0,0, 320, 320*9/16), rect<s32>(0, 0, EventReceiver::renderTarget->getSize().Width,
 			EventReceiver::renderTarget->getSize().Height));
 	
 	if (DebugValues::DRAW_BOUNDING_BOXES) {
@@ -147,7 +147,7 @@ void RenderSystem::draw ( float timestep ) {
 		}
 	}
 }
-
+ 
 void RenderSystem::addAnimatedSceneNode (RenderComponent* rendComp, AnimatedMeshComponent* animComp, TransformComponent* transComp, int id ) {
 	irr::video::IVideoDriver* driver = Game::game.getRendMgr()->getDriver();
 	irr::scene::ISceneManager* smgr = Game::game.getRendMgr()->getSceneManager();

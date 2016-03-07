@@ -25,6 +25,7 @@ private:
 	bool rightMousePressed = false;
 	
 	void setPath(ObjectManager* mgr, int id, irr::core::vector3df point);
+	static void calcPathSynch(ObjectManager* mgr, int id, irr::core::vector3df point);
 	void updateClickPoints();
 	
 	/*	STATES	*/
@@ -36,7 +37,8 @@ private:
 	
 	/*	HELPER METHODS	*/
 	void faceTarget( ObjectManager* mgr, int id);
-	irr::core::vector3df resourceTargetPosition(ObjectManager* mgr);
+	irr::core::vector3df resourceTargetPosition(ObjectManager* mgr, int id);
+	void freeResource(ObjectManager* mgr, int id);
 	void setAnimation(std::string animation, bool loop);
 	bool animationComplete();
 	bool selected();

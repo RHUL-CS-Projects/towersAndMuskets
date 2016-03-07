@@ -10,6 +10,7 @@
 #include <Quadtree.h>
 #include <DebugValues.h>
 #include <Game.h>
+#include <SelectableComponent.h>
 
 using namespace irr;
 using namespace scene;
@@ -44,20 +45,31 @@ void SteeringSystem::update ( float timestep ) {
 		if (transComp == nullptr)
 			continue;
 		
+		std::cout << steerComp->path.finalNode() << ", " << steerComp->path.ended()<< std::endl;
+		
 		if (!steerComp->path.ended()) {
-			
-			seek(steerComp->path.getCurrentNode(), steerComp, transComp);
+			if (!steerComp->path.finalNode())
+				seek(steerComp->path.getCurrentNode(), steerComp, transComp);
+			else
+				arrive(steerComp->path.getCurrentNode(), steerComp, transComp);
 			
 			vector3df myPos = transComp->worldPosition;
 			vector3df nodePos = steerComp->path.getCurrentNode();
 			myPos.Y = 0;
 			nodePos.Y = 0;
 			
-			if ((nodePos - myPos).getLengthSQ() < 50) 
-				steerComp->path.nextNode();
-				
+			if (!steerComp->path.finalNode()) {
+				if ((nodePos - myPos).getLengthSQ() < 50) {
+					steerComp->path.nextNode();
+				}
+			} else {
+				if ((nodePos - myPos).getLengthSQ() < 1) {
+					steerComp->path.nextNode();
+					steerComp->velocity *= 0;
+				}
+			}
 		} else {
-			steerComp->velocity *= 0.95;
+			steerComp->velocity *= 0.9;
 		}
 		
 		if (steerComp->velocity.getLength() > 0.01) {
@@ -72,6 +84,9 @@ void SteeringSystem::update ( float timestep ) {
 				collisionCalls++;
 				
 				SteeringComponent* otherSteerComp = mgr->getObjectComponent<SteeringComponent>(j, "SteeringComponent");
+				
+				if (!otherSteerComp->enabled)
+					continue;
 				
 				// Check the object has a transform
 				TransformComponent* otherTransComp = mgr->getObjectComponent<TransformComponent>(j, "TransformComponent");
@@ -196,6 +211,31 @@ void SteeringSystem::seek ( vector3df targetPos, SteeringComponent* steerComp, T
 	steerForce /= steerComp->mass;
 	
 	steerComp->velocity += steerForce;
+}
+
+void SteeringSystem::arrive ( vector3df arrivePos, SteeringComponent* steerComp, TransformComponent* transComp ) {
+	vector3df* pos = &transComp->worldPosition;
+	vector3df* vel = &steerComp->velocity;
+	
+	float lerpAmount = ((arrivePos - *pos).getLengthSQ() / 50);
+	lerpAmount /= lerpAmount;
+	lerpAmount /= lerpAmount;
+	lerpAmount /= lerpAmount;
+	
+	vector3df velToTarget = (arrivePos - *pos).normalize() * steerComp->maxSpeed * lerpAmount;
+	vector3df steerForce = velToTarget - *vel;
+	
+	if (steerForce.getLength() > steerComp->maxSpeed)
+		steerForce = steerForce.normalize() * steerComp->maxSpeed;
+	steerForce /= steerComp->mass;
+	
+	steerComp->velocity += steerForce;
+	
+	// Point velocity directly at the target
+	steerComp->velocity = (arrivePos - *pos).normalize() * steerComp->velocity.getLength();
+	
+	if (steerComp->velocity.getLength() > steerComp->maxSpeed)
+		steerComp->velocity = steerComp->velocity.normalize() * steerComp->maxSpeed;
 }
 
 /**
