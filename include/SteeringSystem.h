@@ -44,6 +44,11 @@ public:
 	 * Calulcates and applies a force to avoid a point 
 	 */
 	void avoid(irr::core::vector3df avoidPos, SteeringComponent* steerComp, TransformComponent* transComp);
+	
+	/**
+	 * Calulcates and applies a force to arrive smoothly at a point
+	 */
+	void arrive(irr::core::vector3df arrivePos, SteeringComponent* steerComp, TransformComponent* transComp);
 };
 
 #endif

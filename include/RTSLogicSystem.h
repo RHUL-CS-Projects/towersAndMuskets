@@ -24,6 +24,7 @@ private:
 	bool rightMousePressed = false;
 	
 	void setPath(ObjectManager* mgr, int id, irr::core::vector3df point);
+	static void calcPathSynch(ObjectManager* mgr, int id, irr::core::vector3df point);
 	void updateClickPoints();
 	
 	void stateIdle(ObjectManager* mgr, int id);

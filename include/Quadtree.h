@@ -21,6 +21,11 @@ private:
 		float rad;
 	};
 	
+	struct BestNode {
+		float distance;
+		ObjectData object;
+	};
+	
 	// The max number of objects that can be in any node before splitting
 	int maxObjects = 1;
 	
@@ -51,6 +56,8 @@ private:
 	 */
 	int getIndex(ObjectData obj);
 	
+	BestNode nearest(float x, float y, int id, BestNode best, Quadtree* node);
+	
 	std::list<int> getObjectsInBox(std::list<int>& returnObjects, irr::core::rectf box);
 public:	
 	
@@ -77,6 +84,8 @@ public:
 	std::list<int> getObjects(std::list<int>& returnObjects, int id, irr::core::vector3df pos, float rad);
 	
 	std::list<int> getObjectsInRange(std::list<int>& returnObjects, irr::core::vector3df pos, float distance);
+	
+	int getNearest(int id, irr::core::vector3df pos);
 	
 	/**
 	 * Draws the tree and its child nodes to the screen for debugging

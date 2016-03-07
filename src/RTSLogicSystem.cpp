@@ -22,6 +22,8 @@
 #include <irrlicht/irrlicht.h>
 #include <Enums.h>
 
+#include <thread>
+
 using namespace irr;
 using namespace core;
 using namespace video;
@@ -182,6 +184,13 @@ void RTSLogicSystem::updateClickPoints() {
 }
 
 void RTSLogicSystem::setPath ( ObjectManager* mgr, int id, vector3df point ) {
+	currentRTSComp->stateStack.push(WAIT);
+	
+	std::thread t(&RTSLogicSystem::calcPathSynch, mgr, id, point);
+	t.detach();
+}
+
+void RTSLogicSystem::calcPathSynch ( ObjectManager* mgr, int id, vector3df point ) {
 	
 	// Get only selected selectable objects
 	TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(id, "TransformComponent");
@@ -199,6 +208,8 @@ void RTSLogicSystem::setPath ( ObjectManager* mgr, int id, vector3df point ) {
 	
 	PathFinder pathFinder(mgr->worldManager);
 	steerComp->path = pathFinder.findPath(transComp->worldPosition, point);
+	
+	mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent")->stateStack.pop();
 }
 
 bool RTSLogicSystem::animationComplete() {
@@ -641,6 +652,9 @@ void RTSLogicSystem::stateAiming ( ObjectManager* mgr, int id ) {
 	setAnimation("AIM", true);
 	faceTarget(mgr, id);
 	currentRTSComp->shootCounter--;
+	
+	currentRTSComp->pathSet = false;
+	currentSteerComp->path.resetPath();
 	
 	// Start moving to target
 	if (selected() && clickedObject >= 0 && checkTargetDifferentTeam(mgr, clickedObject)) {

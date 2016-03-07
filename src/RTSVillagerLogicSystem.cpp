@@ -21,6 +21,8 @@
 #include <Game.h>
 #include <irrlicht/irrlicht.h>
 
+#include <thread>
+
 using namespace irr;
 using namespace core;
 using namespace video;
@@ -137,7 +139,14 @@ void RTSVillagerLogicSystem::updateClickPoints() {
 }
 
 void RTSVillagerLogicSystem::setPath ( ObjectManager* mgr, int id, vector3df point ) {
+	currentRTSComp->stateStack.push(VILLAGER_WAIT);
 	
+	std::thread t(&RTSVillagerLogicSystem::calcPathSynch, mgr, id, point);
+	t.detach();
+	
+}
+
+void RTSVillagerLogicSystem::calcPathSynch ( ObjectManager* mgr, int id, irr::core::vector3df point ) {
 	// Get only selected selectable objects
 	TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(id, "TransformComponent");
 	
@@ -154,6 +163,8 @@ void RTSVillagerLogicSystem::setPath ( ObjectManager* mgr, int id, vector3df poi
 	
 	PathFinder pathFinder(mgr->worldManager);
 	steerComp->path = pathFinder.findPath(transComp->worldPosition, point);
+	
+	mgr->getObjectComponent<RTSVillagerLogicComponent>(id, "RTSVillagerLogicComponent")->stateStack.pop();
 }
 
 bool RTSVillagerLogicSystem::animationComplete() {
@@ -195,17 +206,55 @@ void RTSVillagerLogicSystem::faceTarget ( ObjectManager* mgr, int id ) {
 	}
 }
 
-vector3df RTSVillagerLogicSystem::resourceTargetPosition ( ObjectManager* mgr ) {
+vector3df RTSVillagerLogicSystem::resourceTargetPosition ( ObjectManager* mgr, int id ) {
 	TransformComponent* otherTransComp = mgr->getObjectComponent<TransformComponent>(currentRTSComp->resourceTargetID, "TransformComponent");
 	ResourceComponent* resComp = mgr->getObjectComponent<ResourceComponent>(currentRTSComp->resourceTargetID, "ResourceComponent");
 	
-	if (otherTransComp != nullptr)
-		return vector3df(otherTransComp->worldPosition.X, 
-						 0, 
-						 otherTransComp->worldPosition.Z + 1 * mgr->worldManager->gridSize);
+	if (otherTransComp == nullptr) return currentTransComp->worldPosition;
 
-	return currentTransComp->worldPosition;
+	float gridSize = mgr->worldManager->gridSize * 0.75f;
+	vector3df mid = otherTransComp->worldPosition;
+	vector3df nearest = currentTransComp->worldPosition;
+	float distsq = -1;
+	bool foundSlot = false;
+	int slot = -1;
+	
+	for (int i = 0; i < 8; i++) {
+		// Construct vector in direction
+		vector3df unit(cos(degToRad(i*45.0f)) * gridSize, 0, sin(degToRad(i*45.0f)) * gridSize);
+		vector3df tempNearest = mid + unit;
+		
+		if (!mgr->worldManager->checkPassable(tempNearest)) continue;
+		if (resComp->gatherSlots[i] != -1) continue;
+		
+		float tempDist = (currentTransComp->worldPosition-tempNearest).getLengthSQ();
+		if (distsq == -1 || tempDist < distsq) {
+			distsq = tempDist;
+			nearest = tempNearest;
+			foundSlot = true;
+			slot = i;
+		}
+	}
+	
+	if (!foundSlot)
+		((StatePlaying*)Game::game.currentState())->message(SHOW_MESSAGE_BAD, "There is not enough space for this unit to gather here");
+	else
+		resComp->gatherSlots[slot] = id;
+		
+	return nearest;
 }
+
+void RTSVillagerLogicSystem::freeResource ( ObjectManager* mgr, int id ) {
+	if (currentRTSComp->resourceTargetID < 0) return;
+	
+	ResourceComponent* resComp = mgr->getObjectComponent<ResourceComponent>(currentRTSComp->resourceTargetID, "ResourceComponent");
+	
+	for (int i = 0; i < 8; i++) {
+		if (resComp->gatherSlots[i] == id)
+			resComp->gatherSlots[i] = -1;
+	}
+}
+
 
 void RTSVillagerLogicSystem::stateDead ( ObjectManager* mgr, int id ) {
 	mgr->detachComponent(id, "SteeringComponent");
@@ -222,10 +271,19 @@ void RTSVillagerLogicSystem::stateDead ( ObjectManager* mgr, int id ) {
 }
 
 void RTSVillagerLogicSystem::stateIdle ( ObjectManager* mgr, int id ) {
-	setAnimation("IDLE", true);
-
+	if (currentSteerComp->velocity.getLength() > 0.01) {
+		setAnimation("WALK", true);
+		FaceDirectionComponent* faceComp = mgr->getObjectComponent<FaceDirectionComponent>(id, "FaceDirectionComponent");
+		if (faceComp != nullptr)
+			faceComp->targetYRot = radToDeg(atan2(-currentSteerComp->velocity.X,-currentSteerComp->velocity.Z));
+	} else {
+		setAnimation("IDLE", true);
+	}
+	
 	// Start walking to resource target
 	if (selected() && clickedObject >= 0) {
+		freeResource(mgr, id);
+		
 		currentRTSComp->resourceTargetID = clickedObject;
 		currentRTSComp->pathSet = false;
 		currentRTSComp->resType = clickedObjType;
@@ -237,6 +295,8 @@ void RTSVillagerLogicSystem::stateIdle ( ObjectManager* mgr, int id ) {
 	
 	// Start walking to position
 	if (selected() && rightMousePressed) {
+		freeResource(mgr, id);
+		
 		currentRTSComp->resourceTargetID = -1;
 		currentRTSComp->pathSet = false;
 		
@@ -260,13 +320,18 @@ void RTSVillagerLogicSystem::stateGather ( ObjectManager* mgr, int id ) {
 			break;
 	}
 	
+	currentSteerComp->enabled = false;
 	faceTarget(mgr, id);
 	
 	// Start walking to resource
 	if (selected() && clickedObject >= 0 && clickedObject != currentRTSComp->resourceTargetID) {
+		freeResource(mgr, id);
+		
 		currentRTSComp->resourceTargetID = clickedObject;
 		currentRTSComp->pathSet = false;
 		currentRTSComp->resType = clickedObjType;
+		
+		currentSteerComp->enabled = true;
 		
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(VILLAGER_MOVE_TO_RESOURCE);
@@ -275,8 +340,12 @@ void RTSVillagerLogicSystem::stateGather ( ObjectManager* mgr, int id ) {
 	
 	// Start walking to position
 	if (selected() && rightMousePressed) {
+		freeResource(mgr, id);
+		
 		currentRTSComp->resourceTargetID = -1;
 		currentRTSComp->pathSet = false;
+		
+		currentSteerComp->enabled = true;
 		
 		currentRTSComp->terrainPoint = terrainPoint;
 		currentRTSComp->stateStack.pop();
@@ -302,6 +371,8 @@ void RTSVillagerLogicSystem::stateWalking ( ObjectManager* mgr, int id ) {
 
 	// Start walking to resource target
 	if (selected() && clickedObject >= 0) {
+		freeResource(mgr, id);
+		
 		currentRTSComp->resourceTargetID = clickedObject;
 		currentRTSComp->pathSet = false;
 		currentRTSComp->resType = clickedObjType;
@@ -313,6 +384,8 @@ void RTSVillagerLogicSystem::stateWalking ( ObjectManager* mgr, int id ) {
 	
 	// Start walking to position
 	if (selected() && rightMousePressed) {
+		freeResource(mgr, id);
+		
 		currentRTSComp->resourceTargetID = -1;
 		currentRTSComp->pathSet = false;
 		
@@ -335,12 +408,14 @@ void RTSVillagerLogicSystem::stateMoveToResource ( ObjectManager* mgr, int id ) 
 	setAnimation("WALK", true);
 	
 	if (!currentRTSComp->pathSet) {
-		setPath(mgr, id, resourceTargetPosition(mgr));
+		setPath(mgr, id, resourceTargetPosition(mgr, id));
 		currentRTSComp->pathSet = true;
 	}
 
 	// Start walking to resource
 	if (selected() && clickedObject >= 0 && clickedObject != currentRTSComp->resourceTargetID) {
+		freeResource(mgr, id);
+		
 		currentRTSComp->resourceTargetID = clickedObject;
 		currentRTSComp->pathSet = false;
 		currentRTSComp->resType = clickedObjType;
@@ -352,6 +427,8 @@ void RTSVillagerLogicSystem::stateMoveToResource ( ObjectManager* mgr, int id ) 
 	
 	// Start walking to position
 	if (selected() && rightMousePressed) {
+		freeResource(mgr, id);
+		
 		currentRTSComp->resourceTargetID = -1;
 		currentRTSComp->pathSet = false;
 		
