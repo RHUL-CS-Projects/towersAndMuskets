@@ -35,12 +35,18 @@ void InteractionMenu::init ( int height, GameState* state ) {
 	
 	guiElements.push_back(new GuiElement(width - 130, top + 50, 100, 20, "Menu", filepath, SColor(50,255,255,255), 6));
 	
+	font = Game::game.getRendMgr()->getGUIEnvironment()->getFont(filepath.c_str());
+	
 	for (GuiElement* e : guiElements) {
 		e->registerObserver(this);
 	}
 	
 	sndRolloverSound = Game::game.resources.loadSound("click.ogg");
 	sndClickSound = Game::game.resources.loadSound("click2.ogg");
+	
+	texGold = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/GoldIcon.png").c_str());
+	texStone = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/StoneIcon.png").c_str());
+	texWood = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/WoodIcon.png").c_str());
 }
 
 void InteractionMenu::onNotify ( int id, int eventID ) {
@@ -72,22 +78,13 @@ void InteractionMenu::onNotify ( int id, int eventID ) {
 			Game::game.pushState(new StatePauseMenu());
 			break;
 		case 7:
-			Game::game.getRendMgr()->getSceneManager()->clear();
-			Game::game.getObjMgr()->clearObjects();
-			Game::game.popStates(1);
-			Game::game.pushState(new StatePlaying("map1"));
+			((StatePlaying*)Game::game.currentState())->reloadMap("map1");
 			break;
 		case 8:
-			Game::game.getRendMgr()->getSceneManager()->clear();
-			Game::game.getObjMgr()->clearObjects();
-			Game::game.popStates(1);
-			Game::game.pushState(new StatePlaying("map2"));
+			((StatePlaying*)Game::game.currentState())->reloadMap("map2");
 			break;
 		case 9:
-			Game::game.getRendMgr()->getSceneManager()->clear();
-			Game::game.getObjMgr()->clearObjects();
-			Game::game.popStates(1);
-			Game::game.pushState(new StatePlaying("map3"));
+			((StatePlaying*)Game::game.currentState())->reloadMap("map3");
 			break;
 		case 10:
 			((StatePlaying*)parentState)->message(SET_PLACE_OBJECT_PLAYER_VILLAGER);
@@ -121,4 +118,18 @@ void InteractionMenu::render ( irr::video::IVideoDriver* driver ) {
 	for (GuiElement* e : guiElements) {
 		e->render(driver);
 	}
+	
+	driver->draw2DImage(texGold, recti(560, bottom-height+20, 576, bottom-height+36), recti(0, 0, texGold->getSize().Width, texGold->getSize().Height), 0, 0, true);
+	driver->draw2DImage(texStone, recti(560, bottom-height+50, 576, bottom-height+66), recti(0, 0, texStone->getSize().Width, texStone->getSize().Height), 0, 0, true);
+	driver->draw2DImage(texWood, recti(560, bottom-height+80, 576, bottom-height+96), recti(0, 0, texWood->getSize().Width, texWood->getSize().Height), 0, 0, true);
+	
+	std::string stone = std::to_string(((StatePlaying*)Game::game.currentState())->getResourceCache()->getStone());
+	std::string gold = std::to_string(((StatePlaying*)Game::game.currentState())->getResourceCache()->getGold());
+	std::string wood = std::to_string(((StatePlaying*)Game::game.currentState())->getResourceCache()->getWood());
+	font->draw(gold.c_str(), recti(590, bottom-height+20, 640, bottom-height+36),SColor(200,255,255,255),false, true);
+	font->draw(stone.c_str(), recti(590, bottom-height+50, 640, bottom-height+66),SColor(200,255,255,255),false, true);
+	font->draw(wood.c_str(), recti(590, bottom-height+80, 640, bottom-height+96),SColor(200,255,255,255),false, true);
 }
+
+
+

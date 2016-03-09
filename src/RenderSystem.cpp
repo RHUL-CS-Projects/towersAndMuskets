@@ -164,6 +164,15 @@ void RenderSystem::addAnimatedSceneNode (RenderComponent* rendComp, AnimatedMesh
 			for (ITexture* texture : animComp->textures) {
 				//animnode->setMaterialTexture(layer, texture);
 				animnode->getMaterial(layer).setTexture(0, texture);
+				animnode->getMaterial(layer).SpecularColor = SColor(0,0,0,0);
+				animnode->setMaterialFlag(video::EMF_ANISOTROPIC_FILTER, false);
+				animnode->setMaterialFlag(video::EMF_ANTI_ALIASING, false);
+				animnode->setMaterialFlag(video::EMF_TRILINEAR_FILTER, false);
+				animnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
+				animnode->setMaterialFlag(video::EMF_USE_MIP_MAPS, false);
+				animnode->setMaterialFlag(video::EMF_BLEND_OPERATION, false);
+				animnode->setMaterialFlag(video::EMF_GOURAUD_SHADING, false);
+				animnode->setMaterialFlag(video::EMF_LIGHTING, false);
 				layer++;
 			}
 		}
@@ -171,11 +180,10 @@ void RenderSystem::addAnimatedSceneNode (RenderComponent* rendComp, AnimatedMesh
 		animnode->setPosition(transComp->worldPosition);
 		animnode->setRotation(transComp->rotation);
 		animnode->setScale(transComp->scale);
-		animnode->getMaterial(0).SpecularColor = SColor(0,0,0,0);
 
 		animnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 		
-		animnode->addShadowVolumeSceneNode();
+		//animnode->addShadowVolumeSceneNode();
 		
 		animnode->setAnimationSpeed(70);
 		animnode->setFrameLoop(62, 142);

@@ -43,16 +43,7 @@ public:
 	/**
 	 * Initialises the grid
 	 */
-	WorldManager(float gridSize, irr::core::recti worldBounds) {
-		this->gridSize = gridSize;
-		this->worldBounds = worldBounds;
-		
-		gridWidth = (int)ceil(worldBounds.getWidth() / gridSize);
-		gridHeight = (int)ceil(worldBounds.getHeight() / gridSize);
-		
-		grid = new short[gridWidth * gridHeight]();
-		
-	}
+	WorldManager(float gridSize);
 	
 	/**
 	 * Sets a rectangle area of the grid as either passable or impassable
@@ -91,6 +82,11 @@ public:
 	 * Clears all grid squares
 	 */
 	void clear();
+	
+	void setTerrainData(irr::scene::ITerrainSceneNode* terrain);
+	
+	irr::core::recti getWorldBounds();
+	irr::core::rectf getWorldBoundsF();
 };
 
 #endif

@@ -179,7 +179,7 @@ public:
 		objmgr->attachComponent(id, new SelectableComponent());
 		objmgr->attachComponent(id, new RenderComponent(true));
 		objmgr->attachComponent(id, new FaceDirectionComponent(0, 0.08f));
-		objmgr->attachComponent(id, new RTSVillagerLogicComponent(0, 1, 1, Game::game.resources.loadSound("musketshot.ogg"), Game::game.resources.loadSound("musketshot.ogg")));
+		objmgr->attachComponent(id, new RTSVillagerLogicComponent(0, 5, 26, Game::game.resources.loadSound("musketshot.ogg"), Game::game.resources.loadSound("musketshot.ogg")));
 		objmgr->attachComponent(id, new SteeringComponent(0.2, 80));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
 	}

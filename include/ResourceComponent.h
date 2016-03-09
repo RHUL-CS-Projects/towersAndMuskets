@@ -6,7 +6,6 @@
 
 class ResourceComponent : public GameComponent {
 private:
-	
 public:
 	ResourceComponent (RESOURCE_TYPE resType) : GameComponent("ResourceComponent") {
 		this->resType = resType;
@@ -14,7 +13,12 @@ public:
 	
 	RESOURCE_TYPE resType;
 	
-	int gatherSlots[8] = {-1, -1, -1, -1, -1, -1, -1, -1};
+	int gatherSlots[4] = {-1, -1, -1, -1};
+	int maxGatherers = 4;
+	
+	int flashNum = 0;
+	int flashTimer = 30;
+	bool flashOn = false;
 };
 
 #endif

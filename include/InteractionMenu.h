@@ -15,6 +15,9 @@ private:
 	sf::Sound* sndRolloverSound;
 	sf::Sound* sndClickSound;
 	GameState* parentState;
+	irr::gui::IGUIFont* font;
+	
+	irr::video::ITexture* texGold, *texStone, *texWood;
 	
 public:
 	InteractionMenu();
@@ -29,6 +32,7 @@ public:
 	void init(int height, GameState* state);
 	void update();
 	void render(irr::video::IVideoDriver* driver);
+	void setResourcesDisplay(int stone, int gold, int wood);
 	virtual void onNotify(int id, int eventID);
 };
 

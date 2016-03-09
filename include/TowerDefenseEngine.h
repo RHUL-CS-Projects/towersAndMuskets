@@ -24,6 +24,7 @@
 #include <ObjectPlacer.h>
 #include <PathMovementComponent.h>
 #include <PathMovementSystem.h>
+#include <PlayerResourceCache.h>
 #include <RenderComponent.h>
 #include <RenderManager.h>
 #include <RenderSystem.h>
