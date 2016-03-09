@@ -28,7 +28,12 @@ private:
 	MapGenerator mapGenerator;
 	ObjectPlacer objectPlacer;
 	NotificationMessage messageDisplay;
+	PlayerResourceCache resourceCache;
 	
+	std::string currentMap;
+	
+	bool shouldReload;
+	void loadMap(std::string mapname);
 public:
 	StatePlaying (std::string mapname);
 	
@@ -36,7 +41,8 @@ public:
 	virtual void render(irr::video::IVideoDriver* driver);
 	virtual void transitionIn();
 	virtual void transitionOut();
-	void loadMap(std::string mapname);
+	PlayerResourceCache* getResourceCache();
+	void reloadMap(std::string mapname);
 	void message(int messageNum, std::string message = "");
 };
 

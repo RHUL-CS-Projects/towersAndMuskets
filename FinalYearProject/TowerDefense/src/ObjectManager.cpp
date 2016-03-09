@@ -35,7 +35,7 @@ ObjectManager::ObjectManager() {
 	systems.push_back(new RTSLogicSystem());
 	systems.push_back(new RTSVillagerLogicSystem());
 	
-	worldManager = new WorldManager(8, irr::core::recti(0,0,480,480));
+	worldManager = new WorldManager(8);
 }
 
 ObjectManager::~ObjectManager() {

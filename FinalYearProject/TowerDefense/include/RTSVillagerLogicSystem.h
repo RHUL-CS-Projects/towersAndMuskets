@@ -38,6 +38,8 @@ private:
 	/*	HELPER METHODS	*/
 	void faceTarget( ObjectManager* mgr, int id);
 	irr::core::vector3df resourceTargetPosition(ObjectManager* mgr, int id);
+	bool canGatherHere(ObjectManager* mgr, int id);
+	bool isResource(ObjectManager* mgr, int checkid);
 	void freeResource(ObjectManager* mgr, int id);
 	void setAnimation(std::string animation, bool loop);
 	bool animationComplete();

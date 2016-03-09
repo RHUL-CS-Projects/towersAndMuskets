@@ -16,11 +16,10 @@ StatePlaying::StatePlaying(std::string mapname) {
 	transparentDraw = false;
 	transparentUpdate = false;
 	ISceneManager* smgr = Game::game.getRendMgr()->getSceneManager();
-	
-	objectPlacer.init();
+
 	interactionMenu.init(128, this);
 	messageDisplay.init(RenderManager::resPath + "/materials/textures/SerifFont.xml");
-
+	
 	loadMap(mapname);
 	
 	if (!bufGunshot1.loadFromFile("res/sounds/musketshot.ogg"))
@@ -35,10 +34,16 @@ StatePlaying::StatePlaying(std::string mapname) {
 }
 
 void StatePlaying::loadMap ( std::string mapname ) {
+	Game::game.getRendMgr()->getSceneManager()->clear();
+	Game::game.getObjMgr()->clearObjects();
+	objectPlacer.init();
+	resourceCache.init(0,0,0);
+	EventReceiver::cubes.clear();
+	
+	///////////////////////////////////
 	ISceneManager* smgr = Game::game.getRendMgr()->getSceneManager();
 	
 	Game::game.getObjMgr()->clearObjects();
-	Game::game.getObjMgr()->worldManager->clear();
 	smgr->clear();
 	
 	mapGenerator.generateMap(mapname);
@@ -51,16 +56,30 @@ void StatePlaying::loadMap ( std::string mapname ) {
 	light->getLightData().Direction = lightdir;
 	
 	camera.addToScene();
+	
+	this->currentMap = mapname;
+}
+
+void StatePlaying::reloadMap ( std::string mapname ) {
+	shouldReload = true;
+	this->currentMap = mapname;
 }
 
 void StatePlaying::update() {
-    GameState::update();
-	
-	camera.update();
-	interactionMenu.update();
-	messageDisplay.update();
-	objectPlacer.update();
-	Game::game.getObjMgr()->updateSystems(0);
+	if (!shouldReload) {
+		GameState::update();
+		
+		camera.update();
+		interactionMenu.update();
+		messageDisplay.update();
+		objectPlacer.update();
+		resourceCache.update();
+		
+		Game::game.getObjMgr()->updateSystems(0);
+	} else {
+		shouldReload = false;
+		loadMap(currentMap);
+	}
 }
 
 void StatePlaying::render ( irr::video::IVideoDriver* driver ) {
@@ -112,3 +131,8 @@ void StatePlaying::message ( int messageNum, std::string message ) {
 		break;
 	}
 }
+
+PlayerResourceCache* StatePlaying::getResourceCache() {
+	return &resourceCache;
+}
+

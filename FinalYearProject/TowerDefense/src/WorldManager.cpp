@@ -7,6 +7,31 @@ using namespace core;
 using namespace video;
 using namespace gui;
 
+WorldManager::WorldManager ( float gridSize ) {
+	this->gridSize = gridSize;
+	this->worldBounds = worldBounds;
+}
+
+void WorldManager::setTerrainData ( scene::ITerrainSceneNode* terrain ) {
+	float terW = terrain->getBoundingBox().MaxEdge.X - terrain->getMesh()->getBoundingBox().MinEdge.X;
+	float terH = terrain->getBoundingBox().MaxEdge.Z - terrain->getMesh()->getBoundingBox().MinEdge.Z;
+	
+	worldBounds = recti(0, 0, (int)terW, (int)terH);
+	
+	gridWidth = (int)floor(terW / gridSize);
+	gridHeight = (int)floor(terH / gridSize);
+	
+	grid = new short[gridWidth * gridHeight]();
+}
+
+recti WorldManager::getWorldBounds() {
+	return worldBounds;
+}
+
+rectf WorldManager::getWorldBoundsF() {
+	return rectf(worldBounds.UpperLeftCorner.X, worldBounds.UpperLeftCorner.Y, worldBounds.LowerRightCorner.X, worldBounds.LowerRightCorner.Y);
+}
+
 /**
  * Set the value on the grid at an x and y position
  */

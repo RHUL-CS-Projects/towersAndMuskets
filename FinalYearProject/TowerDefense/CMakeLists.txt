@@ -57,6 +57,7 @@ set (SOURCES
   src/NotificationMessage.cpp
   src/NoiseGenerator.cpp
   src/RTSVillagerLogicSystem.cpp
+  src/PlayerResourceCache.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)

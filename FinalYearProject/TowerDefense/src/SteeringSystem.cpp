@@ -11,6 +11,7 @@
 #include <DebugValues.h>
 #include <Game.h>
 #include <SelectableComponent.h>
+#include <WorldManager.h>
 
 using namespace irr;
 using namespace scene;
@@ -26,7 +27,7 @@ void SteeringSystem::update ( float timestep ) {
 	
 	int collisionCalls = 0;
 	
-	Quadtree collisionTree(0, rectf(0, 0, 480, 480));
+	Quadtree collisionTree(0, Game::game.getObjMgr()->worldManager->getWorldBoundsF());
 	buildQuadtree(objects, collisionTree);
 	
 	tempTree = &collisionTree;
@@ -44,8 +45,6 @@ void SteeringSystem::update ( float timestep ) {
 		
 		if (transComp == nullptr)
 			continue;
-		
-		std::cout << steerComp->path.finalNode() << ", " << steerComp->path.ended()<< std::endl;
 		
 		if (!steerComp->path.ended()) {
 			if (!steerComp->path.finalNode())
@@ -188,7 +187,7 @@ void SteeringSystem::draw ( float timestep ) {
 		Game::game.getRendMgr()->getDriver()->setMaterial(m);
 		Game::game.getRendMgr()->getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
 		
-		Quadtree collisionTree(0, rectf(0, 0, 480, 480));
+		Quadtree collisionTree(0, Game::game.getObjMgr()->worldManager->getWorldBoundsF());
 		buildQuadtree(objects, collisionTree);
 		
 		collisionTree.draw();

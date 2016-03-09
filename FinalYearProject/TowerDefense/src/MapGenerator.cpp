@@ -14,44 +14,12 @@ using namespace io;
 
 void MapGenerator::generateMap(std::string mapname) {
 	ISceneManager* smgr = Game::game.getRendMgr()->getSceneManager();
-
+	
 	addTerrain(smgr);
+	ITerrainSceneNode* terrain = (ITerrainSceneNode*)Game::game.getRendMgr()->getSceneManager()->getSceneNodeFromName("MainTerrain");
+	Game::game.getObjMgr()->worldManager->setTerrainData(terrain);
+	Game::game.getObjMgr()->worldManager->clear();
 	loadMap(mapname);
-	
-	/*for (int x = 0; x < 240; x++) {
-		for (int y = 0; y < 240; y++) {
-			if (rand() % 400 == 0)
-				placeTree(vector2df(x*2,y*2), smgr);
-		}
-	}
-	
-	for (int x = 0; x < 120; x++) {
-		for (int y = 0; y < 120; y++) {
-			if (rand() % 1000 == 0)
-				placeRock(vector2df(x*4,y*4), smgr);
-		}
-	}*/
-	
-	/*int mapWidth = Game::game.getObjMgr()->worldManager->gridWidth;
-	int mapHeight = Game::game.getObjMgr()->worldManager->gridHeight;
-	float gridSize = Game::game.getObjMgr()->worldManager->gridSize;
-	
-	srand(time(NULL));
-	NoiseGenerator gen;
-	std::cout << "Generating noise map... ";
-	gen.generatePerlinNoise(rand(), 480, 480);
-	std::cout << "Done" << std::endl;
-	
-	std::cout << "Building map... ";
-	for (int x = 0; x < mapWidth; x++) {
-		for (int y = 0; y < mapHeight; y++) {
-			float val = gen.getNoiseAt(x,y);
-
-			if (val < 0.5f)
-				placeTree(vector2df(x * gridSize, y * gridSize), smgr);
-		}
-	}
-	std::cout << "Done" << std::endl;*/
 }
 
 void MapGenerator::loadMap ( std::string mapname ) {
@@ -75,14 +43,71 @@ void MapGenerator::loadMap ( std::string mapname ) {
 				}
 				
 				if (data == SColor(255,200,200,200).color) {
-					placeRock(vector2df(x * gridSize, y * gridSize), smgr);
+					placeRock(vector2df(x * gridSize + gridSize/2, y * gridSize + gridSize/2), smgr);
 				}
 				
 				if (data == SColor(255,255,255,0).color) {
-					placeGold(vector2df(x * gridSize, y * gridSize), smgr);
+					placeGold(vector2df(x * gridSize + gridSize/2, y * gridSize + gridSize/2), smgr);
 				}
 			}
 		}
+		
+		// Build terrain texture
+		/*ITerrainSceneNode* terrain = (ITerrainSceneNode*)Game::game.getRendMgr()->getSceneManager()->getSceneNodeFromName("MainTerrain");
+		
+		float gridW = Game::game.getObjMgr()->worldManager->gridWidth;
+		float gridH = Game::game.getObjMgr()->worldManager->gridHeight;
+		float scale = 16;
+		float texWidth = gridW * gridSize * scale;
+		float texHeight = gridH * gridSize * scale;
+		
+		IVideoDriver* driver = Game::game.getRendMgr()->getDriver();
+		ITexture* texTerrain = driver->addRenderTargetTexture(dimension2du(texWidth, texHeight));
+		ITexture* texGrass1 = driver->getTexture("./res/materials/textures/grass-texture2.jpg");
+		ITexture* texGrass2 = driver->getTexture("./res/materials/textures/grass-texture5.png");
+		driver->setRenderTarget(texTerrain);
+		
+		float tileSize = texWidth / 32;
+		
+		for (int x = 0; x < 32; x++) {
+			for (int y = 0; y < 32; y++) {
+				driver->draw2DImage(
+					texGrass1, 
+					recti(tileSize*x, tileSize*y, tileSize*x + texWidth/32, tileSize*y + texHeight/32),
+					recti(0, 0, texGrass1->getSize().Width, texGrass1->getSize().Height)
+				);
+			}
+		}
+		
+		for (int x = 0; x < gridW; x++) {
+			for (int y = 0; y < gridH; y++) {
+				int dx = gridW - x - 1;
+				int dy = y;
+				
+				if (Game::game.getObjMgr()->worldManager->checkPassableGridCoords(x,y)) {
+					driver->draw2DImage(
+						texGrass1, 
+						recti((dx * gridSize)*scale, (dy * gridSize)*scale, (dx * gridSize + gridSize)*scale, (dy * gridSize + gridSize)*scale),
+						recti(0, 0, texGrass1->getSize().Width, texGrass1->getSize().Height)
+					);
+				} else {
+					driver->draw2DImage(
+						texGrass2, 
+						recti(
+							(dx * gridSize)*scale - (gridSize*scale*0.5f), 
+							(dy * gridSize)*scale - (gridSize*scale*0.5f), 
+							(dx * gridSize + gridSize)*scale + (gridSize*scale*0.5f), 
+							(dy * gridSize + gridSize)*scale  + (gridSize*scale*0.5f)
+						),
+						recti(0, 0, texGrass2->getSize().Width, texGrass2->getSize().Height), 0, 0, true
+					);
+				}
+			}
+		}
+		
+		driver->setRenderTarget(0);
+		terrain->setMaterialTexture(0, texTerrain);
+		terrain->scaleTexture(1, 1);*/
 		
 		mapTexture->drop();
 	} else {
@@ -110,7 +135,10 @@ void MapGenerator::placeRock ( vector2df pos, ISceneManager* smgr ) {
 	if (terrain != nullptr)
 		yPos = terrain->getHeight(pos.X, pos.Y);
 	
-	ObjectFactory::addRock(vector3df(floor(pos.X), floor(yPos), floor(pos.Y)));
+	if (Game::game.getObjMgr()->worldManager->checkPassable(vector3df(pos.X, yPos, pos.Y))) {
+		ObjectFactory::addRock(vector3df(pos.X, yPos, pos.Y));
+		Game::game.getObjMgr()->worldManager->setPassable(rectf(pos.X-0.5f, pos.Y-0.5f, pos.X+0.5f, pos.Y+0.5f), false);
+	}
 }
 
 void MapGenerator::placeGold ( vector2df pos, ISceneManager* smgr ) {
@@ -120,7 +148,10 @@ void MapGenerator::placeGold ( vector2df pos, ISceneManager* smgr ) {
 	if (terrain != nullptr)
 		yPos = terrain->getHeight(pos.X, pos.Y);
 	
-	ObjectFactory::addGold(vector3df(pos.X, yPos, pos.Y));
+	if (Game::game.getObjMgr()->worldManager->checkPassable(vector3df(pos.X, yPos, pos.Y))) {
+		ObjectFactory::addGold(vector3df(pos.X, yPos, pos.Y));
+		Game::game.getObjMgr()->worldManager->setPassable(rectf(pos.X-0.5f, pos.Y-0.5f, pos.X+0.5f, pos.Y+0.5f), false);
+	}
 }
 
 void MapGenerator::addTerrain ( ISceneManager* smgr ) {
@@ -134,7 +165,7 @@ void MapGenerator::addTerrain ( ISceneManager* smgr ) {
 		SColor(255,255,255,255),
 		1,
 		scene::ETPS_17,
-		5
+		1
 	);
 	
 	terrain->setMaterialFlag(video::EMF_LIGHTING, true);

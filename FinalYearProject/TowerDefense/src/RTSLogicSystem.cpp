@@ -210,6 +210,7 @@ void RTSLogicSystem::calcPathSynch ( ObjectManager* mgr, int id, vector3df point
 	steerComp->path = pathFinder.findPath(transComp->worldPosition, point);
 	
 	mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent")->stateStack.pop();
+	mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent")->pathSet = true;
 }
 
 bool RTSLogicSystem::animationComplete() {
@@ -307,7 +308,14 @@ void RTSLogicSystem::stateDead ( ObjectManager* mgr, int id ) {
 }
 
 void RTSLogicSystem::stateIdle ( ObjectManager* mgr, int id ) {
-	setAnimation("IDLE", true);
+	if (currentSteerComp->velocity.getLength() > 0.01) {
+		setAnimation("WALK", true);
+		FaceDirectionComponent* faceComp = mgr->getObjectComponent<FaceDirectionComponent>(id, "FaceDirectionComponent");
+		if (faceComp != nullptr)
+			faceComp->targetYRot = radToDeg(atan2(-currentSteerComp->velocity.X,-currentSteerComp->velocity.Z));
+	} else {
+		setAnimation("IDLE", true);
+	}
 	
 	// Start walking to attack target
 	if (selected() && clickedObject >= 0 && checkTargetDifferentTeam(mgr, clickedObject)) {
