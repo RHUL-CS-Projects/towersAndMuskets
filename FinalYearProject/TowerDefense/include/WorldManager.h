@@ -2,6 +2,7 @@
 #define WORLDMANAGER_H
 
 #include <irrlicht/irrlicht.h>
+#include <Quadtree.h>
 
 /**
  * Stores the grid representation of the world with methods for checking if
@@ -29,6 +30,11 @@ private:
 	 * Gets the height of the terrain at a given location
 	 */
 	float terrainHeight(float x, float y);
+	
+	/**
+	 * Used by other objects for querying distances to each other
+	 */
+	Quadtree* positionTree;
 public:
 	
 	// The width of the grid
@@ -84,6 +90,21 @@ public:
 	void clear();
 	
 	void setTerrainData(irr::scene::ITerrainSceneNode* terrain);
+	
+	/**
+	 * Update the object position quadtree
+	 */
+	void update();
+	
+	/**
+	 * Returns the nearest object with a different team to the one specified
+	 */
+	int getNearestNotOnTeam(int id);
+	
+	/**
+	 * Use as a comparison for ensuring an object is on a different team
+	 */
+	static bool onDifferentTeam(int queryID, int otherID);
 	
 	irr::core::recti getWorldBounds();
 	irr::core::rectf getWorldBoundsF();

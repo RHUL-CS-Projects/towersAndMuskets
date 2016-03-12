@@ -14,8 +14,6 @@
  */
 class SteeringSystem : public ComponentSystem {
 private:
-	// Quadtree used to optimise collision detection
-	Quadtree* tempTree;
 	
 	/**
 	 * Places all objects into the quadtree for collision detection

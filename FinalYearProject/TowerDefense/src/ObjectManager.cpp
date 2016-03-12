@@ -180,6 +180,7 @@ void ObjectManager::detachComponent ( int id, std::string componentName ) {
  * Update all component systems.
  */
 void ObjectManager::updateSystems ( float timestep ) {
+	worldManager->update();
 	
 	for (ComponentSystem* system : systems) {
 		system->update(timestep);
