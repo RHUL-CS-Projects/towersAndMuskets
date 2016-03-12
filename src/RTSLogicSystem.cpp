@@ -293,6 +293,33 @@ vector3df RTSLogicSystem::towerTargetPosition ( ObjectManager* mgr ) {
 	return currentTransComp->worldPosition;
 }
 
+int RTSLogicSystem::getNearestOnOtherTeam ( ObjectManager* mgr, int id ) {
+	std::list<int> objects = mgr->getObjectsWithComponent("RTSLogicComponent");
+	
+	double dist = currentRTSComp->rangeInSquares * mgr->worldManager->gridSize;
+	dist *= dist;
+	int best = -1;
+	
+	for (int i : objects) {
+		RTSLogicComponent* otherRTSComp = mgr->getObjectComponent<RTSLogicComponent>(i, "RTSLogicComponent");
+		
+		if (otherRTSComp->teamID == currentRTSComp->teamID) continue;
+		
+		TransformComponent* otherTransComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
+		
+		double dx = otherTransComp->worldPosition.X - currentTransComp->worldPosition.X;
+		double dz = otherTransComp->worldPosition.Z - currentTransComp->worldPosition.Z;
+		double distsq = dx*dx + dz*dz;
+		
+		if (distsq < dist) {
+			dist = distsq;
+			best = i;
+		}
+	}
+	
+	return best;
+}
+
 void RTSLogicSystem::stateDead ( ObjectManager* mgr, int id ) {
 	mgr->detachComponent(id, "SteeringComponent");
 	mgr->detachComponent(id, "RTSLogicComponent");
@@ -301,6 +328,11 @@ void RTSLogicSystem::stateDead ( ObjectManager* mgr, int id ) {
 	AnimatorComponent* animComp = mgr->getObjectComponent<AnimatorComponent>(id, "AnimatorComponent");
 	RenderComponent* rendComp = mgr->getObjectComponent<RenderComponent>(id, "RenderComponent");
 	
+	SelectableComponent* selectComp = mgr->getObjectComponent<SelectableComponent>(id, "SelectableComponent");
+	if (selectComp != nullptr) {
+		selectComp->sceneNode->setVisible(false);
+	}
+	
 	if (animComp != nullptr && rendComp != nullptr) {
 		animComp->setAnimation("DEATH1", rendComp->sceneNode);
 		rendComp->sceneNode->setLoopMode(false);
@@ -308,6 +340,8 @@ void RTSLogicSystem::stateDead ( ObjectManager* mgr, int id ) {
 }
 
 void RTSLogicSystem::stateIdle ( ObjectManager* mgr, int id ) {
+	int nearestEnemy = getNearestOnOtherTeam(mgr, id);
+	
 	if (currentSteerComp->velocity.getLength() > 0.01) {
 		setAnimation("WALK", true);
 		FaceDirectionComponent* faceComp = mgr->getObjectComponent<FaceDirectionComponent>(id, "FaceDirectionComponent");
@@ -320,6 +354,16 @@ void RTSLogicSystem::stateIdle ( ObjectManager* mgr, int id ) {
 	// Start walking to attack target
 	if (selected() && clickedObject >= 0 && checkTargetDifferentTeam(mgr, clickedObject)) {
 		currentRTSComp->attackTargetID = clickedObject;
+		currentRTSComp->pathSet = false;
+		
+		currentRTSComp->stateStack.pop();
+		currentRTSComp->stateStack.push(MOVE_TO_ATTACK);
+		return;
+	}
+	
+	// Start walking to attack nearby target
+	if (nearestEnemy >= 0) {
+		currentRTSComp->attackTargetID = nearestEnemy;
 		currentRTSComp->pathSet = false;
 		
 		currentRTSComp->stateStack.pop();
@@ -686,8 +730,6 @@ void RTSLogicSystem::stateAiming ( ObjectManager* mgr, int id ) {
 	
 	// Start moving to tower
 	
-	// Go back to idling on foot
-	
 	// Go back to idling in tower
 	
 	// Start moving to position
@@ -718,6 +760,7 @@ void RTSLogicSystem::stateAiming ( ObjectManager* mgr, int id ) {
 		
 		HealthComponent* otherHealthComp = mgr->getObjectComponent<HealthComponent>(currentRTSComp->attackTargetID, "HealthComponent");
 		otherHealthComp->health -= currentRTSComp->attackDamage * ((currentRTSComp->garrissoned) ? 2 : 1);
+		otherHealthComp->alpha = 2;
 		
 		currentRTSComp->shootSound->setPosition(currentTransComp->worldPosition.X, currentTransComp->worldPosition.Y, currentTransComp->worldPosition.Z);
 		currentRTSComp->shootSound->setVolume(100);
@@ -725,6 +768,15 @@ void RTSLogicSystem::stateAiming ( ObjectManager* mgr, int id ) {
 		currentRTSComp->shootSound->setAttenuation(0.1f);
 		currentRTSComp->shootSound->play();
 		return;
+	}
+	
+	// Go back to idling on foot
+	if (!targetAlive(mgr)) {
+		currentRTSComp->attackTargetID = -1;
+		
+		currentRTSComp->stateStack.pop();
+		currentRTSComp->stateStack.push(IDLE);
+		currentRTSComp->stateStack.push(RELEASE_AIM);
 	}
 }
 

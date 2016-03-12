@@ -24,6 +24,7 @@ void Quadtree::clear() {
 	for (int i = 0; i < 4; i++) {
 		if (nodes[i] != nullptr) {
 			nodes[i]->clear();
+			delete nodes[i];
 			nodes[i] = nullptr;
 		}
 	}
@@ -223,7 +224,7 @@ void Quadtree::draw() {
 	}
 }
 
-int Quadtree::getNearest ( int id, irr::core::vector3df pos ) {
+int Quadtree::getNearest ( int id, irr::core::vector3df pos, bool(*constraintFunc)(int, int)) {
 	float x = pos.X;
 	float y = pos.Z;
 	
@@ -231,23 +232,28 @@ int Quadtree::getNearest ( int id, irr::core::vector3df pos ) {
 	best.distance = -1;
 	best.object.id = -1;
 	
-	best = nearest(x, y, id, best, this);
+	best = nearest(x, y, id, best, this, constraintFunc);
 	
 	return best.object.id;
 }
 
-Quadtree::BestNode Quadtree::nearest ( float x, float y, int id, Quadtree::BestNode best, Quadtree* node ) {
+Quadtree::BestNode Quadtree::nearest ( float x, float y, int id, Quadtree::BestNode best, Quadtree* node, bool(*constraintFunc)(int, int)) {
 	float x1 = node->bounds.UpperLeftCorner.X;
 	float y1 = node->bounds.UpperLeftCorner.Y;
 	float x2 = node->bounds.LowerRightCorner.X;
 	float y2 = node->bounds.LowerRightCorner.Y;
-
+	
 	if (x < x1 - best.distance || x > x2 + best.distance || y < y1 - best.distance || y > y2 + best.distance) {
 		return best;
 	}
 	
 	for (ObjectData o : node->objects) {
 		if (o.id == id) continue;
+
+		/*if (constraintFunc != nullptr) {
+			if (!constraintFunc(id, o.id))
+				continue;
+		}*/
 		
 		float dx = o.pos.X - x;
 		dx *= dx;
@@ -267,10 +273,10 @@ Quadtree::BestNode Quadtree::nearest ( float x, float y, int id, Quadtree::BestN
 	int rl = (2*x > x1 + x2) ? 1 : 0;
 	int bt = (2*y > y1 + y2) ? 1 : 0;
 	
-	if (children[bt*2+rl]) best = nearest(x, y, id, best, children[bt*2+rl]);
-	if (children[bt*2+(1-rl)]) best = nearest(x, y, id, best, children[bt*2+(1-rl)]);
-	if (children[(1-bt)*2+rl]) best = nearest(x, y, id, best, children[(1-bt)*2+rl]);
-	if (children[(1-bt)*2+(1-rl)]) best = nearest(x, y, id, best, children[(1-bt)*2+(1-rl)]);
+	if (children[bt*2+rl]) best = nearest(x, y, id, best, children[bt*2+rl], constraintFunc);
+	if (children[bt*2+(1-rl)]) best = nearest(x, y, id, best, children[bt*2+(1-rl)], constraintFunc);
+	if (children[(1-bt)*2+rl]) best = nearest(x, y, id, best, children[(1-bt)*2+rl], constraintFunc);
+	if (children[(1-bt)*2+(1-rl)]) best = nearest(x, y, id, best, children[(1-bt)*2+(1-rl)], constraintFunc);
 	
 	return best;
 }

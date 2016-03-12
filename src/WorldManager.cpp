@@ -1,6 +1,10 @@
 #include <WorldManager.h>
 #include <RenderManager.h>
 #include <Game.h>
+#include <list>
+#include <TransformComponent.h>
+#include <RTSLogicComponent.h>
+#include <RTSVillagerLogicComponent.h>
 
 using namespace irr;
 using namespace core;
@@ -10,6 +14,25 @@ using namespace gui;
 WorldManager::WorldManager ( float gridSize ) {
 	this->gridSize = gridSize;
 	this->worldBounds = worldBounds;
+	
+	this->positionTree = new Quadtree(0, getWorldBoundsF());
+}
+
+void WorldManager::update() {
+	/*positionTree->clear();
+	
+	std::list<int> objects = Game::game.getObjMgr()->getObjectsWithComponent("RTSLogicComponent");
+	
+	for (int i : objects) {
+		TransformComponent* transComp = Game::game.getObjMgr()->getObjectComponent<TransformComponent>(i, "TransformComponent");
+		
+		if (transComp == nullptr)
+			continue;
+		
+		vector3df pos = transComp->worldPosition;
+		
+		positionTree->insert(i, pos, 8);
+	}*/
 }
 
 void WorldManager::setTerrainData ( scene::ITerrainSceneNode* terrain ) {
@@ -22,6 +45,11 @@ void WorldManager::setTerrainData ( scene::ITerrainSceneNode* terrain ) {
 	gridHeight = (int)floor(terH / gridSize);
 	
 	grid = new short[gridWidth * gridHeight]();
+	
+	if (this->positionTree != nullptr)
+		delete this->positionTree;
+	
+	this->positionTree = new Quadtree(0, getWorldBoundsF());
 }
 
 recti WorldManager::getWorldBounds() {
@@ -173,6 +201,7 @@ void WorldManager::draw ( float timestep ) {
  * Clean up any resources declared by this world manager
  */
 void WorldManager::dropWorld() {
+	delete positionTree;
 	delete grid;
 }
 
@@ -187,6 +216,29 @@ void WorldManager::clear() {
 		}
 	}
 }
+
+int WorldManager::getNearestNotOnTeam ( int id ) {
+	TransformComponent* transComp = Game::game.getObjMgr()->getObjectComponent<TransformComponent>(id, "TransformComponent");
+	return positionTree->getNearest(id, transComp->worldPosition, &WorldManager::onDifferentTeam);
+}
+
+bool WorldManager::onDifferentTeam ( int queryID, int otherID ) {
+	RTSLogicComponent* rtsComp = Game::game.getObjMgr()->getObjectComponent<RTSLogicComponent>(queryID, "RTSLogicComponent");
+	RTSVillagerLogicComponent* rtsVComp = Game::game.getObjMgr()->getObjectComponent<RTSVillagerLogicComponent>(queryID, "RTSVillagerLogicComponent");
+	
+	RTSLogicComponent* otherRTSComp = Game::game.getObjMgr()->getObjectComponent<RTSLogicComponent>(otherID, "RTSLogicComponent");
+	RTSVillagerLogicComponent* otherRTSVComp = Game::game.getObjMgr()->getObjectComponent<RTSVillagerLogicComponent>(otherID, "RTSVillagerLogicComponent");
+	
+	if (rtsComp == nullptr && rtsComp == nullptr) return false;
+	if (otherRTSComp == nullptr && otherRTSVComp == nullptr) return false;
+	
+	int team = (rtsComp == nullptr) ? rtsVComp->teamID : rtsComp->teamID;
+	int otherteam = (otherRTSComp == nullptr) ? otherRTSVComp->teamID : otherRTSComp->teamID;
+	
+	return team != otherteam;
+}
+
+
 
 
 

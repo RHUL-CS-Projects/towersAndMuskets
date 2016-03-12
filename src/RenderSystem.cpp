@@ -7,6 +7,7 @@
 #include <AnimatorComponent.h>
 #include <DebugValues.h>
 #include <EventReceiver.h>
+#include <HealthComponent.h>
 
 using namespace irr;
 using namespace core;
@@ -58,6 +59,8 @@ void RenderSystem::update ( float timestep ) {
 				}
 			}
 			
+			ISceneNode* activeNode = (rendComp->sceneNode == nullptr) ? rendComp->sceneNodeStatic : rendComp->sceneNode;
+			
 			// Check if object is selectable and create a selection plane to render
 			SelectableComponent* selectComp = mgr->getObjectComponent<SelectableComponent>(i, "SelectableComponent");
 			if (selectComp != nullptr) {
@@ -71,6 +74,8 @@ void RenderSystem::update ( float timestep ) {
 				
 				if (selectComp->sceneNode == nullptr) {
 					selectComp->sceneNode = smgr->addMeshSceneNode(selectComp->selectionMesh);
+					activeNode->addChild(selectComp->sceneNode);
+					selectComp->sceneNode->setPosition(selectComp->sceneNode->getPosition() + vector3df(0,1,0));
 					std::string texturePath = RenderManager::resPath + "/materials/textures/Selected.png";
 					ITexture* texture = Game::game.getRendMgr()->getDriver()->getTexture(texturePath.c_str());
 					
@@ -81,7 +86,48 @@ void RenderSystem::update ( float timestep ) {
 				}
 				
 				selectComp->sceneNode->setVisible(selectComp->selected);
-				selectComp->sceneNode->setPosition(transComp->worldPosition + vector3df(0,0.2f,0));			
+				//selectComp->sceneNode->setPosition(transComp->worldPosition + vector3df(0,0.2f,0));			
+			}
+			
+			HealthComponent* healthComp = mgr->getObjectComponent<HealthComponent>(i, "HealthComponent");
+			
+			if (healthComp != nullptr) {
+				if (healthComp->billboardNode == nullptr) {
+					IBillboardSceneNode* bill = smgr->addBillboardSceneNode(activeNode, dimension2df(5,0.5f), vector3df(0,10,0));
+					healthComp->billboardNode = bill;
+					activeNode->addChild(healthComp->billboardNode);
+				}
+				
+				if (healthComp->barTexture == nullptr) {
+					healthComp->barTexture = Game::game.getRendMgr()->getDriver()->addTexture(dimension2du(20, 5), "BarTex", video::ECF_A8R8G8B8);
+				}
+				
+				double alpha = healthComp->alpha > 1 ? 1 : healthComp->alpha;
+				if (alpha <= 0) {
+					healthComp->billboardNode->setVisible(false);
+				} else {
+					healthComp->billboardNode->setVisible(true);
+					healthComp->alpha -= 0.01f;
+					
+					// Texture the healthbar based on health
+					u32* pixels = (u32*)healthComp->barTexture->lock();
+					int xbar = (int)floor((double)healthComp->barTexture->getSize().Width / (double)healthComp->maxHealth * (double)healthComp->health);
+					double lerpAmount = 1.0 / (double)healthComp->maxHealth * (double)healthComp->health;
+					int colFront = SColor((int)(255.0 * alpha),40,255,40).getInterpolated(SColor(255,255,40,40), lerpAmount).color;
+					int colBack = SColor((int)(255.0 * alpha),0,0,0).color;
+					for (int x = 0; x < healthComp->barTexture->getSize().Width; x++) {
+						for (int y = 0; y < healthComp->barTexture->getSize().Height; y++) {
+							if (x <= xbar)
+								pixels[x + y*20] = colFront;
+							else
+								pixels[x + y*20] = colBack;
+						}
+					}
+					healthComp->barTexture->unlock();
+					
+					healthComp->billboardNode->setMaterialTexture(0, healthComp->barTexture);
+					healthComp->billboardNode->setMaterialFlag(video::EMF_BLEND_OPERATION, true);
+				}
 			}
 			
 			// Check if the object has a facing direction

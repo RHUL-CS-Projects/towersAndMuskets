@@ -30,8 +30,6 @@ void SteeringSystem::update ( float timestep ) {
 	Quadtree collisionTree(0, Game::game.getObjMgr()->worldManager->getWorldBoundsF());
 	buildQuadtree(objects, collisionTree);
 	
-	tempTree = &collisionTree;
-	
 	std::list<int> possibleCollisions;
 	for (int i : objects) {
 		// Get the steering component

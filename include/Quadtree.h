@@ -56,7 +56,7 @@ private:
 	 */
 	int getIndex(ObjectData obj);
 	
-	BestNode nearest(float x, float y, int id, BestNode best, Quadtree* node);
+	BestNode nearest(float x, float y, int id, BestNode best, Quadtree* node, bool(*constraintFunc)(int, int));
 	
 	std::list<int> getObjectsInBox(std::list<int>& returnObjects, irr::core::rectf box);
 public:	
@@ -85,7 +85,7 @@ public:
 	
 	std::list<int> getObjectsInRange(std::list<int>& returnObjects, irr::core::vector3df pos, float distance);
 	
-	int getNearest(int id, irr::core::vector3df pos);
+	int getNearest(int id, irr::core::vector3df pos, bool(*constraintFunc)(int, int) = 0);
 	
 	/**
 	 * Draws the tree and its child nodes to the screen for debugging

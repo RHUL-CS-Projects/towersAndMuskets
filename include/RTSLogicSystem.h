@@ -50,6 +50,7 @@ private:
 	bool targetAlive(ObjectManager* mgr);
 	float distanceToObjectSq(ObjectManager* mgr, int otherID);
 	bool checkTargetDifferentTeam(ObjectManager* mgr, int target);
+	int getNearestOnOtherTeam(ObjectManager* mgr, int id);
 	
 	TransformComponent* currentTransComp;
 	RTSLogicComponent* currentRTSComp;
