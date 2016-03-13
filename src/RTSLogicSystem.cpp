@@ -47,10 +47,11 @@ void RTSLogicSystem::update ( float timestep ) {
 		currentHealthComp = mgr->getObjectComponent<HealthComponent>(i, "HealthComponent");
 		currentTransComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
 		currentRendComp = mgr->getObjectComponent<RenderComponent>(i, "RenderComponent");
+		currentTeamComp = mgr->getObjectComponent<TeamComponent>(i, "TeamComponent");
 		
 		// Assert that the object has the necessary components to operate correctly
-		if (currentRTSComp == nullptr || currentSteerComp == nullptr || currentHealthComp == nullptr 
-			|| currentTransComp == nullptr || currentRendComp == nullptr)
+		if (!currentRTSComp || !currentSteerComp || !currentHealthComp 
+			|| !currentTransComp || !currentRendComp || !currentTeamComp)
 			continue;
 		
 		currentSelectComp = mgr->getObjectComponent<SelectableComponent>(i, "SelectableComponent");
@@ -136,11 +137,62 @@ void RTSLogicSystem::update ( float timestep ) {
 		}
 	}
 	
+	// Update flashing towers
+	objects = mgr->getObjectsWithComponent("TowerComponent");
+	for (int i : objects) {
+		TowerComponent* resComp = mgr->getObjectComponent<TowerComponent>(i, "TowerComponent");
+		
+		if (resComp->flashNum > 0) {
+			if (resComp->flashTimer > 0) {
+				resComp->flashTimer--;				
+			} else {
+				resComp->flashNum--;
+				resComp->flashTimer = 5;
+				resComp->flashOn = !resComp->flashOn;
+			}
+		}
+	}
+	
 	rightMousePressed = false;
 }
 
 void RTSLogicSystem::draw ( float timestep ) {
-    
+    // Draw flashing boxes under clicked towers
+	std::list<int> objects = Game::game.getObjMgr()->getObjectsWithComponent("TowerComponent");
+	
+	for (int i : objects) {
+		TowerComponent* towerComp = Game::game.getObjMgr()->getObjectComponent<TowerComponent>(i, "TowerComponent");
+		
+		SMaterial m;
+		
+		ITerrainSceneNode* terrain = (ITerrainSceneNode*)Game::game.getRendMgr()->getSceneManager()->getSceneNodeFromName("MainTerrain");
+		
+		if (towerComp->flashNum > 0 && towerComp->flashOn) {
+			m.Lighting = false;
+			m.Thickness = 1.0f;
+			Game::game.getRendMgr()->getDriver()->setMaterial(m);
+			Game::game.getRendMgr()->getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
+			
+			TransformComponent* transComp = Game::game.getObjMgr()->getObjectComponent<TransformComponent>(i, "TransformComponent");
+			vector3df pos = transComp->worldPosition;
+			float gridSize = Game::game.getObjMgr()->worldManager->gridSize;
+			
+			vector3df p1 = pos+vector3df(-gridSize,2,-gridSize);
+			vector3df p2 = pos+vector3df(-gridSize,2,gridSize);
+			vector3df p3 = pos+vector3df(gridSize,2,-gridSize);
+			vector3df p4 = pos+vector3df(gridSize,2,gridSize);
+			
+			p1.Y = terrain->getHeight(p1.X, p1.Z) + 0.5f;
+			p2.Y = terrain->getHeight(p2.X, p2.Z) + 0.5f;
+			p3.Y = terrain->getHeight(p3.X, p3.Z) + 0.5f;
+			p4.Y = terrain->getHeight(p4.X, p4.Z) + 0.5f;
+			
+			Game::game.getRendMgr()->getDriver()->draw3DLine(p1, p2, SColor(255,255,255,255));
+			Game::game.getRendMgr()->getDriver()->draw3DLine(p1, p3, SColor(255,255,255,255));
+			Game::game.getRendMgr()->getDriver()->draw3DLine(p3, p4, SColor(255,255,255,255));
+			Game::game.getRendMgr()->getDriver()->draw3DLine(p2, p4, SColor(255,255,255,255));
+		}
+	}
 }
 
 void RTSLogicSystem::updateClickPoints() {
@@ -249,7 +301,7 @@ float RTSLogicSystem::distanceToObjectSq ( ObjectManager* mgr, int otherID ) {
 bool RTSLogicSystem::targetAlive ( ObjectManager* mgr ) {
 	HealthComponent* otherHealthComp = mgr->getObjectComponent<HealthComponent>(currentRTSComp->attackTargetID, "HealthComponent");
 	
-	if (otherHealthComp->health <= 0)
+	if (otherHealthComp == nullptr || otherHealthComp->health <= 0)
 		return false;
 	
 	return true;
@@ -267,9 +319,9 @@ void RTSLogicSystem::faceTarget ( ObjectManager* mgr, int id ) {
 }
 
 bool RTSLogicSystem::checkTargetDifferentTeam ( ObjectManager* mgr, int target ) {
-	RTSLogicComponent* otherRTSComp = mgr->getObjectComponent<RTSLogicComponent>(target, "RTSLogicComponent");
+	TeamComponent* otherTeamComp = mgr->getObjectComponent<TeamComponent>(target, "TeamComponent");
 	
-	return otherRTSComp->teamID != currentRTSComp->teamID;
+	return otherTeamComp->teamID != currentTeamComp->teamID;
 }
 
 vector3df RTSLogicSystem::attackTargetPosition(ObjectManager* mgr) {
@@ -281,29 +333,54 @@ vector3df RTSLogicSystem::attackTargetPosition(ObjectManager* mgr) {
 	return currentTransComp->worldPosition;
 }
 
-vector3df RTSLogicSystem::towerTargetPosition ( ObjectManager* mgr ) {
-	TransformComponent* otherTransComp = mgr->getObjectComponent<TransformComponent>(currentRTSComp->towerID, "TransformComponent");
-	TowerComponent* towerComp = mgr->getObjectComponent<TowerComponent>(currentRTSComp->towerID, "TowerComponent");
+vector3df RTSLogicSystem::towerTargetPosition ( ObjectManager* mgr, int towerID ) {
+	TransformComponent* otherTransComp = mgr->getObjectComponent<TransformComponent>(towerID, "TransformComponent");
+	TowerComponent* towerComp = mgr->getObjectComponent<TowerComponent>(towerID, "TowerComponent");
 	
-	if (otherTransComp != nullptr)
-		return vector3df(otherTransComp->worldPosition.X + towerComp->doorOffset.X * mgr->worldManager->gridSize, 
+	if (otherTransComp != nullptr) {
+		/*return vector3df(otherTransComp->worldPosition.X + towerComp->doorOffset.X * mgr->worldManager->gridSize, 
 						 0 + towerComp->doorOffset.Y * mgr->worldManager->gridSize, 
-						 otherTransComp->worldPosition.Z + towerComp->doorOffset.Z * mgr->worldManager->gridSize);
+						 otherTransComp->worldPosition.Z + towerComp->doorOffset.Z * mgr->worldManager->gridSize);*/
+		vector3df nearest = currentTransComp->worldPosition;
+		double dist = -1;
+		double angle = 360 / 8;
+		double gridSize = mgr->worldManager->gridSize;
+		vector3df mid = otherTransComp->worldPosition;
+		
+		for (int i = 0; i < 8; i++) {
+			vector3df unit(cos(degToRad(i*angle)) * gridSize, 0, sin(degToRad(i*angle)) * gridSize);
+			unit *= 1.5;
+			vector3df tempNearest = mid + unit;
+		
+			if (!mgr->worldManager->checkPassable(tempNearest)) continue;
+			
+			double tempDist = (currentTransComp->worldPosition - tempNearest).getLengthSQ();
+			if (dist == -1 || tempDist < dist) {
+				dist = tempDist;
+				nearest = tempNearest;
+			}
+		}
+		
+		return nearest;
+	}
 
 	return currentTransComp->worldPosition;
 }
 
 int RTSLogicSystem::getNearestOnOtherTeam ( ObjectManager* mgr, int id ) {
-	std::list<int> objects = mgr->getObjectsWithComponent("RTSLogicComponent");
+	std::list<int> objects = mgr->getObjectsWithComponent("TeamComponent");
 	
 	double dist = currentRTSComp->rangeInSquares * mgr->worldManager->gridSize;
+	// Multiply range by 1.5 to get a tentative line of sight
+	dist *= 1.5;
 	dist *= dist;
+	
 	int best = -1;
 	
 	for (int i : objects) {
-		RTSLogicComponent* otherRTSComp = mgr->getObjectComponent<RTSLogicComponent>(i, "RTSLogicComponent");
+		TeamComponent* otherTeamComp = mgr->getObjectComponent<TeamComponent>(i, "TeamComponent");
 		
-		if (otherRTSComp->teamID == currentRTSComp->teamID) continue;
+		if (otherTeamComp->teamID == currentTeamComp->teamID) continue;
 		
 		TransformComponent* otherTransComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
 		
@@ -321,17 +398,36 @@ int RTSLogicSystem::getNearestOnOtherTeam ( ObjectManager* mgr, int id ) {
 }
 
 void RTSLogicSystem::stateDead ( ObjectManager* mgr, int id ) {
+	if (currentRTSComp->garrissoned) {
+		TowerComponent* towerComp = mgr->getObjectComponent<TowerComponent>(currentRTSComp->towerID, "TowerComponent");
+		for (int i = 0; i < 4; i++) {
+			if (towerComp->freeSpace[i] == id) {
+				towerComp->freeSpace[i] = -1;
+				break;
+			}
+		}
+	}
+	
 	mgr->detachComponent(id, "SteeringComponent");
 	mgr->detachComponent(id, "RTSLogicComponent");
-	mgr->detachComponent(id, "SelectableComponent");
+	mgr->detachComponent(id, "TeamComponent");
 	
 	AnimatorComponent* animComp = mgr->getObjectComponent<AnimatorComponent>(id, "AnimatorComponent");
 	RenderComponent* rendComp = mgr->getObjectComponent<RenderComponent>(id, "RenderComponent");
 	
 	SelectableComponent* selectComp = mgr->getObjectComponent<SelectableComponent>(id, "SelectableComponent");
 	if (selectComp != nullptr) {
+		selectComp->selected = false;
 		selectComp->sceneNode->setVisible(false);
 	}
+	mgr->detachComponent(id, "SelectableComponent");
+	
+	HealthComponent* healthComp = mgr->getObjectComponent<HealthComponent>(id, "HealthComponent");
+	if (healthComp != nullptr) {
+		healthComp->alpha = 0;
+		healthComp->billboardNode->setVisible(false);
+	}
+	mgr->detachComponent(id, "HealthComponent");
 	
 	if (animComp != nullptr && rendComp != nullptr) {
 		animComp->setAnimation("DEATH1", rendComp->sceneNode);
@@ -340,7 +436,6 @@ void RTSLogicSystem::stateDead ( ObjectManager* mgr, int id ) {
 }
 
 void RTSLogicSystem::stateIdle ( ObjectManager* mgr, int id ) {
-	int nearestEnemy = getNearestOnOtherTeam(mgr, id);
 	
 	if (currentSteerComp->velocity.getLength() > 0.01) {
 		setAnimation("WALK", true);
@@ -361,6 +456,7 @@ void RTSLogicSystem::stateIdle ( ObjectManager* mgr, int id ) {
 		return;
 	}
 	
+	int nearestEnemy = getNearestOnOtherTeam(mgr, id);
 	// Start walking to attack nearby target
 	if (nearestEnemy >= 0) {
 		currentRTSComp->attackTargetID = nearestEnemy;
@@ -375,6 +471,7 @@ void RTSLogicSystem::stateIdle ( ObjectManager* mgr, int id ) {
 	if (selected() && clickedTower >= 0) {
 		currentRTSComp->towerID = clickedTower;
 		currentRTSComp->pathSet = false;
+		currentSteerComp->path.resetPath();
 		
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(MOVE_TO_TOWER);
@@ -397,8 +494,17 @@ void RTSLogicSystem::stateMoveToAttack ( ObjectManager* mgr, int id ) {
 	setAnimation("WALK", true);
 	
 	if (!currentRTSComp->pathSet) {
-		setPath(mgr, id, attackTargetPosition(mgr));
-		currentRTSComp->pathSet = true;
+		RTSLogicComponent* otherRTSComp = mgr->getObjectComponent<RTSLogicComponent>(currentRTSComp->attackTargetID, "RTSLogicComponent");
+		
+		if (otherRTSComp == nullptr || !otherRTSComp->garrissoned) {
+			setPath(mgr, id, attackTargetPosition(mgr));
+			currentRTSComp->pathSet = true;
+		} else {
+			setPath(mgr, id, towerTargetPosition(mgr, otherRTSComp->towerID));
+			currentRTSComp->pathSet = true;
+		}
+		
+		return;
 	}
 	
 	// Start walking to attack target
@@ -415,6 +521,7 @@ void RTSLogicSystem::stateMoveToAttack ( ObjectManager* mgr, int id ) {
 	if (selected() && clickedTower >= 0) {
 		currentRTSComp->towerID = clickedTower;
 		currentRTSComp->pathSet = false;
+		currentSteerComp->path.resetPath();
 		
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(MOVE_TO_TOWER);
@@ -423,8 +530,10 @@ void RTSLogicSystem::stateMoveToAttack ( ObjectManager* mgr, int id ) {
 	
 	float distSq = (mgr->worldManager->gridSize * currentRTSComp->rangeInSquares) * (mgr->worldManager->gridSize * currentRTSComp->rangeInSquares);
 	
+	std::cout << currentRTSComp->attackTargetID << std::endl;
+	
 	// Start aiming at target
-	if (distanceToObjectSq(mgr, currentRTSComp->attackTargetID) < distSq) {
+	if (currentRTSComp->attackTargetID >= 0 && distanceToObjectSq(mgr, currentRTSComp->attackTargetID) < distSq) {
 		currentRTSComp->pathSet = false;
 		currentSteerComp->path.resetPath();
 		currentRTSComp->stateStack.pop();
@@ -441,6 +550,16 @@ void RTSLogicSystem::stateMoveToAttack ( ObjectManager* mgr, int id ) {
 		currentRTSComp->terrainPoint = terrainPoint;
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(WALKING);
+		return;
+	}
+	
+	// Finished walking
+	if (currentSteerComp->path.ended()) {
+		currentRTSComp->attackTargetID = -1;
+		currentRTSComp->pathSet = false;
+		
+		currentRTSComp->stateStack.pop();
+		currentRTSComp->stateStack.push(IDLE);
 		return;
 	}
 }
@@ -487,6 +606,7 @@ void RTSLogicSystem::stateWalking ( ObjectManager* mgr, int id ) {
 	if (selected() && clickedTower >= 0) {
 		currentRTSComp->towerID = clickedTower;
 		currentRTSComp->pathSet = false;
+		currentSteerComp->path.resetPath();
 		
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(MOVE_TO_TOWER);
@@ -520,7 +640,7 @@ void RTSLogicSystem::stateClimbDown ( ObjectManager* mgr, int id ) {
 	TowerComponent* towerComp = mgr->getObjectComponent<TowerComponent>(currentRTSComp->towerID, "TowerComponent");
 	TransformComponent* towerTransComp = mgr->getObjectComponent<TransformComponent>(currentRTSComp->towerID, "TransformComponent");
 	
-	currentTransComp->worldPosition = towerTargetPosition(mgr);
+	currentTransComp->worldPosition = towerTargetPosition(mgr, currentRTSComp->towerID);
 	
 	for (int i = 0; i < 4; i++) {
 		if (towerComp->freeSpace[i] == id) {
@@ -548,6 +668,8 @@ void RTSLogicSystem::stateClimbDown ( ObjectManager* mgr, int id ) {
 
 void RTSLogicSystem::stateClimbUp ( ObjectManager* mgr, int id ) {
 	setAnimation("IDLE", true);
+	currentSteerComp->path.resetPath();
+	
 	if (!currentRTSComp->canGarrisson) {
 		((StatePlaying*)Game::game.currentState())->message(SHOW_MESSAGE_BAD, "This unit is too large to be garrissoned");
 		currentRTSComp->stateStack.pop();
@@ -594,10 +716,10 @@ void RTSLogicSystem::stateClimbUp ( ObjectManager* mgr, int id ) {
 }
 
 void RTSLogicSystem::stateGarrissoned ( ObjectManager* mgr, int id ) {
-	if (!currentRTSComp->pathSet) {
+	/*if (!currentRTSComp->pathSet) {
 		setPath(mgr, id, towerTargetPosition(mgr));
 		currentRTSComp->pathSet = true;
-	}
+	}*/
 	
 	// Start walking to attack target
 	if (selected() && clickedObject >= 0 && checkTargetDifferentTeam(mgr, clickedObject)) {
@@ -617,6 +739,7 @@ void RTSLogicSystem::stateGarrissoned ( ObjectManager* mgr, int id ) {
 	// Start walking to tower target
 	if (selected() && clickedTower >= 0 && clickedTower != currentRTSComp->towerID) {
 		currentRTSComp->pathSet = false;
+		currentSteerComp->path.resetPath();
 		
 		currentRTSComp->stateStack.push(CLIMB_DOWN);
 		stateClimbDown(mgr, id);
@@ -643,6 +766,20 @@ void RTSLogicSystem::stateGarrissoned ( ObjectManager* mgr, int id ) {
 		return;
 	}
 	setAnimation("IDLE", true);
+	
+	float rangeBonus = currentRTSComp->garrissoned ? 1.5f : 1;
+	float dist = (mgr->worldManager->gridSize * currentRTSComp->rangeInSquares * rangeBonus);
+	float distSq = dist * dist;
+	
+	int nearestEnemy = getNearestOnOtherTeam(mgr, id);
+	// Start walking to attack nearby target
+	if (nearestEnemy >= 0 && distanceToObjectSq(mgr, nearestEnemy) < distSq) {
+		currentRTSComp->attackTargetID = nearestEnemy;
+		currentRTSComp->pathSet = false;
+		
+		currentRTSComp->stateStack.push(AIMING);
+		return;
+	}
 }
 
 void RTSLogicSystem::stateMoveToTower ( ObjectManager* mgr, int id ) {
@@ -652,12 +789,22 @@ void RTSLogicSystem::stateMoveToTower ( ObjectManager* mgr, int id ) {
 		((StatePlaying*)Game::game.currentState())->message(SHOW_MESSAGE_BAD, "This unit is too large to be garrissoned");
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(IDLE);
+		
+		currentRTSComp->pathSet = false;
+		currentSteerComp->path.resetPath();
 		return;
 	}
 	
 	if (!currentRTSComp->pathSet) {
-		setPath(mgr, id, towerTargetPosition(mgr));
+		setPath(mgr, id, towerTargetPosition(mgr, currentRTSComp->towerID));
 		currentRTSComp->pathSet = true;
+		
+		TowerComponent* resComp = mgr->getObjectComponent<TowerComponent>(currentRTSComp->towerID, "TowerComponent");
+		resComp->flashNum = 8;
+		resComp->flashTimer = 5;
+		
+		Game::game.resources.loadSound("garrisson.ogg")->play();
+		return;
 	}
 	
 	// Start walking to attack target
@@ -675,6 +822,7 @@ void RTSLogicSystem::stateMoveToTower ( ObjectManager* mgr, int id ) {
 	if (selected() && clickedTower >= 0 && clickedTower != currentRTSComp->towerID) {
 		currentRTSComp->towerID = clickedTower;
 		currentRTSComp->pathSet = false;
+		currentSteerComp->path.resetPath();
 		
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(MOVE_TO_TOWER);
@@ -693,7 +841,8 @@ void RTSLogicSystem::stateMoveToTower ( ObjectManager* mgr, int id ) {
 	}
 	
 	// Start climbing tower
-	if (currentSteerComp->path.ended()) {
+	if (currentSteerComp->path.ended() || distanceToObjectSq(mgr, currentRTSComp->towerID) < (mgr->worldManager->gridSize*1.5)*(mgr->worldManager->gridSize*1.5)) {
+		std::cout << "here" << std::endl;
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(GARRISSONED);
 		currentRTSComp->stateStack.push(CLIMB_UP);
@@ -770,12 +919,16 @@ void RTSLogicSystem::stateAiming ( ObjectManager* mgr, int id ) {
 		return;
 	}
 	
-	// Go back to idling on foot
-	if (!targetAlive(mgr)) {
+	float rangeBonus = currentRTSComp->garrissoned ? 1.5f : 1;
+	float dist = (mgr->worldManager->gridSize * currentRTSComp->rangeInSquares * rangeBonus);
+	float distSq = dist * dist;
+	
+	// Go back to idling
+	if (!targetAlive(mgr) || distanceToObjectSq(mgr, currentRTSComp->attackTargetID) > distSq) {
 		currentRTSComp->attackTargetID = -1;
 		
 		currentRTSComp->stateStack.pop();
-		currentRTSComp->stateStack.push(IDLE);
+		currentRTSComp->stateStack.push(currentRTSComp->garrissoned ? GARRISSONED : IDLE);
 		currentRTSComp->stateStack.push(RELEASE_AIM);
 	}
 }

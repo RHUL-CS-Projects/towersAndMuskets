@@ -17,9 +17,7 @@ private:
 public:
 	RTSVillagerLogicComponent() : GameComponent("RTSVillagerLogicComponent") {}
 	
-	RTSVillagerLogicComponent(int team, int chopFrame, int mineFrame, sf::Sound* chopSound, sf::Sound* mineSound) : GameComponent("RTSVillagerLogicComponent") {
-		teamID = team;
-		
+	RTSVillagerLogicComponent(int chopFrame, int mineFrame, sf::Sound* chopSound, sf::Sound* mineSound) : GameComponent("RTSVillagerLogicComponent") {
 		this->chopFrame = chopFrame;
 		this->mineFrame = mineFrame;
 		this->chopSound = chopSound;
@@ -27,7 +25,6 @@ public:
 	}
 	
 	int resourceTargetID = -1;
-	int teamID = -1;
 	int chopFrame;
 	int mineFrame;
 	bool soundPlayed = false;

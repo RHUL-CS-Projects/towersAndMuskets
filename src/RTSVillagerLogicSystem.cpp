@@ -388,15 +388,24 @@ void RTSVillagerLogicSystem::freeResource ( ObjectManager* mgr, int id ) {
 void RTSVillagerLogicSystem::stateDead ( ObjectManager* mgr, int id ) {
 	mgr->detachComponent(id, "SteeringComponent");
 	mgr->detachComponent(id, "RTSVillagerLogicComponent");
-	mgr->detachComponent(id, "SelectableComponent");
+	mgr->detachComponent(id, "TeamComponent");
 	
 	AnimatorComponent* animComp = mgr->getObjectComponent<AnimatorComponent>(id, "AnimatorComponent");
 	RenderComponent* rendComp = mgr->getObjectComponent<RenderComponent>(id, "RenderComponent");
 	
 	SelectableComponent* selectComp = mgr->getObjectComponent<SelectableComponent>(id, "SelectableComponent");
 	if (selectComp != nullptr) {
+		selectComp->selected = false;
 		selectComp->sceneNode->setVisible(false);
 	}
+	mgr->detachComponent(id, "SelectableComponent");
+	
+	HealthComponent* healthComp = mgr->getObjectComponent<HealthComponent>(id, "HealthComponent");
+	if (healthComp != nullptr) {
+		healthComp->alpha = 0;
+		healthComp->billboardNode->setVisible(false);
+	}
+	mgr->detachComponent(id, "HealthComponent");
 	
 	if (animComp != nullptr && rendComp != nullptr) {
 		animComp->setAnimation("DEATH1", rendComp->sceneNode);

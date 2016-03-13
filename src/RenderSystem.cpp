@@ -102,6 +102,9 @@ void RenderSystem::update ( float timestep ) {
 					healthComp->barTexture = Game::game.getRendMgr()->getDriver()->addTexture(dimension2du(20, 5), "BarTex", video::ECF_A8R8G8B8);
 				}
 				
+				if (selectComp != nullptr && selectComp->selected)
+					healthComp->alpha = 1;
+					
 				double alpha = healthComp->alpha > 1 ? 1 : healthComp->alpha;
 				if (alpha <= 0) {
 					healthComp->billboardNode->setVisible(false);
@@ -114,7 +117,7 @@ void RenderSystem::update ( float timestep ) {
 					int xbar = (int)floor((double)healthComp->barTexture->getSize().Width / (double)healthComp->maxHealth * (double)healthComp->health);
 					double lerpAmount = 1.0 / (double)healthComp->maxHealth * (double)healthComp->health;
 					int colFront = SColor((int)(255.0 * alpha),40,255,40).getInterpolated(SColor(255,255,40,40), lerpAmount).color;
-					int colBack = SColor((int)(255.0 * alpha),0,0,0).color;
+					int colBack = SColor((int)(100.0 * alpha),0,0,0).color;
 					for (int x = 0; x < healthComp->barTexture->getSize().Width; x++) {
 						for (int y = 0; y < healthComp->barTexture->getSize().Height; y++) {
 							if (x <= xbar)
@@ -127,6 +130,7 @@ void RenderSystem::update ( float timestep ) {
 					
 					healthComp->billboardNode->setMaterialTexture(0, healthComp->barTexture);
 					healthComp->billboardNode->setMaterialFlag(video::EMF_BLEND_OPERATION, true);
+					healthComp->billboardNode->setMaterialFlag(video::EMF_ZBUFFER, false);
 				}
 			}
 			
@@ -217,8 +221,6 @@ void RenderSystem::addAnimatedSceneNode (RenderComponent* rendComp, AnimatedMesh
 				animnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 				animnode->setMaterialFlag(video::EMF_USE_MIP_MAPS, false);
 				animnode->setMaterialFlag(video::EMF_BLEND_OPERATION, false);
-				animnode->setMaterialFlag(video::EMF_GOURAUD_SHADING, false);
-				animnode->setMaterialFlag(video::EMF_LIGHTING, false);
 				layer++;
 			}
 		}
@@ -228,6 +230,7 @@ void RenderSystem::addAnimatedSceneNode (RenderComponent* rendComp, AnimatedMesh
 		animnode->setScale(transComp->scale);
 
 		animnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
+		animnode->getMaterial(0).SpecularColor = SColor(0,0,0,0);
 		
 		//animnode->addShadowVolumeSceneNode();
 		

@@ -14,6 +14,7 @@
 #include <HealthComponent.h>
 #include <RenderComponent.h>
 #include <Quadtree.h>
+#include <TeamComponent.h>
 
 /**
  * System to update a selected object's path when the map is right-clicked
@@ -43,7 +44,7 @@ private:
 	
 	void faceTarget( ObjectManager* mgr, int id);
 	irr::core::vector3df attackTargetPosition(ObjectManager* mgr);
-	irr::core::vector3df towerTargetPosition(ObjectManager* mgr);
+	irr::core::vector3df towerTargetPosition(ObjectManager* mgr, int towerID);
 	void setAnimation(std::string animation, bool loop);
 	bool animationComplete();
 	bool selected();
@@ -60,6 +61,7 @@ private:
 	HealthComponent* currentHealthComp;
 	PathMovementComponent* currentPathComp;
 	RenderComponent* currentRendComp;
+	TeamComponent* currentTeamComp;
 	
 	irr::core::vector3df terrainPoint;
 	irr::core::vector3df objectPoint;

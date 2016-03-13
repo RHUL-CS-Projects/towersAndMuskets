@@ -16,6 +16,7 @@
 #include <RTSVillagerLogicComponent.h>
 #include <HealthComponent.h>
 #include <ResourceComponent.h>
+#include <TeamComponent.h>
 #include <irrlicht/irrlicht.h>
 #include <sfml/SFML/Audio.hpp>
 #include <string>
@@ -94,9 +95,10 @@ public:
 		
 		objmgr->attachComponent(id, new RenderComponent(true));
 		objmgr->attachComponent(id, new FaceDirectionComponent(0, 0.08f));
-		objmgr->attachComponent(id, new RTSLogicComponent(1, 1, Game::game.resources.loadSound("musketshot.ogg"), 60, false));
+		objmgr->attachComponent(id, new RTSLogicComponent(1, Game::game.resources.loadSound("musketshot.ogg"), 60, false));
 		objmgr->attachComponent(id, new SteeringComponent(0.2, 80));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
+		objmgr->attachComponent(id, new TeamComponent(1));
 	}
 	
 	static int addPlayerUnit(irr::core::vector3df pos) {
@@ -122,9 +124,10 @@ public:
 		objmgr->attachComponent(id, new SelectableComponent());
 		objmgr->attachComponent(id, new RenderComponent(true));
 		objmgr->attachComponent(id, new FaceDirectionComponent(0, 0.08f));
-		objmgr->attachComponent(id, new RTSLogicComponent(0, 1, Game::game.resources.loadSound("musketshot.ogg"), 60, true));
+		objmgr->attachComponent(id, new RTSLogicComponent(1, Game::game.resources.loadSound("musketshot.ogg"), 60, true));
 		objmgr->attachComponent(id, new SteeringComponent(0.2, 80));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
+		objmgr->attachComponent(id, new TeamComponent(0));
 	}
 	
 	static int addPlayerCannon(irr::core::vector3df pos) {
@@ -147,16 +150,17 @@ public:
 		animComp->addAnimation("SHOOT", 232, 263, 30);
 		animComp->addAnimation("RELOAD", 266, 576, 30);
 		animComp->addAnimation("REST", 580, 609, 30);
-		animComp->addAnimation("DEATH1", 612, 623, 30);
+		animComp->addAnimation("DEATH1", 612, 623, 20);
 		
 		objmgr->attachComponent(id, animComp);
 		
 		objmgr->attachComponent(id, new SelectableComponent(3,3));
 		objmgr->attachComponent(id, new RenderComponent(true));
 		objmgr->attachComponent(id, new FaceDirectionComponent(0, 0.08f));
-		objmgr->attachComponent(id, new RTSLogicComponent(0, 1, Game::game.resources.loadSound("cannonfire.ogg"), 60, false, 10, 15));
+		objmgr->attachComponent(id, new RTSLogicComponent(1, Game::game.resources.loadSound("cannonfire.ogg"), 60, false, 10, 15));
 		objmgr->attachComponent(id, new SteeringComponent(0.1, 80, 8));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
+		objmgr->attachComponent(id, new TeamComponent(0));
 	}
 	
 	static int addPlayerVillager(irr::core::vector3df pos) {
@@ -179,9 +183,10 @@ public:
 		objmgr->attachComponent(id, new SelectableComponent());
 		objmgr->attachComponent(id, new RenderComponent(true));
 		objmgr->attachComponent(id, new FaceDirectionComponent(0, 0.08f));
-		objmgr->attachComponent(id, new RTSVillagerLogicComponent(0, 5, 26, Game::game.resources.loadSound("musketshot.ogg"), Game::game.resources.loadSound("musketshot.ogg")));
+		objmgr->attachComponent(id, new RTSVillagerLogicComponent(5, 26, Game::game.resources.loadSound("musketshot.ogg"), Game::game.resources.loadSound("musketshot.ogg")));
 		objmgr->attachComponent(id, new SteeringComponent(0.2, 80));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
+		objmgr->attachComponent(id, new TeamComponent(0));
 	}
 };
 
