@@ -17,8 +17,7 @@ private:
 public:
 	RTSLogicComponent() : GameComponent("RTSLogicComponent") {}
 	
-	RTSLogicComponent(int team, int actionFrame, sf::Sound* shoot, int shootDelay, bool canGarrissonm, int attackDamage = 4, int rangeInSquares = 10) : GameComponent("RTSLogicComponent") {
-		teamID = team;
+	RTSLogicComponent(int actionFrame, sf::Sound* shoot, int shootDelay, bool canGarrisson, int attackDamage = 4, int rangeInSquares = 10) : GameComponent("RTSLogicComponent") {
 		attackActionFrame = actionFrame;
 		shootSound = shoot;
 		this->canGarrisson = canGarrisson;
@@ -31,7 +30,6 @@ public:
 	
 	int attackTargetID = -1;
 	int towerID = -1;
-	int teamID = -1;
 	bool garrissoned = false;
 	bool canGarrisson = true;
 	

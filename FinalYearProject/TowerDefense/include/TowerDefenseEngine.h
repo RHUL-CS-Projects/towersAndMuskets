@@ -37,6 +37,8 @@
 #include <StateMainMenu.h>
 #include <StaticMeshComponent.h>
 #include <SteeringComponent.h>
+#include <TeamComponent.h>
+#include <TowerComponent.h>
 #include <TransformComponent.h>
 
 #endif

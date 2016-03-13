@@ -223,7 +223,7 @@ int WorldManager::getNearestNotOnTeam ( int id ) {
 }
 
 bool WorldManager::onDifferentTeam ( int queryID, int otherID ) {
-	RTSLogicComponent* rtsComp = Game::game.getObjMgr()->getObjectComponent<RTSLogicComponent>(queryID, "RTSLogicComponent");
+	/*RTSLogicComponent* rtsComp = Game::game.getObjMgr()->getObjectComponent<RTSLogicComponent>(queryID, "RTSLogicComponent");
 	RTSVillagerLogicComponent* rtsVComp = Game::game.getObjMgr()->getObjectComponent<RTSVillagerLogicComponent>(queryID, "RTSVillagerLogicComponent");
 	
 	RTSLogicComponent* otherRTSComp = Game::game.getObjMgr()->getObjectComponent<RTSLogicComponent>(otherID, "RTSLogicComponent");
@@ -235,7 +235,7 @@ bool WorldManager::onDifferentTeam ( int queryID, int otherID ) {
 	int team = (rtsComp == nullptr) ? rtsVComp->teamID : rtsComp->teamID;
 	int otherteam = (otherRTSComp == nullptr) ? otherRTSVComp->teamID : otherRTSComp->teamID;
 	
-	return team != otherteam;
+	return team != otherteam;*/
 }
 
 

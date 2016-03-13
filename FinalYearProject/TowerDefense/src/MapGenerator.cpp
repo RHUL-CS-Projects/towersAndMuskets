@@ -170,8 +170,6 @@ void MapGenerator::addTerrain ( ISceneManager* smgr ) {
 	
 	terrain->setMaterialFlag(video::EMF_LIGHTING, true);
 	terrain->setMaterialTexture(0, Game::game.getRendMgr()->getDriver()->getTexture("./res/materials/textures/grass-texture2.jpg"));
-	//terrain->setMaterialTexture(1, driver->getTexture("./res/materials/textures/grass-texture4.jpg"));
-	//terrain->setMaterialType(video::EMT_DETAIL_MAP);
 	terrain->scaleTexture(32, 32);
 	
 	ITriangleSelector* terrainSelector = smgr->createTerrainTriangleSelector(terrain);
