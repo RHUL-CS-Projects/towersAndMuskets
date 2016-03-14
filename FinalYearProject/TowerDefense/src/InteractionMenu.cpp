@@ -21,17 +21,17 @@ void InteractionMenu::init ( int height, GameState* state ) {
 	int width = Game::game.getRendMgr()->getDriver()->getScreenSize().Width;
 	
 	std::string filepath = RenderManager::resPath + "/materials/textures/SerifFont.xml";
-	guiElements.push_back(new GuiElement(40, top + 20, 100, 20, "Tower", filepath, SColor(50,255,255,255), 0));
-	guiElements.push_back(new GuiElement(40, top + 50, 100, 20, "Tree", filepath, SColor(50,255,255,255), 1));
-	guiElements.push_back(new GuiElement(40, top + 80, 100, 20, "Rock", filepath, SColor(50,255,255,255), 2));
-	guiElements.push_back(new GuiElement(160, top + 20, 100, 20, "EnemyUnit", filepath, SColor(50,255,255,255), 3));
-	guiElements.push_back(new GuiElement(160, top + 50, 100, 20, "PlayerUnit", filepath, SColor(50,255,255,255), 4));
-	guiElements.push_back(new GuiElement(160, top + 80, 100, 20, "PlayerCannon", filepath, SColor(50,255,255,255), 5));
-	guiElements.push_back(new GuiElement(280, top + 20, 100, 20, "PlayerVillager", filepath, SColor(50,255,255,255), 10));
+	guiElements.push_back(new GuiElement(20, top + 30, 100, 20, "Tower", filepath, SColor(150,255,255,255), 0));
+	guiElements.push_back(new GuiElement(20, top + 60, 100, 20, "Tree", filepath, SColor(150,255,255,255), 1));
+	guiElements.push_back(new GuiElement(20, top + 90, 100, 20, "Rock", filepath, SColor(150,255,255,255), 2));
+	guiElements.push_back(new GuiElement(140, top + 30, 100, 20, "EnemyUnit", filepath, SColor(150,255,255,255), 3));
+	guiElements.push_back(new GuiElement(140, top + 60, 100, 20, "Musketeer", filepath, SColor(150,255,255,255), 4));
+	guiElements.push_back(new GuiElement(140, top + 90, 100, 20, "Cannon", filepath, SColor(150,255,255,255), 5));
+	guiElements.push_back(new GuiElement(260, top + 30, 100, 20, "Villager", filepath, SColor(150,255,255,255), 10));
 	
-	guiElements.push_back(new GuiElement(400, top + 20, 100, 20, "Map1", filepath, SColor(50,255,255,255), 7));
-	guiElements.push_back(new GuiElement(400, top + 50, 100, 20, "Map2", filepath, SColor(50,255,255,255), 8));
-	guiElements.push_back(new GuiElement(400, top + 80, 100, 20, "Map3", filepath, SColor(50,255,255,255), 9));
+	//guiElements.push_back(new GuiElement(400, top + 40, 100, 20, "Map1", filepath, SColor(150,255,255,255), 7));
+	//guiElements.push_back(new GuiElement(400, top + 70, 100, 20, "Map2", filepath, SColor(150,255,255,255), 8));
+	//guiElements.push_back(new GuiElement(400, top + 100, 100, 20, "Map3", filepath, SColor(150,255,255,255), 9));
 	
 	guiElements.push_back(new GuiElement(width - 130, top + 50, 100, 20, "Menu", filepath, SColor(50,255,255,255), 6));
 	
@@ -47,6 +47,8 @@ void InteractionMenu::init ( int height, GameState* state ) {
 	texGold = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/GoldIcon.png").c_str());
 	texStone = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/StoneIcon.png").c_str());
 	texWood = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/WoodIcon.png").c_str());
+	
+	texHUD = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/hudimage.png").c_str());
 }
 
 void InteractionMenu::onNotify ( int id, int eventID ) {
@@ -115,20 +117,22 @@ void InteractionMenu::render ( irr::video::IVideoDriver* driver ) {
 	driver->draw2DRectangle(SColor(255,80,58,48), drawRectLeft);
 	driver->draw2DRectangle(SColor(255,80,58,48), drawRectRight);
 	
+	driver->draw2DImage(texHUD, recti(0, bottom-height-30, width, bottom), recti(0, 0, texHUD->getSize().Width, texHUD->getSize().Height), 0, 0, true);
+	
 	for (GuiElement* e : guiElements) {
 		e->render(driver);
 	}
 	
-	driver->draw2DImage(texGold, recti(560, bottom-height+20, 576, bottom-height+36), recti(0, 0, texGold->getSize().Width, texGold->getSize().Height), 0, 0, true);
-	driver->draw2DImage(texStone, recti(560, bottom-height+50, 576, bottom-height+66), recti(0, 0, texStone->getSize().Width, texStone->getSize().Height), 0, 0, true);
-	driver->draw2DImage(texWood, recti(560, bottom-height+80, 576, bottom-height+96), recti(0, 0, texWood->getSize().Width, texWood->getSize().Height), 0, 0, true);
+	driver->draw2DImage(texGold, recti(920, bottom-height+25, 940, bottom-height+45), recti(0, 0, texGold->getSize().Width, texGold->getSize().Height), 0, 0, true);
+	driver->draw2DImage(texStone, recti(920, bottom-height+55, 940, bottom-height+75), recti(0, 0, texStone->getSize().Width, texStone->getSize().Height), 0, 0, true);
+	driver->draw2DImage(texWood, recti(920, bottom-height+85, 940, bottom-height+105), recti(0, 0, texWood->getSize().Width, texWood->getSize().Height), 0, 0, true);
 	
 	std::string stone = std::to_string(((StatePlaying*)Game::game.currentState())->getResourceCache()->getStone());
 	std::string gold = std::to_string(((StatePlaying*)Game::game.currentState())->getResourceCache()->getGold());
 	std::string wood = std::to_string(((StatePlaying*)Game::game.currentState())->getResourceCache()->getWood());
-	font->draw(gold.c_str(), recti(590, bottom-height+20, 640, bottom-height+36),SColor(200,255,255,255),false, true);
-	font->draw(stone.c_str(), recti(590, bottom-height+50, 640, bottom-height+66),SColor(200,255,255,255),false, true);
-	font->draw(wood.c_str(), recti(590, bottom-height+80, 640, bottom-height+96),SColor(200,255,255,255),false, true);
+	font->draw(gold.c_str(), recti(950, bottom-height+25, 1040, bottom-height+45),SColor(200,255,255,255),false, true);
+	font->draw(stone.c_str(), recti(950, bottom-height+55, 1040, bottom-height+75),SColor(200,255,255,255),false, true);
+	font->draw(wood.c_str(), recti(950, bottom-height+85, 1040, bottom-height+105),SColor(200,255,255,255),false, true);
 }
 
 

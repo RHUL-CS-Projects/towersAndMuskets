@@ -58,6 +58,7 @@ set (SOURCES
   src/NoiseGenerator.cpp
   src/RTSVillagerLogicSystem.cpp
   src/PlayerResourceCache.cpp
+  src/GroupPathMover.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)

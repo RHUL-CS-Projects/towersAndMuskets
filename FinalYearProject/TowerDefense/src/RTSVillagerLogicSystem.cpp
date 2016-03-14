@@ -253,6 +253,7 @@ void RTSVillagerLogicSystem::calcPathSynch ( ObjectManager* mgr, int id, irr::co
 
 	mgr->getObjectComponent<RTSVillagerLogicComponent>(id, "RTSVillagerLogicComponent")->stateStack.pop();
 	mgr->getObjectComponent<RTSVillagerLogicComponent>(id, "RTSVillagerLogicComponent")->pathSet = true;
+	Game::game.resources.loadSound("villagermove.ogg")->play();
 }
 
 bool RTSVillagerLogicSystem::animationComplete() {

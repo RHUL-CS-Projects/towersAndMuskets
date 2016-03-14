@@ -21,6 +21,7 @@
 #include <Game.h>
 #include <irrlicht/irrlicht.h>
 #include <Enums.h>
+#include <GroupPathMover.h>
 
 #include <thread>
 
@@ -32,6 +33,7 @@ using namespace scene;
 
 void RTSLogicSystem::update ( float timestep ) {
 	updateClickPoints();
+	pathMover = GroupPathMover();
 	
     // Get the object object manager
 	ObjectManager* mgr = Game::game.getObjMgr();
@@ -153,6 +155,7 @@ void RTSLogicSystem::update ( float timestep ) {
 		}
 	}
 	
+	pathMover.startCalc();
 	rightMousePressed = false;
 }
 
@@ -238,8 +241,12 @@ void RTSLogicSystem::updateClickPoints() {
 void RTSLogicSystem::setPath ( ObjectManager* mgr, int id, vector3df point ) {
 	currentRTSComp->stateStack.push(WAIT);
 	
-	std::thread t(&RTSLogicSystem::calcPathSynch, mgr, id, point);
-	t.detach();
+	if (currentSelectComp != nullptr && currentSelectComp->selected && currentRTSComp->towerID == -1) {
+		pathMover.requestPath(id, point);
+	} else {
+		std::thread t(&RTSLogicSystem::calcPathSynch, mgr, id, point);
+		t.detach();
+	}
 }
 
 void RTSLogicSystem::calcPathSynch ( ObjectManager* mgr, int id, vector3df point ) {
@@ -453,6 +460,7 @@ void RTSLogicSystem::stateIdle ( ObjectManager* mgr, int id ) {
 		
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(MOVE_TO_ATTACK);
+		mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent")->walkSound->play();
 		return;
 	}
 	
@@ -486,6 +494,7 @@ void RTSLogicSystem::stateIdle ( ObjectManager* mgr, int id ) {
 		currentRTSComp->terrainPoint = terrainPoint;
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(WALKING);
+		mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent")->walkSound->play();
 		return;
 	}
 }
@@ -514,6 +523,7 @@ void RTSLogicSystem::stateMoveToAttack ( ObjectManager* mgr, int id ) {
 		
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(MOVE_TO_ATTACK);
+		mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent")->walkSound->play();
 		return;
 	}
 	
@@ -550,6 +560,7 @@ void RTSLogicSystem::stateMoveToAttack ( ObjectManager* mgr, int id ) {
 		currentRTSComp->terrainPoint = terrainPoint;
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(WALKING);
+		mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent")->walkSound->play();
 		return;
 	}
 	
@@ -599,6 +610,7 @@ void RTSLogicSystem::stateWalking ( ObjectManager* mgr, int id ) {
 		
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(MOVE_TO_ATTACK);
+		mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent")->walkSound->play();
 		return;
 	}
 	
@@ -621,6 +633,7 @@ void RTSLogicSystem::stateWalking ( ObjectManager* mgr, int id ) {
 		currentRTSComp->terrainPoint = terrainPoint;
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(WALKING);
+		mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent")->walkSound->play();
 		return;
 	}
 	
@@ -733,6 +746,7 @@ void RTSLogicSystem::stateGarrissoned ( ObjectManager* mgr, int id ) {
 		
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(MOVE_TO_ATTACK);
+		mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent")->walkSound->play();
 		return;
 	}
 	
@@ -763,6 +777,7 @@ void RTSLogicSystem::stateGarrissoned ( ObjectManager* mgr, int id ) {
 		currentRTSComp->terrainPoint = terrainPoint;
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(WALKING);
+		mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent")->walkSound->play();
 		return;
 	}
 	setAnimation("IDLE", true);
@@ -815,6 +830,7 @@ void RTSLogicSystem::stateMoveToTower ( ObjectManager* mgr, int id ) {
 		
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(MOVE_TO_ATTACK);
+		mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent")->walkSound->play();
 		return;
 	}
 	
@@ -837,6 +853,7 @@ void RTSLogicSystem::stateMoveToTower ( ObjectManager* mgr, int id ) {
 		currentRTSComp->terrainPoint = terrainPoint;
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(WALKING);
+		mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent")->walkSound->play();
 		return;
 	}
 	
@@ -874,6 +891,8 @@ void RTSLogicSystem::stateAiming ( ObjectManager* mgr, int id ) {
 			currentRTSComp->stateStack.push(MOVE_TO_ATTACK);
 			currentRTSComp->stateStack.push(RELEASE_AIM);
 		}
+		
+		mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent")->walkSound->play();
 		return;
 	}
 	
@@ -898,6 +917,7 @@ void RTSLogicSystem::stateAiming ( ObjectManager* mgr, int id ) {
 			currentRTSComp->stateStack.push(RELEASE_AIM);
 		}
 		
+		mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent")->walkSound->play();
 		return;
 	}
 	

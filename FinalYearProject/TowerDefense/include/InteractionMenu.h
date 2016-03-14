@@ -18,6 +18,7 @@ private:
 	irr::gui::IGUIFont* font;
 	
 	irr::video::ITexture* texGold, *texStone, *texWood;
+	irr::video::ITexture* texHUD;
 	
 public:
 	InteractionMenu();

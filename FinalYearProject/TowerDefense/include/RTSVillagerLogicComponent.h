@@ -17,19 +17,15 @@ private:
 public:
 	RTSVillagerLogicComponent() : GameComponent("RTSVillagerLogicComponent") {}
 	
-	RTSVillagerLogicComponent(int chopFrame, int mineFrame, sf::Sound* chopSound, sf::Sound* mineSound) : GameComponent("RTSVillagerLogicComponent") {
+	RTSVillagerLogicComponent(int chopFrame, int mineFrame) : GameComponent("RTSVillagerLogicComponent") {
 		this->chopFrame = chopFrame;
 		this->mineFrame = mineFrame;
-		this->chopSound = chopSound;
-		this->mineSound = mineSound;
 	}
 	
 	int resourceTargetID = -1;
 	int chopFrame;
 	int mineFrame;
 	bool soundPlayed = false;
-	sf::Sound* chopSound;
-	sf::Sound* mineSound;
 	
 	int gatherDelay = 60*4;
 	int gatherTicker = gatherDelay;
