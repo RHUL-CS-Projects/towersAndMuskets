@@ -49,6 +49,10 @@ void MapGenerator::loadMap ( std::string mapname ) {
 				if (data == SColor(255,255,255,0).color) {
 					placeGold(vector2df(x * gridSize + gridSize/2, y * gridSize + gridSize/2), smgr);
 				}
+				
+				if (data == SColor(255,255,0,0).color) {
+					placeVillager(vector2df(x * gridSize + gridSize/2, y * gridSize + gridSize/2), smgr);
+				}
 			}
 		}
 		
@@ -151,6 +155,18 @@ void MapGenerator::placeGold ( vector2df pos, ISceneManager* smgr ) {
 	if (Game::game.getObjMgr()->worldManager->checkPassable(vector3df(pos.X, yPos, pos.Y))) {
 		ObjectFactory::addGold(vector3df(pos.X, yPos, pos.Y));
 		Game::game.getObjMgr()->worldManager->setPassable(rectf(pos.X-0.5f, pos.Y-0.5f, pos.X+0.5f, pos.Y+0.5f), false);
+	}
+}
+
+void MapGenerator::placeVillager ( vector2df pos, ISceneManager* smgr ) {
+	ITerrainSceneNode* terrain = (ITerrainSceneNode*)smgr->getSceneNodeFromName("MainTerrain");
+	int yPos = 0;
+	
+	if (terrain != nullptr)
+		yPos = terrain->getHeight(pos.X, pos.Y);
+	
+	if (Game::game.getObjMgr()->worldManager->checkPassable(vector3df(pos.X, yPos, pos.Y))) {
+		ObjectFactory::addPlayerVillager(vector3df(pos.X, yPos, pos.Y));
 	}
 }
 

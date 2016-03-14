@@ -15,6 +15,7 @@
 #include <RenderComponent.h>
 #include <Quadtree.h>
 #include <TeamComponent.h>
+#include <GroupPathMover.h>
 
 /**
  * System to update a selected object's path when the map is right-clicked
@@ -23,6 +24,7 @@ class RTSLogicSystem : public ComponentSystem {
 private:
 	bool rightMouseDown = false;
 	bool rightMousePressed = false;
+	GroupPathMover pathMover;
 	
 	void setPath(ObjectManager* mgr, int id, irr::core::vector3df point);
 	static void calcPathSynch(ObjectManager* mgr, int id, irr::core::vector3df point);

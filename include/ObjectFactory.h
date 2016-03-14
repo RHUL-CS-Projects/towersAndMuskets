@@ -67,7 +67,6 @@ public:
 		objmgr->attachComponent(id, new TransformComponent(pos));
 		objmgr->attachComponent(id, new StaticMeshComponent("tower2.x", "TowerTexture.png", irr::core::vector3df(-90,0,0)));
 		objmgr->attachComponent(id, new RenderComponent(true));
-		objmgr->attachComponent(id, new SteeringComponent(0, 80));
 		objmgr->attachComponent(id, new TowerComponent());
 		
 		return id;
@@ -95,7 +94,7 @@ public:
 		
 		objmgr->attachComponent(id, new RenderComponent(true));
 		objmgr->attachComponent(id, new FaceDirectionComponent(0, 0.08f));
-		objmgr->attachComponent(id, new RTSLogicComponent(1, Game::game.resources.loadSound("musketshot.ogg"), 60, false));
+		objmgr->attachComponent(id, new RTSLogicComponent(1, Game::game.resources.loadSound("musketshot.ogg"), Game::game.resources.loadSound(" "), 60, false));
 		objmgr->attachComponent(id, new SteeringComponent(0.2, 80));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
 		objmgr->attachComponent(id, new TeamComponent(1));
@@ -124,7 +123,7 @@ public:
 		objmgr->attachComponent(id, new SelectableComponent());
 		objmgr->attachComponent(id, new RenderComponent(true));
 		objmgr->attachComponent(id, new FaceDirectionComponent(0, 0.08f));
-		objmgr->attachComponent(id, new RTSLogicComponent(1, Game::game.resources.loadSound("musketshot.ogg"), 60, true));
+		objmgr->attachComponent(id, new RTSLogicComponent(1, Game::game.resources.loadSound("musketshot.ogg"), Game::game.resources.loadSound("unitmove.ogg"), 60, true));
 		objmgr->attachComponent(id, new SteeringComponent(0.2, 80));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
 		objmgr->attachComponent(id, new TeamComponent(0));
@@ -157,7 +156,7 @@ public:
 		objmgr->attachComponent(id, new SelectableComponent(3,3));
 		objmgr->attachComponent(id, new RenderComponent(true));
 		objmgr->attachComponent(id, new FaceDirectionComponent(0, 0.08f));
-		objmgr->attachComponent(id, new RTSLogicComponent(1, Game::game.resources.loadSound("cannonfire.ogg"), 60, false, 10, 15));
+		objmgr->attachComponent(id, new RTSLogicComponent(1, Game::game.resources.loadSound("cannonfire.ogg"), Game::game.resources.loadSound("cannonmove.ogg"), 60, false, 10, 15));
 		objmgr->attachComponent(id, new SteeringComponent(0.1, 80, 8));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
 		objmgr->attachComponent(id, new TeamComponent(0));
@@ -183,7 +182,7 @@ public:
 		objmgr->attachComponent(id, new SelectableComponent());
 		objmgr->attachComponent(id, new RenderComponent(true));
 		objmgr->attachComponent(id, new FaceDirectionComponent(0, 0.08f));
-		objmgr->attachComponent(id, new RTSVillagerLogicComponent(5, 26, Game::game.resources.loadSound("musketshot.ogg"), Game::game.resources.loadSound("musketshot.ogg")));
+		objmgr->attachComponent(id, new RTSVillagerLogicComponent(5, 26));
 		objmgr->attachComponent(id, new SteeringComponent(0.2, 80));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
 		objmgr->attachComponent(id, new TeamComponent(0));

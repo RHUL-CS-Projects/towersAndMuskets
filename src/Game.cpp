@@ -72,25 +72,15 @@ void Game::run() {
 		if (stateStack.size() > 0)
 			renderStates();
 		frameCounter++;
-
-		std::cout << driver->getFPS() << std::endl;
 		
-		/*if (currentTime - updateTime >= 1000000.0) {
+		if (currentTime - updateTime >= 1000000.0) {
 			if (DebugValues::PRINT_FPS)
 				cout << "Ticks: " << tickCounter << ", Frames: " << frameCounter << endl;
-			
-			std::wstring labelText;
-			labelText += L"TICKS: ";
-			labelText += to_wstring(tickCounter);
-			labelText += L", FRAMES: ";
-			labelText += to_wstring(frameCounter);;
-			
-			/*lblTickFrame->setText(labelText.c_str());*/
-			
-			/*frameCounter = 0;
+
+			frameCounter = 0;
 			tickCounter = 0;
 			updateTime += 1000000.0;//currentTime - ((currentTime - updateTime) - 1000);
-		}*/
+		}
 	}
 }
 

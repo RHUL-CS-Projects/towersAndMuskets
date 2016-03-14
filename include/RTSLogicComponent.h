@@ -17,7 +17,7 @@ private:
 public:
 	RTSLogicComponent() : GameComponent("RTSLogicComponent") {}
 	
-	RTSLogicComponent(int actionFrame, sf::Sound* shoot, int shootDelay, bool canGarrisson, int attackDamage = 4, int rangeInSquares = 10) : GameComponent("RTSLogicComponent") {
+	RTSLogicComponent(int actionFrame, sf::Sound* shoot, sf::Sound* walkSound, int shootDelay, bool canGarrisson, int attackDamage = 4, int rangeInSquares = 10) : GameComponent("RTSLogicComponent") {
 		attackActionFrame = actionFrame;
 		shootSound = shoot;
 		this->canGarrisson = canGarrisson;
@@ -26,6 +26,7 @@ public:
 		shootCounter = rand() % shootDelay;
 		this->attackDamage = attackDamage;
 		this->rangeInSquares = rangeInSquares;
+		this->walkSound = walkSound;
 	}
 	
 	int attackTargetID = -1;
@@ -42,6 +43,7 @@ public:
 	
 	int attackActionFrame;
 	sf::Sound* shootSound;
+	sf::Sound* walkSound;
 	int shootDelay;
 	int shootCounter;
 	
