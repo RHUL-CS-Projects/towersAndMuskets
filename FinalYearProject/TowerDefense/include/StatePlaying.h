@@ -29,6 +29,7 @@ private:
 	ObjectPlacer objectPlacer;
 	NotificationMessage messageDisplay;
 	PlayerResourceCache resourceCache;
+	WaveController waveController;
 	
 	std::string currentMap;
 	

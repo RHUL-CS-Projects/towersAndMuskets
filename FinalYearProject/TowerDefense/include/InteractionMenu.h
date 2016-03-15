@@ -12,13 +12,14 @@ class InteractionMenu : public GuiObserver {
 private:
 	std::list<GuiElement*> guiElements;
 	int height;
+	double progressPercent = 1;
 	sf::Sound* sndRolloverSound;
 	sf::Sound* sndClickSound;
 	GameState* parentState;
 	irr::gui::IGUIFont* font;
 	
 	irr::video::ITexture* texGold, *texStone, *texWood;
-	irr::video::ITexture* texHUD;
+	irr::video::ITexture* texHUD, *texBarFront, *texBarBack;
 	
 public:
 	InteractionMenu();
@@ -34,6 +35,7 @@ public:
 	void update();
 	void render(irr::video::IVideoDriver* driver);
 	void setResourcesDisplay(int stone, int gold, int wood);
+	void setProgress(double percent);
 	virtual void onNotify(int id, int eventID);
 };
 

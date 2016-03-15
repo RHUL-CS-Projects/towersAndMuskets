@@ -189,7 +189,7 @@ void RTSLogicSystem::draw ( float timestep ) {
 			p2.Y = terrain->getHeight(p2.X, p2.Z) + 0.5f;
 			p3.Y = terrain->getHeight(p3.X, p3.Z) + 0.5f;
 			p4.Y = terrain->getHeight(p4.X, p4.Z) + 0.5f;
-			
+
 			Game::game.getRendMgr()->getDriver()->draw3DLine(p1, p2, SColor(255,255,255,255));
 			Game::game.getRendMgr()->getDriver()->draw3DLine(p1, p3, SColor(255,255,255,255));
 			Game::game.getRendMgr()->getDriver()->draw3DLine(p3, p4, SColor(255,255,255,255));
@@ -707,6 +707,7 @@ void RTSLogicSystem::stateClimbUp ( ObjectManager* mgr, int id ) {
 	
 	if (!foundSpace) {
 		((StatePlaying*)Game::game.currentState())->message(SHOW_MESSAGE_BAD, "Not enough space to garrisson this unit");
+		currentRTSComp->towerID = -1;
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(IDLE);

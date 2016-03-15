@@ -42,6 +42,8 @@ NodePath PathFinder::findPath ( vector3df start, vector3df end ) {
 	pathFound = false;
 	NodePath path = findPath(startX, startY, endX, endY);
 	
+	end.Y = ((ITerrainSceneNode*)Game::game.getRendMgr()->getSceneManager()->getSceneNodeFromName("MainTerrain"))->getHeight(end.X, end.Z);
+	
 	if (pathFound) {
 		path.addNodeFront(start);
 		path.addNode(end);

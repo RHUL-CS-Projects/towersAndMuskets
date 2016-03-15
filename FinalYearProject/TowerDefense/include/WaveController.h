@@ -5,15 +5,19 @@ class WaveController {
 private:
 	bool inWave;
 	int waveNumber;
+	double wavePercent;
+	double waitPercent;
+	double waveSpeed;
+	double waitSpeed;
 	
+	void updateWait();
+	void updateWave();
 public:
-	WaveController() {
-		
-	}
+	WaveController();
 	
+	void init();
 	void update();
-	double getWaitPercentage();
-	double getWavePercentage();
+	double getPercentage();
 };
 
 #endif
