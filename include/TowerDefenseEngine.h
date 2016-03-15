@@ -40,5 +40,6 @@
 #include <TeamComponent.h>
 #include <TowerComponent.h>
 #include <TransformComponent.h>
+#include <WaveController.h>
 
 #endif

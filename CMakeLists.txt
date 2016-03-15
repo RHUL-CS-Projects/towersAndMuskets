@@ -59,6 +59,7 @@ set (SOURCES
   src/RTSVillagerLogicSystem.cpp
   src/PlayerResourceCache.cpp
   src/GroupPathMover.cpp
+  src/WaveController.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)

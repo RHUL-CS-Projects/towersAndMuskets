@@ -91,12 +91,12 @@ void SteeringSystem::update ( float timestep ) {
 				if (otherTransComp == nullptr)
 					continue;
 				
-				if ((transComp->worldPosition - otherTransComp->worldPosition).getLengthSQ() < steerComp->radius*steerComp->radius + otherSteerComp->radius*otherSteerComp->radius) {
-					if (steerComp->path.ended())
-						avoid(otherTransComp->worldPosition, steerComp, transComp);
+				double dist;
+				if ((dist = (transComp->worldPosition - otherTransComp->worldPosition).getLengthSQ()) < steerComp->radius*steerComp->radius + otherSteerComp->radius*otherSteerComp->radius) {
+					if (!steerComp->path.finalNode())
+						//avoid(otherTransComp->worldPosition, steerComp, transComp);
 					
-					//avoid(transComp->worldPosition, otherSteerComp, otherTransComp);
-
+						avoid(transComp->worldPosition, otherSteerComp, otherTransComp);
 				}
 			}
 		}

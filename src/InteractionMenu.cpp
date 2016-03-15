@@ -49,6 +49,14 @@ void InteractionMenu::init ( int height, GameState* state ) {
 	texWood = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/WoodIcon.png").c_str());
 	
 	texHUD = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/hudimage.png").c_str());
+	texBarBack = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/progressbarback.png").c_str());
+	texBarFront = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/progressbarfront.png").c_str());
+}
+
+void InteractionMenu::setProgress ( double percent ) {
+	progressPercent = percent;
+	if (progressPercent < 0) progressPercent = 0;
+	if (progressPercent > 1) progressPercent = 1;
 }
 
 void InteractionMenu::onNotify ( int id, int eventID ) {
@@ -117,7 +125,23 @@ void InteractionMenu::render ( irr::video::IVideoDriver* driver ) {
 	driver->draw2DRectangle(SColor(255,80,58,48), drawRectLeft);
 	driver->draw2DRectangle(SColor(255,80,58,48), drawRectRight);
 	
-	driver->draw2DImage(texHUD, recti(0, bottom-height-30, width, bottom), recti(0, 0, texHUD->getSize().Width, texHUD->getSize().Height), 0, 0, true);
+	vector2di hudPos(0, bottom-height-30);
+	driver->draw2DImage(texHUD, recti(hudPos.X, hudPos.Y, width, bottom), recti(0, 0, texHUD->getSize().Width, texHUD->getSize().Height), 0, 0, true);
+	
+	vector2di barPos(hudPos.X+394, hudPos.Y+55);
+	recti barTexRect(barPos.X, barPos.Y, barPos.X+texBarFront->getSize().Width, barPos.Y+texBarFront->getSize().Height);
+	driver->draw2DImage(texBarBack, barTexRect, recti(0, 0, texBarBack->getSize().Width, texBarBack->getSize().Height), 0, 0, true);
+	
+	recti barRect(barPos.X+20, barPos.Y+14, (int)(barPos.X+(barTexRect.getWidth()-20)*progressPercent), barPos.Y+barTexRect.getHeight()-14);
+
+	driver->draw2DRectangle(SColor(150,0,255,0), barRect);
+	driver->draw2DImage(texBarFront, barTexRect, recti(0, 0, texBarFront->getSize().Width, texBarFront->getSize().Height), 0, 0, true);
+	
+	recti captionShadowRect(barPos.X + 3, barPos.Y + barTexRect.getHeight() + 3, barTexRect.LowerRightCorner.X + 3, barTexRect.LowerRightCorner.Y + barTexRect.getHeight() + 13);
+	font->draw("Time to Next Wave", captionShadowRect, SColor(200,0,0,0), true);
+	
+	recti captionRect(barPos.X, barPos.Y + barTexRect.getHeight(), barTexRect.LowerRightCorner.X, barTexRect.LowerRightCorner.Y + barTexRect.getHeight() + 10);
+	font->draw("Time to Next Wave", captionRect, SColor(200,255,255,255), true);
 	
 	for (GuiElement* e : guiElements) {
 		e->render(driver);

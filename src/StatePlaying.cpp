@@ -38,6 +38,7 @@ void StatePlaying::loadMap ( std::string mapname ) {
 	Game::game.getObjMgr()->clearObjects();
 	objectPlacer.init();
 	resourceCache.init(0,0,0);
+	waveController.init();
 	EventReceiver::cubes.clear();
 	
 	///////////////////////////////////
@@ -70,11 +71,13 @@ void StatePlaying::update() {
 		GameState::update();
 		
 		camera.update();
+		waveController.update();
 		interactionMenu.update();
 		messageDisplay.update();
 		objectPlacer.update();
 		resourceCache.update();
 		
+		interactionMenu.setProgress(waveController.getPercentage());
 		Game::game.getObjMgr()->updateSystems(0);
 	} else {
 		shouldReload = false;

@@ -139,16 +139,24 @@ void RTSVillagerLogicSystem::draw ( float timestep ) {
 			Game::game.getRendMgr()->getDriver()->setMaterial(m);
 			Game::game.getRendMgr()->getDriver()->setTransform(video::ETS_WORLD, IdentityMatrix);
 			
+			RTSLogicComponent* rtsComp = Game::game.getObjMgr()->getObjectComponent<RTSLogicComponent>(i, "RTSLogicComponent");			
+			
+			SColor col(255,0,255,0);
+			if (rtsComp != nullptr && rtsComp->stateStack.top() == MOVE_TO_ATTACK)
+				col = SColor(255,255,0,0);
+			
 			vector3df node, prevNode;
-			for (int i = 1; i < steerComp->path.getWaypoints().size(); i++) {
+			/*for (int i = 1; i < steerComp->path.getWaypoints().size(); i++) {
 				node = steerComp->path.getWaypoints()[i];
 				prevNode = steerComp->path.getWaypoints()[i-1];
-				Game::game.getRendMgr()->getDriver()->draw3DLine(prevNode+vector3df(0,2,0), node+vector3df(0,2,0), SColor(10,0,255,0));	
-			}
-			/*Game::game.getRendMgr()->getDriver()->draw3DLine(node+vector3df(0,1,0), node+vector3df(1,5,0), SColor(255,255,0,0));	
-			Game::game.getRendMgr()->getDriver()->draw3DLine(node+vector3df(0,1,0), node+vector3df(-1,5,0), SColor(255,255,0,0));
-			Game::game.getRendMgr()->getDriver()->draw3DLine(node+vector3df(0,1,0), node+vector3df(0,5,1), SColor(255,255,0,0));
-			Game::game.getRendMgr()->getDriver()->draw3DLine(node+vector3df(0,1,0), node+vector3df(0,5,-1), SColor(255,255,0,0));*/
+				Game::game.getRendMgr()->getDriver()->draw3DLine(prevNode+vector3df(0,2,0), node+vector3df(0,2,0), col);	
+			}*/
+			
+			node = steerComp->path.getWaypoints()[steerComp->path.getWaypoints().size()-1];
+			Game::game.getRendMgr()->getDriver()->draw3DLine(node+vector3df(0,1,0), node+vector3df(1,5,0), col);	
+			Game::game.getRendMgr()->getDriver()->draw3DLine(node+vector3df(0,1,0), node+vector3df(-1,5,0), col);
+			Game::game.getRendMgr()->getDriver()->draw3DLine(node+vector3df(0,1,0), node+vector3df(0,5,1), col);
+			Game::game.getRendMgr()->getDriver()->draw3DLine(node+vector3df(0,1,0), node+vector3df(0,5,-1), col);
 		}
 	}
 	
