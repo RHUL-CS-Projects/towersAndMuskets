@@ -70,27 +70,27 @@ void RTSVillagerLogicSystem::update ( float timestep ) {
 		switch (currentState) {
 		case VILLAGER_IDLE:
 			stateIdle(mgr, i);
-			if (selected) std::cout << "IDLE" << std::endl;
+			if (DebugValues::UNIT_STATES && selected) std::cout << "IDLE" << std::endl;
 			break;
 			
 		case VILLAGER_WALKING:
 			stateWalking(mgr, i);
-			if (selected) std::cout << "WALKING" << std::endl;
+			if (DebugValues::UNIT_STATES && selected) std::cout << "WALKING" << std::endl;
 			break;
 
 		case VILLAGER_DEAD:
 			stateDead(mgr, i);
-			if (selected) std::cout << "DEAD" << std::endl;
+			if (DebugValues::UNIT_STATES && selected) std::cout << "DEAD" << std::endl;
 			break;
 			
 		case VILLAGER_GATHER:
 			stateGather(mgr, i);
-			if (selected) std::cout << "GATHER" << std::endl;
+			if (DebugValues::UNIT_STATES && selected) std::cout << "GATHER" << std::endl;
 			break;
 			
 		case VILLAGER_MOVE_TO_RESOURCE:
 			stateMoveToResource(mgr, i);
-			if (selected) std::cout << "MOVE_TO_RESOURCE" << std::endl;
+			if (DebugValues::UNIT_STATES && selected) std::cout << "MOVE_TO_RESOURCE" << std::endl;
 			break;
 		}
 	}

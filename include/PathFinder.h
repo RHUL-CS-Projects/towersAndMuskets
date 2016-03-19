@@ -100,6 +100,8 @@ private:
 	 * Jump to adjacent nodes in a given direction
 	 */
 	//PathFindNode* jump(int x, int y, int fromX, int fromY, int endX, int endY);
+	
+	bool pathFound;
 public:
 	
 	/**

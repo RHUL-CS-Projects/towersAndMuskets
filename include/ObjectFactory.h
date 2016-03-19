@@ -11,12 +11,15 @@
 #include <FaceDirectionComponent.h>
 #include <AnimatedMeshComponent.h>
 #include <TowerComponent.h>
+#include <TownhallComponent.h>
 #include <AnimatorComponent.h>
 #include <RTSLogicComponent.h>
 #include <RTSVillagerLogicComponent.h>
 #include <HealthComponent.h>
 #include <ResourceComponent.h>
 #include <TeamComponent.h>
+#include <SpawnLocationComponent.h>
+#include <RTSAIComponent.h>
 #include <irrlicht/irrlicht.h>
 #include <sfml/SFML/Audio.hpp>
 #include <string>
@@ -60,6 +63,18 @@ public:
 		return id;
 	}
 	
+	static int addSpawnLocation(irr::core::vector3df pos) {
+		ObjectManager* objmgr = Game::game.getObjMgr();
+		int id = objmgr->createObject();
+		
+		objmgr->attachComponent(id, new TransformComponent(pos));
+		objmgr->attachComponent(id, new StaticMeshComponent("flag.x", "FlagTexture.png", irr::core::vector3df(-90,0,0)));
+		objmgr->attachComponent(id, new RenderComponent(true));
+		objmgr->attachComponent(id, new SpawnLocationComponent());
+		
+		return id;
+	}
+	
 	static int addTower(irr::core::vector3df pos) {
 		ObjectManager* objmgr = Game::game.getObjMgr();
 		int id = objmgr->createObject();
@@ -68,6 +83,21 @@ public:
 		objmgr->attachComponent(id, new StaticMeshComponent("tower2.x", "TowerTexture.png", irr::core::vector3df(-90,0,0)));
 		objmgr->attachComponent(id, new RenderComponent(true));
 		objmgr->attachComponent(id, new TowerComponent());
+		
+		return id;
+	}
+	
+	static int addTownhall(irr::core::vector3df pos) {
+		ObjectManager* objmgr = Game::game.getObjMgr();
+		int id = objmgr->createObject();
+		
+		objmgr->attachComponent(id, new TransformComponent(pos));
+		objmgr->attachComponent(id, new StaticMeshComponent("townhall.x", "TownhallTexture.png", irr::core::vector3df(-90,0,0)));
+		objmgr->attachComponent(id, new RenderComponent(true));
+		objmgr->attachComponent(id, new HealthComponent(20, 20));
+		objmgr->attachComponent(id, new TeamComponent(id, 0));
+		objmgr->attachComponent(id, new TownhallComponent());
+		objmgr->attachComponent(id, new SelectableComponent(10, 10));
 		
 		return id;
 	}
@@ -94,10 +124,10 @@ public:
 		
 		objmgr->attachComponent(id, new RenderComponent(true));
 		objmgr->attachComponent(id, new FaceDirectionComponent(0, 0.08f));
-		objmgr->attachComponent(id, new RTSLogicComponent(1, Game::game.resources.loadSound("musketshot.ogg"), Game::game.resources.loadSound(" "), 60, false));
+		objmgr->attachComponent(id, new RTSAIComponent(1, Game::game.resources.loadSound("musketshot.ogg"), Game::game.resources.loadSound(" "), 60));
 		objmgr->attachComponent(id, new SteeringComponent(0.2, 80));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
-		objmgr->attachComponent(id, new TeamComponent(1));
+		objmgr->attachComponent(id, new TeamComponent(id, 1));
 	}
 	
 	static int addPlayerUnit(irr::core::vector3df pos) {
@@ -126,7 +156,7 @@ public:
 		objmgr->attachComponent(id, new RTSLogicComponent(1, Game::game.resources.loadSound("musketshot.ogg"), Game::game.resources.loadSound("unitmove.ogg"), 60, true));
 		objmgr->attachComponent(id, new SteeringComponent(0.2, 80));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
-		objmgr->attachComponent(id, new TeamComponent(0));
+		objmgr->attachComponent(id, new TeamComponent(id, 0));
 	}
 	
 	static int addPlayerCannon(irr::core::vector3df pos) {
@@ -159,7 +189,7 @@ public:
 		objmgr->attachComponent(id, new RTSLogicComponent(1, Game::game.resources.loadSound("cannonfire.ogg"), Game::game.resources.loadSound("cannonmove.ogg"), 60, false, 10, 15));
 		objmgr->attachComponent(id, new SteeringComponent(0.1, 80, 8));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
-		objmgr->attachComponent(id, new TeamComponent(0));
+		objmgr->attachComponent(id, new TeamComponent(id, 0));
 	}
 	
 	static int addPlayerVillager(irr::core::vector3df pos) {
@@ -185,7 +215,7 @@ public:
 		objmgr->attachComponent(id, new RTSVillagerLogicComponent(5, 26));
 		objmgr->attachComponent(id, new SteeringComponent(0.2, 80));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
-		objmgr->attachComponent(id, new TeamComponent(0));
+		objmgr->attachComponent(id, new TeamComponent(id, 0));
 	}
 };
 

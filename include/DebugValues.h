@@ -29,6 +29,9 @@ public:
 	
 	// Whether or not the picking texture should be drawn
 	static bool DRAW_PICK_BOXES;
+	
+	// Whether unit states should be printed to the console
+	static bool UNIT_STATES;
 };
 
 #endif

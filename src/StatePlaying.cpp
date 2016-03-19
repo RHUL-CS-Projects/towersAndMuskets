@@ -38,7 +38,6 @@ void StatePlaying::loadMap ( std::string mapname ) {
 	Game::game.getObjMgr()->clearObjects();
 	objectPlacer.init();
 	resourceCache.init(0,0,0);
-	waveController.init();
 	EventReceiver::cubes.clear();
 	
 	///////////////////////////////////
@@ -59,6 +58,7 @@ void StatePlaying::loadMap ( std::string mapname ) {
 	camera.addToScene();
 	
 	this->currentMap = mapname;
+	waveController.init();
 }
 
 void StatePlaying::reloadMap ( std::string mapname ) {
@@ -131,6 +131,11 @@ void StatePlaying::message ( int messageNum, std::string message ) {
 	case SHOW_MESSAGE_BAD:
 		messageDisplay.showMessage(message, SColor(255,255,0,0));
 		Game::game.resources.loadSound("badsound.ogg")->play();
+		break;
+	case SKIP_WAVE_WAIT:
+		waveController.skipWait();
+		messageDisplay.showMessage("Wave started!", SColor(255,0,255,0));
+		Game::game.resources.loadSound("goodsound.ogg")->play();
 		break;
 	}
 }

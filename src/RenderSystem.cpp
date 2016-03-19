@@ -101,11 +101,11 @@ void RenderSystem::update ( float timestep ) {
 				if (healthComp->barTexture == nullptr) {
 					healthComp->barTexture = Game::game.getRendMgr()->getDriver()->addTexture(dimension2du(20, 5), "BarTex", video::ECF_A8R8G8B8);
 				}
-				
-				if (selectComp != nullptr && selectComp->selected)
-					healthComp->alpha = 1;
 					
 				double alpha = healthComp->alpha > 1 ? 1 : healthComp->alpha;
+				if (selectComp != nullptr && selectComp->selected)
+						alpha = 1;
+				
 				if (alpha <= 0) {
 					healthComp->billboardNode->setVisible(false);
 				} else {
@@ -288,7 +288,7 @@ void RenderSystem::addStaticSceneNode (RenderComponent* rendComp, StaticMeshComp
 		meshnode->getMaterial(0).SpecularColor = SColor(0,0,0,0);
 
 		meshnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
-		meshnode->addShadowVolumeSceneNode();
+		//meshnode->addShadowVolumeSceneNode();
 		
 		ITriangleSelector* selector = smgr->createTriangleSelector(meshComp->mesh, meshnode);
 		meshnode->setTriangleSelector(selector);

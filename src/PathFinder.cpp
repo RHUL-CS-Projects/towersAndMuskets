@@ -11,8 +11,6 @@ using namespace scene;
 using namespace core;
 using namespace std;
 
-bool pathFound;
-
 /**
 * Comparison operator for Nodes
 */

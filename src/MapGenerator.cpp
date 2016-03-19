@@ -53,6 +53,14 @@ void MapGenerator::loadMap ( std::string mapname ) {
 				if (data == SColor(255,255,0,0).color) {
 					placeVillager(vector2df(x * gridSize + gridSize/2, y * gridSize + gridSize/2), smgr);
 				}
+				
+				if (data == SColor(255,255,255,255).color) {
+					placeTownhall(vector2df(x * gridSize + gridSize/2, y * gridSize + gridSize/2 + 2), smgr);
+				}
+				
+				if (data == SColor(255,0,0,255).color) {
+					placeSpawn(vector2df(x * gridSize + gridSize/2, y * gridSize + gridSize/2 + 2), smgr);
+				}
 			}
 		}
 		
@@ -129,6 +137,33 @@ void MapGenerator::placeTree ( vector2df pos, ISceneManager* smgr ) {
 	if (Game::game.getObjMgr()->worldManager->checkPassable(vector3df(pos.X, yPos, pos.Y))) {
 		ObjectFactory::addTree(vector3df(pos.X, yPos, pos.Y));
 		Game::game.getObjMgr()->worldManager->setPassable(rectf(pos.X-0.5f, pos.Y-0.5f, pos.X+0.5f, pos.Y+0.5f), false);
+	}
+}
+
+void MapGenerator::placeTownhall ( vector2df pos, ISceneManager* smgr ) {
+	ITerrainSceneNode* terrain = (ITerrainSceneNode*)smgr->getSceneNodeFromName("MainTerrain");
+	int yPos = 0;
+	
+	if (terrain != nullptr)
+		yPos = terrain->getHeight(pos.X, pos.Y);
+	
+	if (Game::game.getObjMgr()->worldManager->checkPassable(vector3df(pos.X, yPos, pos.Y))) {
+		ObjectFactory::addTownhall(vector3df(pos.X, yPos, pos.Y));
+		double gridSize = Game::game.getObjMgr()->worldManager->gridSize;
+		Game::game.getObjMgr()->worldManager->setPassable(rectf(pos.X-(1.5f * gridSize), pos.Y-(2.5f * gridSize), pos.X+(1.5f * gridSize), pos.Y+(0.5f * gridSize)), false);
+	}
+}
+
+void MapGenerator::placeSpawn( vector2df pos, ISceneManager* smgr ) {
+	ITerrainSceneNode* terrain = (ITerrainSceneNode*)smgr->getSceneNodeFromName("MainTerrain");
+	int yPos = 0;
+	
+	if (terrain != nullptr)
+		yPos = terrain->getHeight(pos.X, pos.Y);
+	
+	if (Game::game.getObjMgr()->worldManager->checkPassable(vector3df(pos.X, yPos, pos.Y))) {
+		ObjectFactory::addSpawnLocation(vector3df(pos.X, yPos, pos.Y));
+		double gridSize = Game::game.getObjMgr()->worldManager->gridSize;
 	}
 }
 

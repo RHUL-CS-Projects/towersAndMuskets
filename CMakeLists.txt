@@ -60,6 +60,8 @@ set (SOURCES
   src/PlayerResourceCache.cpp
   src/GroupPathMover.cpp
   src/WaveController.cpp
+  src/TeamComponent.cpp
+  src/RTSAISystem.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)

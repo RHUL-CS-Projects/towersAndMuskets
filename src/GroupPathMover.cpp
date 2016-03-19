@@ -38,12 +38,28 @@ void GroupPathMover::calculatePaths( std::vector<int> objs, irr::core::vector3df
 	
 	double px, py;
 	
-	while (unassigned > 0) {
-		// Check current point
-		px = mid.X - spacedWidth/2 + (xcurrent * spacing);
-		py = mid.Z - spacedHeight/2 + (ycurrent * spacing);
+	vector3df averagePoint(0,0,0);
+	for (int i : objs) {
+		TransformComponent* transComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
 		
-		vector3df tempPoint(px, 0, py);
+		if (transComp == nullptr)
+			return;
+		
+		averagePoint += transComp->worldPosition;
+	}
+	averagePoint /= objs.size();
+	
+	vector3df forward = (dest - averagePoint).normalize();
+	vector3df left(-forward.Z, 0, forward.X);
+	
+	// Find a position for all units in group
+	while (unassigned > 0) {
+		
+		vector3df tempPoint(mid.X, 0, mid.Z);
+		tempPoint += (spacedWidth/2)*left;
+		tempPoint += (spacedHeight/2)*forward;
+		tempPoint -= (xcurrent*spacing+spacing/2)*left;
+		tempPoint -= (ycurrent*spacing+spacing/2)*forward;
 		
 		if (wmgr->checkPassable(tempPoint)) {
 			unassigned--;

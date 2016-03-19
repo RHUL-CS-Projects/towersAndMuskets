@@ -36,47 +36,52 @@ void RTSCamera::addToScene() {
 }
 
 void RTSCamera::update() {
+	double speedMult = 1;
+	
 	if (Game::game.getRendMgr()->getDevice()->isWindowActive()) {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) speedMult = 0.25;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) speedMult = 0.05;
+		
 		// Camera controls
 		if (Keyboard::isKeyPressed(Keyboard::W)) {
-			targetCamX += cos(camRotY) * 2;
-			targetCamZ += sin(camRotY) * 2;
+			targetCamX += cos(camRotY) * 2 * speedMult;
+			targetCamZ += sin(camRotY) * 2 * speedMult;
 		}
 		
 		if (Keyboard::isKeyPressed(Keyboard::S)) {
-			targetCamX -= cos(camRotY) * 2;
-			targetCamZ -= sin(camRotY) * 2;
+			targetCamX -= cos(camRotY) * 2 * speedMult;
+			targetCamZ -= sin(camRotY) * 2 * speedMult;
 		}
 		
 		if (Keyboard::isKeyPressed(Keyboard::A)) {
-			targetCamX += cos(camRotY + (90 * (PI/180))) * 2; 
-			targetCamZ += sin(camRotY + (90 * (PI/180))) * 2;
+			targetCamX += cos(camRotY + (90 * (PI/180))) * 2 * speedMult; 
+			targetCamZ += sin(camRotY + (90 * (PI/180))) * 2 * speedMult;
 		}
 		
 		if (Keyboard::isKeyPressed(Keyboard::D)) {
-			targetCamX += cos(camRotY - (90 * (PI/180))) * 2; 
-			targetCamZ += sin(camRotY - (90 * (PI/180))) * 2;
+			targetCamX += cos(camRotY - (90 * (PI/180))) * 2 * speedMult; 
+			targetCamZ += sin(camRotY - (90 * (PI/180))) * 2 * speedMult;
 		}
 		
 		if (Keyboard::isKeyPressed(Keyboard::Q)) {
-			targetCamRotY += 0.05f;
+			targetCamRotY += 0.05f  * speedMult;
 		}
 		
 		if (Keyboard::isKeyPressed(Keyboard::E)) {
-			targetCamRotY -= 0.05f;
+			targetCamRotY -= 0.05f  * speedMult;
 		}
 	}
 	
 	if (EventReceiver::getMouseState()->wheelDelta < 0) {
 		EventReceiver::getMouseState()->wheelDelta = 0;
-		targetCamHeight += 10;
+		targetCamHeight += 10 * speedMult;
 		targetCamHeight = (targetCamHeight > 200) ? 200 : targetCamHeight;
 	}
 	
 	if (EventReceiver::getMouseState()->wheelDelta > 0) {
 		EventReceiver::getMouseState()->wheelDelta = 0;
-		targetCamHeight -= 10;
-		targetCamHeight = (targetCamHeight < 10) ? 10 : targetCamHeight;
+		targetCamHeight -= 10 * speedMult;
+		targetCamHeight = (targetCamHeight < 20) ? 20 : targetCamHeight;
 	}
 	
 	cameraHeight = cameraHeight + (targetCamHeight - cameraHeight) * 0.2f;
@@ -84,8 +89,18 @@ void RTSCamera::update() {
 	camX = camX + (targetCamX - camX) * 0.2f;
 	camZ = camZ + (targetCamZ - camZ) * 0.2f;
 	
-	camera->setPosition(vector3df(camX, cameraHeight, camZ));
-	camera->setTarget(vector3df(camX + cos(camRotY), cameraHeight - camAngleXZ, camZ + sin(camRotY)));
+	ITerrainSceneNode* terrain = ((ITerrainSceneNode*)Game::game.getRendMgr()->getSceneManager()->getSceneNodeFromName("MainTerrain"));
+	aabbox3df bounds = terrain->getBoundingBox();
+	double onTerX = camX;
+	double onTerY = camZ;
+	onTerX = (onTerX > bounds.MaxEdge.X-1) ? bounds.MaxEdge.X-1 : onTerX;
+	onTerY = (onTerY > bounds.MaxEdge.Z-1) ? bounds.MaxEdge.Z-1 : onTerY;
+	onTerX = (onTerX < bounds.MinEdge.X) ? bounds.MinEdge.X : onTerX;
+	onTerY = (onTerY < bounds.MinEdge.Y) ? bounds.MinEdge.Z : onTerY;
+	double terY = terrain->getHeight(onTerX, onTerY);
+	
+	camera->setPosition(vector3df(camX, terY + cameraHeight, camZ));
+	camera->setTarget(vector3df(camX + cos(camRotY), (terY + cameraHeight) - camAngleXZ, camZ + sin(camRotY)));
 	
 	Listener::setPosition(camX, cameraHeight, camZ);
 	vector3df lookvec = (camera->getPosition() - camera->getTarget()).normalize();
