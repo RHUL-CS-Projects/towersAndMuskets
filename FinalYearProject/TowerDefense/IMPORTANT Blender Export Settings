@@ -18,3 +18,8 @@ Up Axis: Y
 (Everything else unticked)
 
 Also note - Animation timeline must extend from 0 to end of all animations in NLA editor to work correctly
+
+
+Static meshes:
+
+Right handed coordinates, Y up-axis

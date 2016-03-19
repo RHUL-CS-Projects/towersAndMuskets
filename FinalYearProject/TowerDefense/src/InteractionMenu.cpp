@@ -27,13 +27,13 @@ void InteractionMenu::init ( int height, GameState* state ) {
 	guiElements.push_back(new GuiElement(140, top + 30, 100, 20, "EnemyUnit", filepath, SColor(150,255,255,255), 3));
 	guiElements.push_back(new GuiElement(140, top + 60, 100, 20, "Musketeer", filepath, SColor(150,255,255,255), 4));
 	guiElements.push_back(new GuiElement(140, top + 90, 100, 20, "Cannon", filepath, SColor(150,255,255,255), 5));
+	guiElements.push_back(new GuiElement(width - 130, top + 50, 100, 20, "Menu", filepath, SColor(50,255,255,255), 6));
 	guiElements.push_back(new GuiElement(260, top + 30, 100, 20, "Villager", filepath, SColor(150,255,255,255), 10));
+	guiElements.push_back(new GuiElement(width - 520, top + height - 30, 100, 20, "Skip Wait", filepath, SColor(50,255,255,255), 11));
 	
 	//guiElements.push_back(new GuiElement(400, top + 40, 100, 20, "Map1", filepath, SColor(150,255,255,255), 7));
 	//guiElements.push_back(new GuiElement(400, top + 70, 100, 20, "Map2", filepath, SColor(150,255,255,255), 8));
 	//guiElements.push_back(new GuiElement(400, top + 100, 100, 20, "Map3", filepath, SColor(150,255,255,255), 9));
-	
-	guiElements.push_back(new GuiElement(width - 130, top + 50, 100, 20, "Menu", filepath, SColor(50,255,255,255), 6));
 	
 	font = Game::game.getRendMgr()->getGUIEnvironment()->getFont(filepath.c_str());
 	
@@ -98,6 +98,9 @@ void InteractionMenu::onNotify ( int id, int eventID ) {
 			break;
 		case 10:
 			((StatePlaying*)parentState)->message(SET_PLACE_OBJECT_PLAYER_VILLAGER);
+			break;
+		case 11:
+			((StatePlaying*)parentState)->message(SKIP_WAVE_WAIT);
 			break;
 		}
 		sndClickSound->play();

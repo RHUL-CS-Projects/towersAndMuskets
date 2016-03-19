@@ -28,17 +28,20 @@
 #include <RenderComponent.h>
 #include <RenderManager.h>
 #include <RenderSystem.h>
+#include <RTSAIComponent.h>
 #include <RTSCamera.h>
 #include <RTSLogicComponent.h>
 #include <RTSLogicSystem.h>
 #include <SelectableComponent.h>
 #include <SelectionSystem.h>
 #include <Server.h>
+#include <SpawnLocationComponent.h>
 #include <StateMainMenu.h>
 #include <StaticMeshComponent.h>
 #include <SteeringComponent.h>
 #include <TeamComponent.h>
 #include <TowerComponent.h>
+#include <TownhallComponent.h>
 #include <TransformComponent.h>
 #include <WaveController.h>
 

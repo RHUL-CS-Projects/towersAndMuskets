@@ -8,5 +8,6 @@ bool DebugValues::DRAW_BOUNDING_BOXES = false;
 bool DebugValues::DRAW_PICK_BOXES = false;
 
 bool DebugValues::PRINT_FPS = false;
+bool DebugValues::UNIT_STATES = false;
 
 bool DebugValues::STENCIL_ENABLED = false;

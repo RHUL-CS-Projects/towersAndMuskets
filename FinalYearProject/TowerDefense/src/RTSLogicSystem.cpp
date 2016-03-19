@@ -74,67 +74,67 @@ void RTSLogicSystem::update ( float timestep ) {
 		switch (currentState) {
 		case IDLE:
 			stateIdle(mgr, i);
-			if (selected) std::cout << "IDLE" << std::endl;
+			if (DebugValues::UNIT_STATES && selected) std::cout << "IDLE" << std::endl;
 			break;
 			
 		case WALKING:
 			stateWalking(mgr, i);
-			if (selected) std::cout << "WALKING" << std::endl;
+			if (DebugValues::UNIT_STATES && selected) std::cout << "WALKING" << std::endl;
 			break;
 			
 		case MOVE_TO_ATTACK:
 			stateMoveToAttack(mgr, i);
-			if (selected) std::cout << "MOVE_TO_ATTACK" << std::endl;
+			if (DebugValues::UNIT_STATES && selected) std::cout << "MOVE_TO_ATTACK" << std::endl;
 			break;
 			
 		case ATTACKING:
 			stateAttacking(mgr, i);
-			if (selected) std::cout << "ATTACKING" << std::endl;
+			if (DebugValues::UNIT_STATES && selected) std::cout << "ATTACKING" << std::endl;
 			break;
 			
 		case RELOADING:
 			stateReloading(mgr, i);
-			if (selected) std::cout << "RELOADING" << std::endl;
+			if (DebugValues::UNIT_STATES && selected) std::cout << "RELOADING" << std::endl;
 			break;
 			
 		case DEAD:
 			stateDead(mgr, i);
-			if (selected) std::cout << "DEAD" << std::endl;
+			if (DebugValues::UNIT_STATES && selected) std::cout << "DEAD" << std::endl;
 			break;
 			
 		case TAKE_AIM:
 			stateTakeAim(mgr, i);
-			if (selected) std::cout << "TAKE_AIM" << std::endl;
+			if (DebugValues::UNIT_STATES && selected) std::cout << "TAKE_AIM" << std::endl;
 			break;
 			
 		case RELEASE_AIM:
 			stateReleaseAim(mgr, i);
-			if (selected) std::cout << "RELEASE_AIM" << std::endl;
+			if (DebugValues::UNIT_STATES && selected) std::cout << "RELEASE_AIM" << std::endl;
 			break;
 			
 		case GARRISSONED:
 			stateGarrissoned(mgr, i);
-			if (selected) std::cout << "GARRISSONED" << std::endl;
+			if (DebugValues::UNIT_STATES && selected) std::cout << "GARRISSONED" << std::endl;
 			break;
 			
 		case CLIMB_UP:
 			stateClimbUp(mgr, i);
-			if (selected) std::cout << "CLIMB_UP" << std::endl;
+			if (DebugValues::UNIT_STATES && selected) std::cout << "CLIMB_UP" << std::endl;
 			break;
 			
 		case CLIMB_DOWN:
 			stateClimbDown(mgr, i);
-			if (selected) std::cout << "CLIMB_DOWN" << std::endl;
+			if (DebugValues::UNIT_STATES && selected) std::cout << "CLIMB_DOWN" << std::endl;
 			break;
 			
 		case MOVE_TO_TOWER:
 			stateMoveToTower(mgr, i);
-			if (selected) std::cout << "MOVE_TO_TOWER" << std::endl;
+			if (DebugValues::UNIT_STATES && selected) std::cout << "MOVE_TO_TOWER" << std::endl;
 			break;
 			
 		case AIMING:
 			stateAiming(mgr, i);
-			if (selected) std::cout << "AIMING" << std::endl;
+			if (DebugValues::UNIT_STATES && selected) std::cout << "AIMING" << std::endl;
 			break;
 		}
 	}
@@ -348,7 +348,7 @@ vector3df RTSLogicSystem::towerTargetPosition ( ObjectManager* mgr, int towerID 
 		/*return vector3df(otherTransComp->worldPosition.X + towerComp->doorOffset.X * mgr->worldManager->gridSize, 
 						 0 + towerComp->doorOffset.Y * mgr->worldManager->gridSize, 
 						 otherTransComp->worldPosition.Z + towerComp->doorOffset.Z * mgr->worldManager->gridSize);*/
-		vector3df nearest = currentTransComp->worldPosition;
+		vector3df nearest = otherTransComp->worldPosition;
 		double dist = -1;
 		double angle = 360 / 8;
 		double gridSize = mgr->worldManager->gridSize;
@@ -375,7 +375,7 @@ vector3df RTSLogicSystem::towerTargetPosition ( ObjectManager* mgr, int towerID 
 }
 
 int RTSLogicSystem::getNearestOnOtherTeam ( ObjectManager* mgr, int id ) {
-	std::list<int> objects = mgr->getObjectsWithComponent("TeamComponent");
+	std::vector<int> objects = TeamComponent::getObjectsOnTeam((currentTeamComp->teamID + 1) % 2);
 	
 	double dist = currentRTSComp->rangeInSquares * mgr->worldManager->gridSize;
 	// Multiply range by 1.5 to get a tentative line of sight
@@ -386,10 +386,10 @@ int RTSLogicSystem::getNearestOnOtherTeam ( ObjectManager* mgr, int id ) {
 	
 	for (int i : objects) {
 		TeamComponent* otherTeamComp = mgr->getObjectComponent<TeamComponent>(i, "TeamComponent");
-		
-		if (otherTeamComp->teamID == currentTeamComp->teamID) continue;
-		
 		TransformComponent* otherTransComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
+		HealthComponent* otherHealthComp = mgr->getObjectComponent<HealthComponent>(i, "HealthComponent");
+		
+		if (otherHealthComp == nullptr || otherHealthComp->health <= 0) continue;
 		
 		double dx = otherTransComp->worldPosition.X - currentTransComp->worldPosition.X;
 		double dz = otherTransComp->worldPosition.Z - currentTransComp->worldPosition.Z;
@@ -823,6 +823,18 @@ void RTSLogicSystem::stateMoveToTower ( ObjectManager* mgr, int id ) {
 		return;
 	}
 	
+	// Could not move to tower
+	if (currentSteerComp->path.ended() && distanceToObjectSq(mgr, currentRTSComp->towerID) > (mgr->worldManager->gridSize*2)*(mgr->worldManager->gridSize*2)) {
+		currentRTSComp->towerID = -1;
+		
+		currentRTSComp->stateStack.pop();
+		currentRTSComp->stateStack.push(IDLE);
+		
+		currentRTSComp->pathSet = false;
+		currentSteerComp->path.resetPath();
+		return;
+	}
+	
 	// Start walking to attack target
 	if (selected() && clickedObject >= 0 && checkTargetDifferentTeam(mgr, clickedObject)) {
 		currentRTSComp->towerID = -1;
@@ -860,10 +872,10 @@ void RTSLogicSystem::stateMoveToTower ( ObjectManager* mgr, int id ) {
 	
 	// Start climbing tower
 	if (currentSteerComp->path.ended() || distanceToObjectSq(mgr, currentRTSComp->towerID) < (mgr->worldManager->gridSize*1.5)*(mgr->worldManager->gridSize*1.5)) {
-		std::cout << "here" << std::endl;
 		currentRTSComp->stateStack.pop();
 		currentRTSComp->stateStack.push(GARRISSONED);
 		currentRTSComp->stateStack.push(CLIMB_UP);
+		return;
 	}
 }
 
