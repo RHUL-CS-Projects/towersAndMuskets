@@ -22,6 +22,7 @@
 #include <ObjectFactory.h>
 #include <ObjectManager.h>
 #include <ObjectPlacer.h>
+#include <ParticleManager.h>
 #include <PathMovementComponent.h>
 #include <PathMovementSystem.h>
 #include <PlayerResourceCache.h>

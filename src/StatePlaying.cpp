@@ -3,6 +3,7 @@
 #include <Game.h>
 #include <sfml/SFML/Audio.hpp>
 #include <sfml/SFML/Window.hpp>
+#include <TransparentMaterialShader.h>
 
 using namespace irr;
 using namespace core;
@@ -19,6 +20,7 @@ StatePlaying::StatePlaying(std::string mapname) {
 
 	interactionMenu.init(128, this);
 	messageDisplay.init(RenderManager::resPath + "/materials/textures/SerifFont.xml");
+	TeamComponent::reset();
 	
 	loadMap(mapname);
 	
@@ -30,10 +32,34 @@ StatePlaying::StatePlaying(std::string mapname) {
 	sndGunshot1.setAttenuation(0.1f);
 	sndGunshot1.setPosition(128, 0, 128);
 	
+	IGPUProgrammingServices* gpu = Game::game.getRendMgr()->getDriver()->getGPUProgrammingServices();
+	
+	if (gpu) {
+		TransparentMaterialShader* shader = new TransparentMaterialShader();
+		
+		s32 newMat = gpu->addHighLevelShaderMaterialFromFiles(
+			"./res/materials/shaders/transparentshader.vert", "vertexMain", video::EVST_VS_1_1,
+			"./res/materials/shaders/transparentshader.frag", "pixelMain", video::EPST_PS_1_1,
+			shader, video::EMT_TRANSPARENT_ADD_COLOR, 0, video::EGSL_CG
+		);
+		
+		shader->drop();
+		
+		TransparentMaterialShader::materialID = newMat;
+		
+		std::cout << "Mat: " << newMat << ", ID: " << TransparentMaterialShader::materialID << std::endl;
+		
+		/*IMeshSceneNode* node = smgr->addCubeSceneNode(20);
+		node->setPosition(vector3df(200, 40, 200));
+		node->setMaterialTexture(0, Game::game.getRendMgr()->getDriver()->getTexture("./res/materials/textures/grass-texture3.jpg"));
+		node->setMaterialType((video::E_MATERIAL_TYPE)TransparentMaterialShader::materialID);*/
+	}
+	
 	ObjectManager* objmgr = Game::game.getObjMgr();
 }
 
 void StatePlaying::loadMap ( std::string mapname ) {
+	particleManager.reset();
 	Game::game.getRendMgr()->getSceneManager()->clear();
 	Game::game.getObjMgr()->clearObjects();
 	objectPlacer.init();
@@ -76,9 +102,12 @@ void StatePlaying::update() {
 		messageDisplay.update();
 		objectPlacer.update();
 		resourceCache.update();
+		particleManager.update();
 		
 		interactionMenu.setProgress(waveController.getPercentage());
 		Game::game.getObjMgr()->updateSystems(0);
+		
+		TeamComponent::updateTeamLists();
 	} else {
 		shouldReload = false;
 		loadMap(currentMap);

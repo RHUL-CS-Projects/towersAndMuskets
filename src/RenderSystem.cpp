@@ -80,9 +80,10 @@ void RenderSystem::update ( float timestep ) {
 					ITexture* texture = Game::game.getRendMgr()->getDriver()->getTexture(texturePath.c_str());
 					
 					selectComp->sceneNode->setMaterialTexture(0, texture);
-					selectComp->sceneNode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
+					//selectComp->sceneNode->setMaterialType(video::EMT_TRANSPARENT_ALPHA_CHANNEL);
 					selectComp->sceneNode->setMaterialFlag(video::EMF_LIGHTING, false);
 					selectComp->sceneNode->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+					selectComp->sceneNode->setMaterialFlag(video::EMF_BLEND_OPERATION, true);
 				}
 				
 				selectComp->sceneNode->setVisible(selectComp->selected);
@@ -129,7 +130,7 @@ void RenderSystem::update ( float timestep ) {
 					healthComp->barTexture->unlock();
 					
 					healthComp->billboardNode->setMaterialTexture(0, healthComp->barTexture);
-					healthComp->billboardNode->setMaterialFlag(video::EMF_BLEND_OPERATION, true);
+					//healthComp->billboardNode->setMaterialFlag(video::EMF_BLEND_OPERATION, true);
 					healthComp->billboardNode->setMaterialFlag(video::EMF_ZBUFFER, false);
 				}
 			}
