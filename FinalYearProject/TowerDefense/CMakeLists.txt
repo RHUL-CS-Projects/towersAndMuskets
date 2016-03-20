@@ -62,6 +62,8 @@ set (SOURCES
   src/WaveController.cpp
   src/TeamComponent.cpp
   src/RTSAISystem.cpp
+  src/TransparentMaterialShader.cpp
+  src/ParticleManager.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)

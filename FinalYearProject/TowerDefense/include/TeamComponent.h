@@ -21,6 +21,8 @@ public:
 	
 	int teamID;
 	
+	static void updateTeamLists();
+	static void reset();
 	static std::vector<int> getObjectsOnTeam(int team);
 };
 

@@ -4,6 +4,7 @@
 #include <list>
 #include <RenderManager.h>
 #include <StatePlaying.h>
+#include <TransparentMaterialShader.h>
 
 #include <RTSAIComponent.h>
 #include <SelectableComponent.h>
@@ -305,11 +306,20 @@ int RTSAISystem::getNearestOnOtherTeam ( ObjectManager* mgr, int id ) {
 	int best = -1;
 	
 	for (int i : objects) {
+		if (!mgr->objectExists(i)) {
+			continue;
+		}
+		
+		if (!mgr->objectHasComponent(i, "TeamComponent") || !mgr->objectHasComponent(i, "HealthComponent") || !mgr->objectHasComponent(i, "TransformComponent"))
+			continue;
+		
 		TeamComponent* otherTeamComp = mgr->getObjectComponent<TeamComponent>(i, "TeamComponent");
 		TransformComponent* otherTransComp = mgr->getObjectComponent<TransformComponent>(i, "TransformComponent");
 		HealthComponent* otherHealthComp = mgr->getObjectComponent<HealthComponent>(i, "HealthComponent");
 		
-		if (otherHealthComp == nullptr || otherHealthComp->health <= 0) continue;
+		//std::cout << i << std::endl;
+		
+		if (otherHealthComp->health <= 0) continue;
 		
 		double dx = otherTransComp->worldPosition.X - currentTransComp->worldPosition.X;
 		double dz = otherTransComp->worldPosition.Z - currentTransComp->worldPosition.Z;
@@ -393,7 +403,7 @@ void RTSAISystem::stateMoveToAttack ( ObjectManager* mgr, int id ) {
 	}
 	
 	float distSq = (mgr->worldManager->gridSize * currentRTSComp->rangeInSquares) * (mgr->worldManager->gridSize * currentRTSComp->rangeInSquares);
-	std::cout << currentRTSComp->attackTargetID << std::endl;
+	//std::cout << currentRTSComp->attackTargetID << std::endl;
 	
 	// Start aiming at target
 	if (currentRTSComp->attackTargetID >= 0 && distanceToObjectSq(mgr, currentRTSComp->attackTargetID) < distSq) {
@@ -475,21 +485,20 @@ void RTSAISystem::stateAiming ( ObjectManager* mgr, int id ) {
 		currentRTSComp->shootSound->setVolume(100);
 		currentRTSComp->shootSound->setRelativeToListener(false);
 		currentRTSComp->shootSound->setAttenuation(0.1f);
+		currentRTSComp->shootSound->setPitch(0.9f + (1.0f/1000*(rand()%1000))*0.2f);
 		currentRTSComp->shootSound->play();
 		
 		vector3df enemyPos = attackTargetPosition(mgr);
 		vector3df dif = enemyPos - currentTransComp->worldPosition;
 		
-		// Add smoke
-		/*IMesh* planeMesh = Game::game.getRendMgr()->getSceneManager()->getGeometryCreator()->createPlaneMesh(dimension2df(1,1.5));
-		IMeshSceneNode* node = Game::game.getRendMgr()->getSceneManager()->addMeshSceneNode(planeMesh);
-		node->setPosition(currentTransComp->worldPosition + vector3df(dif.X/2 + sin(atan2(dif.X, dif.Z))*4, 7, dif.Z/2 + cos(atan2(dif.X, dif.Z))*4));
-		node->setMaterialTexture(0, Game::game.getRendMgr()->getDriver()->getTexture("./res/materials/textures/smoketrail.png"));
-		node->setMaterialFlag(video::EMF_BLEND_OPERATION, true);
-		node->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
-		node->setRotation(vector3df(0, 90+radToDeg(atan2(dif.X, dif.Z)), 0));
-		node->setScale(vector3df(dif.getLength()-5, 1, 1));*/
+		vector3df start = currentTransComp->worldPosition + vector3df(sin(atan2(dif.X, dif.Z))*4, 7.5, cos(atan2(dif.X, dif.Z))*4);
+		vector3df end = enemyPos + vector3df(0, 7.5, 0);
+		((StatePlaying*)Game::game.currentState())->particleManager.addSmokeTrailParticle(start, end);
 		
+		FaceDirectionComponent* faceComp = mgr->getObjectComponent<FaceDirectionComponent>(id, "FaceDirectionComponent");
+	
+		if (faceComp != nullptr)
+			((StatePlaying*)Game::game.currentState())->particleManager.addMuzzleFlashParticle(currentTransComp->worldPosition, vector3df(0, faceComp->currentYRot, 0));
 		
 		return;
 	}

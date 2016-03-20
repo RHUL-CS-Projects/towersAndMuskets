@@ -39,6 +39,8 @@ private:
 public:
 	StatePlaying (std::string mapname);
 	
+	ParticleManager particleManager;
+	
 	virtual void update();
 	virtual void render(irr::video::IVideoDriver* driver);
 	virtual void transitionIn();

@@ -94,10 +94,9 @@ public:
 		objmgr->attachComponent(id, new TransformComponent(pos));
 		objmgr->attachComponent(id, new StaticMeshComponent("townhall.x", "TownhallTexture.png", irr::core::vector3df(-90,0,0)));
 		objmgr->attachComponent(id, new RenderComponent(true));
-		objmgr->attachComponent(id, new HealthComponent(20, 20));
-		objmgr->attachComponent(id, new TeamComponent(id, 0));
+		//objmgr->attachComponent(id, new HealthComponent(20, 20));
+		//objmgr->attachComponent(id, new TeamComponent(id, 0));
 		objmgr->attachComponent(id, new TownhallComponent());
-		objmgr->attachComponent(id, new SelectableComponent(10, 10));
 		
 		return id;
 	}
