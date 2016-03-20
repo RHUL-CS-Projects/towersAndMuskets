@@ -6,6 +6,7 @@
 #include <Game.h>
 #include <StatePlaying.h>
 #include <StatePauseMenu.h>
+#include <GuiElementPurchase.h>
 
 using namespace irr;
 using namespace core;
@@ -21,15 +22,21 @@ void InteractionMenu::init ( int height, GameState* state ) {
 	int width = Game::game.getRendMgr()->getDriver()->getScreenSize().Width;
 	
 	std::string filepath = RenderManager::resPath + "/materials/textures/SerifFont.xml";
-	guiElements.push_back(new GuiElement(20, top + 30, 100, 20, "Tower", filepath, SColor(150,255,255,255), 0));
-	guiElements.push_back(new GuiElement(20, top + 60, 100, 20, "Tree", filepath, SColor(150,255,255,255), 1));
-	guiElements.push_back(new GuiElement(20, top + 90, 100, 20, "Rock", filepath, SColor(150,255,255,255), 2));
-	guiElements.push_back(new GuiElement(140, top + 30, 100, 20, "EnemyUnit", filepath, SColor(150,255,255,255), 3));
-	guiElements.push_back(new GuiElement(140, top + 60, 100, 20, "Musketeer", filepath, SColor(150,255,255,255), 4));
-	guiElements.push_back(new GuiElement(140, top + 90, 100, 20, "Cannon", filepath, SColor(150,255,255,255), 5));
+	//guiElements.push_back(new GuiElement(20, top - 200 + 30, 100, 20, "Tower", filepath, SColor(150,255,255,255), 0));
+	//guiElements.push_back(new GuiElement(20, top - 200 + 60, 100, 20, "Tree", filepath, SColor(150,255,255,255), 1));
+	//guiElements.push_back(new GuiElement(20, top - 200 + 90, 100, 20, "Rock", filepath, SColor(150,255,255,255), 2));
+	guiElements.push_back(new GuiElement(140, top - 200 + 30, 100, 20, "EnemyUnit", filepath, SColor(150,255,255,255), 3));
+	//guiElements.push_back(new GuiElement(140, top - 200 + 60, 100, 20, "Musketeer", filepath, SColor(150,255,255,255), 4));
+	//guiElements.push_back(new GuiElement(140, top - 200 + 90, 100, 20, "Cannon", filepath, SColor(150,255,255,255), 5));
+	//guiElements.push_back(new GuiElement(260, top - 200 + 30, 100, 20, "Villager", filepath, SColor(150,255,255,255), 10));
+	
 	guiElements.push_back(new GuiElement(width - 130, top + 50, 100, 20, "Menu", filepath, SColor(50,255,255,255), 6));
-	guiElements.push_back(new GuiElement(260, top + 30, 100, 20, "Villager", filepath, SColor(150,255,255,255), 10));
 	guiElements.push_back(new GuiElement(width - 520, top + height - 30, 100, 20, "Skip Wait", filepath, SColor(50,255,255,255), 11));
+	
+	guiElements.push_back(new GuiElementPurchase(20 + 10, top + 20, "unitbuttonback.png", "towerbutton.png", "unitbuttonbacklight.png", 0));
+	guiElements.push_back(new GuiElementPurchase(20 + 90, top + 20, "unitbuttonback.png", "musketbutton.png", "unitbuttonbacklight.png", 4));
+	guiElements.push_back(new GuiElementPurchase(20 + 170, top + 20, "unitbuttonback.png", "cannonbutton.png", "unitbuttonbacklight.png", 5));
+	guiElements.push_back(new GuiElementPurchase(20 + 250, top + 20, "unitbuttonback.png", "villagerbutton.png", "unitbuttonbacklight.png", 10));
 	
 	//guiElements.push_back(new GuiElement(400, top + 40, 100, 20, "Map1", filepath, SColor(150,255,255,255), 7));
 	//guiElements.push_back(new GuiElement(400, top + 70, 100, 20, "Map2", filepath, SColor(150,255,255,255), 8));
@@ -44,9 +51,7 @@ void InteractionMenu::init ( int height, GameState* state ) {
 	sndRolloverSound = Game::game.resources.loadSound("click.ogg");
 	sndClickSound = Game::game.resources.loadSound("click2.ogg");
 	
-	texGold = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/GoldIcon.png").c_str());
-	texStone = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/StoneIcon.png").c_str());
-	texWood = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/WoodIcon.png").c_str());
+	texRes = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/hud resources.png").c_str());
 	
 	texHUD = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/hudimage.png").c_str());
 	texBarBack = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/progressbarback.png").c_str());
@@ -150,16 +155,16 @@ void InteractionMenu::render ( irr::video::IVideoDriver* driver ) {
 		e->render(driver);
 	}
 	
-	driver->draw2DImage(texGold, recti(920, bottom-height+25, 940, bottom-height+45), recti(0, 0, texGold->getSize().Width, texGold->getSize().Height), 0, 0, true);
-	driver->draw2DImage(texStone, recti(920, bottom-height+55, 940, bottom-height+75), recti(0, 0, texStone->getSize().Width, texStone->getSize().Height), 0, 0, true);
-	driver->draw2DImage(texWood, recti(920, bottom-height+85, 940, bottom-height+105), recti(0, 0, texWood->getSize().Width, texWood->getSize().Height), 0, 0, true);
+	driver->draw2DImage(texRes, recti(920, bottom-height+10, 920+texRes->getSize().Width, bottom-height+10+texRes->getSize().Height), 
+						recti(0, 0, texRes->getSize().Width, texRes->getSize().Height), 0, 0, true);
+
 	
 	std::string stone = std::to_string(((StatePlaying*)Game::game.currentState())->getResourceCache()->getStone());
 	std::string gold = std::to_string(((StatePlaying*)Game::game.currentState())->getResourceCache()->getGold());
 	std::string wood = std::to_string(((StatePlaying*)Game::game.currentState())->getResourceCache()->getWood());
-	font->draw(gold.c_str(), recti(950, bottom-height+25, 1040, bottom-height+45),SColor(200,255,255,255),false, true);
-	font->draw(stone.c_str(), recti(950, bottom-height+55, 1040, bottom-height+75),SColor(200,255,255,255),false, true);
-	font->draw(wood.c_str(), recti(950, bottom-height+85, 1040, bottom-height+105),SColor(200,255,255,255),false, true);
+	font->draw(gold.c_str(), recti(980, bottom-height+20, 1040, bottom-height+40),SColor(200,255,255,255),false, true);
+	font->draw(stone.c_str(), recti(980, bottom-height+55, 1040, bottom-height+75),SColor(200,255,255,255),false, true);
+	font->draw(wood.c_str(), recti(980, bottom-height+90, 1040, bottom-height+110),SColor(200,255,255,255),false, true);
 }
 
 

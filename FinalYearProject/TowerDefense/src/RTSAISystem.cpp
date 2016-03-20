@@ -65,9 +65,11 @@ void RTSAISystem::update ( float timestep ) {
 		
 		currentState = currentRTSComp->stateStack.top();
 		
-		if (currentHealthComp->health <= 0)
+		if (currentHealthComp->health <= 0) {
 			currentRTSComp->stateStack.push(DEAD);
-		
+			currentState = currentRTSComp->stateStack.top();
+		}
+			
 		// Perform behaviours of current state
 		switch (currentState) {
 		case IDLE:
@@ -298,10 +300,10 @@ vector3df RTSAISystem::towerTargetPosition ( ObjectManager* mgr, int towerID ) {
 int RTSAISystem::getNearestOnOtherTeam ( ObjectManager* mgr, int id ) {
 	std::vector<int> objects = TeamComponent::getObjectsOnTeam((currentTeamComp->teamID + 1) % 2);
 	
-	double dist = currentRTSComp->rangeInSquares * mgr->worldManager->gridSize;
+	double dist = -1;//currentRTSComp->rangeInSquares * mgr->worldManager->gridSize;
 	// Multiply range by 1.5 to get a tentative line of sight
-	dist *= 1.5;
-	dist *= dist;
+	//dist *= 1.5;
+	//dist *= dist;
 	
 	int best = -1;
 	
@@ -325,7 +327,7 @@ int RTSAISystem::getNearestOnOtherTeam ( ObjectManager* mgr, int id ) {
 		double dz = otherTransComp->worldPosition.Z - currentTransComp->worldPosition.Z;
 		double distsq = dx*dx + dz*dz;
 		
-		if (distsq < dist) {
+		if (dist == -1 || distsq < dist) {
 			dist = distsq;
 			best = i;
 		}

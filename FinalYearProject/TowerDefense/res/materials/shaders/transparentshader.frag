@@ -1,6 +1,6 @@
 
 uniform sampler2D myTexture;
-uniform double alpha;
+uniform float alpha;
 
 void main (void)
 {

@@ -64,6 +64,7 @@ set (SOURCES
   src/RTSAISystem.cpp
   src/TransparentMaterialShader.cpp
   src/ParticleManager.cpp
+  src/GuiElementPurchase.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)
