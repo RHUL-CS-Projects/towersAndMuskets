@@ -18,7 +18,7 @@ private:
 	GameState* parentState;
 	irr::gui::IGUIFont* font;
 	
-	irr::video::ITexture* texGold, *texStone, *texWood;
+	irr::video::ITexture* texRes;
 	irr::video::ITexture* texHUD, *texBarFront, *texBarBack;
 	
 public:

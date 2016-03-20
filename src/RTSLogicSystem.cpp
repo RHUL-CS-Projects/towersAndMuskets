@@ -67,8 +67,10 @@ void RTSLogicSystem::update ( float timestep ) {
 		currentState = currentRTSComp->stateStack.top();
 		bool selected = (currentSelectComp == nullptr) ? false : ((currentSelectComp->selected) ? true : false);
 		
-		if (currentHealthComp->health <= 0)
+		if (currentHealthComp->health <= 0) {
 			currentRTSComp->stateStack.push(DEAD);
+			currentState = currentRTSComp->stateStack.top();
+		}
 		
 		// Perform behaviours of current state
 		switch (currentState) {

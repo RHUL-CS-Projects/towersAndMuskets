@@ -20,6 +20,7 @@ protected:
 	bool mouseOver;
 	
 public:
+	GuiElement() {}
 	GuiElement(int x, int y, int width, int height, std::string text, std::string fontpath, irr::video::SColor col, int id = 0);
 	
 	virtual void update();

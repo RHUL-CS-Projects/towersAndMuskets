@@ -21,7 +21,7 @@ private:
 	double waveSpeed;
 	double waitSpeed;
 	
-	int spawnNumber = 20;
+	int spawnNumber = 30;
 	int toSpawn = 0;
 	int spawnTimeCount = 0;
 	int spawnDelay = 60;

@@ -4,12 +4,13 @@
 #include <irrlicht/irrlicht.h>
 #include <TowerDefenseEngine.h>
 #include <algorithm>
+#include <time.h>
 
 using namespace irr;
 using namespace core;
 
 WaveController::WaveController() {
-	waitSpeed = 1.0/(60*120);
+	waitSpeed = 1.0/(60*200);
 }
 
 double WaveController::getPercentage() {
@@ -27,7 +28,7 @@ void WaveController::init() {
 
 void WaveController::update() {
 	if (inWave) {
-		//updateWave();
+		updateWave();
 	} else {
 		updateWait();
 	}
@@ -101,6 +102,8 @@ void WaveController::pickSpawnLocations() {
 	int unitsPerSpawn = 5;
 	std::list<int> spawns  = Game::game.getObjMgr()->getObjectsWithComponent("SpawnLocationComponent"); 
 	std::vector<int> spawnsVec { spawns.begin(), spawns.end() };
+	
+	srand(time(nullptr));
 	
 	std::random_shuffle(spawnsVec.begin(), spawnsVec.end());
 	

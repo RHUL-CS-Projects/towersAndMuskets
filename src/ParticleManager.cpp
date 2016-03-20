@@ -16,6 +16,7 @@ void ParticleManager::addSmokeTrailParticle(vector3df from, vector3df to) {
 	newPart.node->setMaterialTexture(0, Game::game.getRendMgr()->getDriver()->getTexture("./res/materials/textures/smoketrail.png"));
 	newPart.node->setMaterialFlag(video::EMF_BLEND_OPERATION, true);
 	newPart.node->setMaterialType((video::E_MATERIAL_TYPE)TransparentMaterialShader::materialID);
+	newPart.node->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 	
 	vector3df startScale = vector3df(dif.getLength(), 1, 1);
 
@@ -37,8 +38,8 @@ void ParticleManager::addSmokeTrailParticle(vector3df from, vector3df to) {
 	
 	newPart.node->getMaterial(0).MaterialTypeParam = newPart.startAlpha;
 	
-	newPart.life = 120;
-	newPart.startLife = 120;
+	newPart.life = 300;
+	newPart.startLife = 300;
 	
 	newPart.startScale = startScale;
 	newPart.finalScale = startScale + vector3df(0,0,5);
@@ -57,6 +58,7 @@ void ParticleManager::addSmokeParticle ( vector3df from ) {
 	newPart.node->setMaterialTexture(0, Game::game.getRendMgr()->getDriver()->getTexture("./res/materials/textures/smoke.png"));
 	newPart.node->setMaterialFlag(video::EMF_BLEND_OPERATION, true);
 	newPart.node->setMaterialType((video::E_MATERIAL_TYPE)TransparentMaterialShader::materialID);
+	newPart.node->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 	
 	double scale = 1.0 / 255 * (double)(rand()%255);
 	vector3df startScale = vector3df(0.2 + 0.8*scale, 0.2 + 0.8*scale, 0.2 + 0.8*scale);
@@ -69,8 +71,8 @@ void ParticleManager::addSmokeParticle ( vector3df from ) {
 	
 	newPart.node->getMaterial(0).MaterialTypeParam = newPart.startAlpha;
 	
-	newPart.life = 200;
-	newPart.startLife = 200;
+	newPart.life = 400;
+	newPart.startLife = 400;
 	
 	newPart.startScale = startScale;
 	newPart.finalScale = startScale + vector3df(10,10,10);
@@ -88,6 +90,7 @@ void ParticleManager::addMuzzleFlashParticle ( vector3df unitpos, vector3df unit
 	newPart.node->setMaterialFlag(video::EMF_BLEND_OPERATION, true);
 	newPart.node->setMaterialType((video::E_MATERIAL_TYPE)TransparentMaterialShader::materialID);
 	newPart.node->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
+	newPart.node->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 	
 	vector3df startScale = vector3df(1, 1, 1);
 	
