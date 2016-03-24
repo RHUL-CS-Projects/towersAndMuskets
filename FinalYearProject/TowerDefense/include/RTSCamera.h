@@ -8,6 +8,7 @@ class RTSCamera {
 private:
 	float cameraHeight;
 	float targetCamHeight;
+	float targetGroundCamHeight;
 	float camX;
 	float camZ;
 	float targetCamX;
@@ -15,6 +16,10 @@ private:
 	float camRotY;
 	float targetCamRotY;
 	float camAngleXZ;
+	float lookTarget;
+	
+	bool groundCam;
+	bool tabPressed;
 	irr::scene::ICameraSceneNode* camera;
 
 public:

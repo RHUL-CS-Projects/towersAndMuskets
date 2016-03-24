@@ -25,11 +25,15 @@ int PlayerResourceCache::getWood() {
 }
 
 void PlayerResourceCache::spend ( int stone, int gold, int wood ) {
-	if (getStone() >= stone && getGold() >= gold && getWood() >= wood) {
+	if (canAfford(stone, gold, wood)) {
 		this->stone -= stone;
 		this->gold -= gold;
 		this->wood -= wood;
 	}
+}
+
+bool PlayerResourceCache::canAfford ( int stone, int gold, int wood ) {
+	return (getStone() >= stone && getGold() >= gold && getWood() >= wood);
 }
 
 void PlayerResourceCache::update() {

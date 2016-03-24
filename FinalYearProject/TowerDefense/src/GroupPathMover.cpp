@@ -92,8 +92,11 @@ void GroupPathMover::calculatePaths( std::vector<int> objs, irr::core::vector3df
 		steerComp->path = pathFinder.findPath(transComp->worldPosition, points.back());
 		points.pop_back();
 		
-		mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent")->stateStack.pop();
-		mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent")->pathSet = true;
+		RTSLogicComponent* rtsComp = mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent");
+		if (rtsComp != nullptr) {
+			rtsComp->stateStack.pop();
+			rtsComp->pathSet = true;
+		}
 	}
 }
 

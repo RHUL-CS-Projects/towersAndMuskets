@@ -21,6 +21,7 @@ public:
 	void gatherWood();
 	
 	void spend(int stone, int gold, int wood);
+	bool canAfford(int stone, int gold, int wood);
 	
 	void update();
 };

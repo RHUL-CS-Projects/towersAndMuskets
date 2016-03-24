@@ -13,6 +13,7 @@ struct SpawnLocation {
 class WaveController {
 private:
 	std::vector<SpawnLocation> spawnLocations;
+	std::vector<int> enemies;
 	
 	bool inWave;
 	int waveNumber;
@@ -21,7 +22,8 @@ private:
 	double waveSpeed;
 	double waitSpeed;
 	
-	int spawnNumber = 30;
+	int killed = 0;
+	int spawnNumber = 5;
 	int toSpawn = 0;
 	int spawnTimeCount = 0;
 	int spawnDelay = 60;
@@ -33,6 +35,9 @@ private:
 	void pickSpawnLocations();
 	void hideAllSpawnLocations();
 	void showCurrentSpawnLocations();
+	void updateUnitsLeft();
+	
+	bool unitAlive(int id);
 public:
 	WaveController();
 	

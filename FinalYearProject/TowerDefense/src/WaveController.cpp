@@ -39,6 +39,7 @@ void WaveController::updateWait() {
 	
 	if (waitPercent >= 1) {
 		((StatePlaying*)Game::game.currentState())->message(SHOW_MESSAGE_GOOD, "Wave Started!");
+		waitPercent = 0;
 		inWave = true;
 		toSpawn = spawnNumber;
 		spawnTimeCount = spawnDelay;
@@ -48,20 +49,39 @@ void WaveController::updateWait() {
 
 void WaveController::updateWave() {
 	spawnWave();
+	updateUnitsLeft();
+	wavePercent = 1.0 / (double)spawnNumber * (double)killed;
+	
+	if (killed >= spawnNumber) {
+		((StatePlaying*)Game::game.currentState())->message(SHOW_MESSAGE_GOOD, "Wave Complete!");
+		inWave = false;
+		killed = 0;
+		wavePercent = 0;
+		spawnNumber += 5;
+		
+		pickSpawnLocations();
+	}
 }
 
 void WaveController::skipWait() {
-	if (!inWave) waitSpeed = 1;
+	if (!inWave) waitPercent = 1;
 }
 
 void WaveController::spawnWave() {
 	spawnTimeCount--;
 	
+	int left = 0;
+	for (SpawnLocation s : spawnLocations) {
+		left += s.leftToSpawn;
+		std::cout << s.leftToSpawn << ", ";
+	}
+	std::cout << std::endl;
+	
 	if (spawnTimeCount <= 0) {
-		if (toSpawn > 0) {
+		if (left > 0) {
 			toSpawn--;
 			
-			std::random_shuffle(spawnLocations.begin(), spawnLocations.end());
+			//std::random_shuffle(spawnLocations.begin(), spawnLocations.end());
 			
 			SpawnLocation* current = &spawnLocations.back();
 			
@@ -79,6 +99,7 @@ void WaveController::spawnWave() {
 
 void WaveController::spawnUnit ( vector3df position ) {
 	int id = ObjectFactory::addEnemyUnit(position);
+	enemies.push_back(id);
 }
 
 void WaveController::hideAllSpawnLocations() {
@@ -95,11 +116,10 @@ void WaveController::showCurrentSpawnLocations() {
 }
 
 void WaveController::pickSpawnLocations() {
-	hideAllSpawnLocations();
 	spawnLocations.clear();
+	hideAllSpawnLocations();
 	
-	// - Pick enough spawn points for all units to be spawned
-	int unitsPerSpawn = 5;
+	int unitsPerSpawn = 2;
 	std::list<int> spawns  = Game::game.getObjMgr()->getObjectsWithComponent("SpawnLocationComponent"); 
 	std::vector<int> spawnsVec { spawns.begin(), spawns.end() };
 	
@@ -107,25 +127,44 @@ void WaveController::pickSpawnLocations() {
 	
 	std::random_shuffle(spawnsVec.begin(), spawnsVec.end());
 	
-	int numSpawnPoints = (int)ceil(spawnNumber/unitsPerSpawn);
+	//int numSpawnPoints = (int)ceil(spawnNumber/unitsPerSpawn);
+	int leftToAssign = spawnNumber;
 	
-	while (numSpawnPoints > 0 && spawnsVec.size() > 0) {
-		numSpawnPoints--;
+	while (leftToAssign > 0 && spawnsVec.size() > 0) {
+		//numSpawnPoints--;
 		
 		SpawnLocation s;
 		s.id = spawnsVec.back();
 		spawnsVec.pop_back();
 		
 		s.location = ((TransformComponent*)Game::game.getObjMgr()->getObjectComponent<TransformComponent>(s.id, "TransformComponent"))->worldPosition;
-		s.leftToSpawn = unitsPerSpawn;
+		s.leftToSpawn = std::min(unitsPerSpawn, leftToAssign);
+		leftToAssign -= unitsPerSpawn;
 		
 		spawnLocations.push_back(s);
 	}
-	
+	std::cout << spawnLocations.size() << std::endl;
 	showCurrentSpawnLocations();
 }
 
+bool WaveController::unitAlive ( int id ) {
+	HealthComponent* healthComp = Game::game.getObjMgr()->getObjectComponent<HealthComponent>(id, "HealthComponent");
+	if (healthComp == nullptr || healthComp->health <= 0)
+		return false;
+	
+	return true;
+}
 
+void WaveController::updateUnitsLeft() {
+	for (auto it = enemies.begin(); it != enemies.end();) {
+		if (!unitAlive(*it)) {
+			it = enemies.erase(it);
+			killed++;
+		} else {
+			it++;
+		}
+	}
+}
 
 
 

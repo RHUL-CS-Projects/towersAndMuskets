@@ -261,8 +261,13 @@ void RTSVillagerLogicSystem::calcPathSynch ( ObjectManager* mgr, int id, irr::co
 	PathFinder pathFinder(mgr->worldManager);
 	steerComp->path = pathFinder.findPath(transComp->worldPosition, point);
 
-	mgr->getObjectComponent<RTSVillagerLogicComponent>(id, "RTSVillagerLogicComponent")->stateStack.pop();
-	mgr->getObjectComponent<RTSVillagerLogicComponent>(id, "RTSVillagerLogicComponent")->pathSet = true;
+	
+	RTSVillagerLogicComponent* rtsComp = mgr->getObjectComponent<RTSVillagerLogicComponent>(id, "RTSVillagerLogicComponent");
+	if (rtsComp != nullptr) {
+		rtsComp->stateStack.pop();
+		rtsComp->pathSet = true;
+	}
+
 	Game::game.resources.loadSound("villagermove.ogg")->play();
 }
 

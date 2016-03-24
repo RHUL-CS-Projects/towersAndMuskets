@@ -270,8 +270,11 @@ void RTSLogicSystem::calcPathSynch ( ObjectManager* mgr, int id, vector3df point
 	PathFinder pathFinder(mgr->worldManager);
 	steerComp->path = pathFinder.findPath(transComp->worldPosition, point);
 	
-	mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent")->stateStack.pop();
-	mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent")->pathSet = true;
+	RTSLogicComponent* rtsComp = mgr->getObjectComponent<RTSLogicComponent>(id, "RTSLogicComponent");
+	if (rtsComp != nullptr) {
+		rtsComp->stateStack.pop();
+		rtsComp->pathSet = true;
+	}
 }
 
 bool RTSLogicSystem::animationComplete() {

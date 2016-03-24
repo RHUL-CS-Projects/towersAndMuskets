@@ -8,6 +8,7 @@
 #include <DebugValues.h>
 #include <EventReceiver.h>
 #include <HealthComponent.h>
+#include <TransparentMaterialShader.h>
 
 using namespace irr;
 using namespace core;
@@ -181,8 +182,11 @@ void RenderSystem::draw ( float timestep ) {
 	Game::game.getRendMgr()->getSceneManager()->drawAll();
 	
 	if (DebugValues::DRAW_PICK_BOXES)
-		Game::game.getRendMgr()->getDriver()->draw2DImage(EventReceiver::renderTarget, rect<s32>(0,0, 320, 320*9/16), rect<s32>(0, 0, EventReceiver::renderTarget->getSize().Width,
-			EventReceiver::renderTarget->getSize().Height));
+		Game::game.getRendMgr()->getDriver()->draw2DImage(
+			EventReceiver::renderTarget, 
+			rect<s32>(0, 0, EventReceiver::renderTarget->getSize().Width, EventReceiver::renderTarget->getSize().Height), 
+			rect<s32>(0, 0, EventReceiver::renderTarget->getSize().Width, EventReceiver::renderTarget->getSize().Height)
+		);
 	
 	if (DebugValues::DRAW_BOUNDING_BOXES) {
 		list<ISceneNode*> nodes = Game::game.getRendMgr()->getSceneManager()->getRootSceneNode()->getChildren();
@@ -222,6 +226,7 @@ void RenderSystem::addAnimatedSceneNode (RenderComponent* rendComp, AnimatedMesh
 				animnode->setMaterialFlag(video::EMF_BILINEAR_FILTER, false);
 				animnode->setMaterialFlag(video::EMF_USE_MIP_MAPS, false);
 				animnode->setMaterialFlag(video::EMF_BLEND_OPERATION, false);
+				
 				layer++;
 			}
 		}
@@ -243,21 +248,15 @@ void RenderSystem::addAnimatedSceneNode (RenderComponent* rendComp, AnimatedMesh
 		animnode->setTriangleSelector(selector);
 		animnode->setID(id);
 		
-		aabbox3df box = animnode->getTransformedBoundingBox();
-		vector3df centre = box.getCenter();
-		vector3df size = box.getExtent();
+		animnode->getMesh()->setHardwareMappingHint(scene::EHM_STATIC);
 		
-		IMeshSceneNode* cube = smgr->addCubeSceneNode(1, 0, id, centre, vector3df(0,0,0), size);
-		cube->setMaterialFlag(video::EMF_LIGHTING, false);
-		smgr->getMeshManipulator()->setVertexColors(cube->getMesh(), SColor(id));
-		cube->setVisible(false);
-		
-		CollisionCube c;
-		c.cubeNode = cube;
-		c.parentNode = animnode;
-		c.parentPrevVisibility = true;
-		
-		EventReceiver::cubes.push_back(c);
+		animnode->setMaterialType((video::E_MATERIAL_TYPE)TransparentMaterialShader::materialIDNonAdd);
+		animnode->getMaterial(0).MaterialTypeParam = 1;
+		animnode->getMaterial(0).MaterialTypeParam2 = id;
+		animnode->getMaterial(1).MaterialTypeParam = 1;
+		animnode->getMaterial(1).MaterialTypeParam2 = id;
+		animnode->getMaterial(2).MaterialTypeParam = 1;
+		animnode->getMaterial(2).MaterialTypeParam2 = id;
 	}
 	
 	rendComp->sceneNode = animnode;
@@ -295,21 +294,11 @@ void RenderSystem::addStaticSceneNode (RenderComponent* rendComp, StaticMeshComp
 		meshnode->setTriangleSelector(selector);
 		meshnode->setID(id);
 		
-		aabbox3df box = meshnode->getTransformedBoundingBox();
-		vector3df centre = box.getCenter();
-		vector3df size = box.getExtent();
+		meshnode->getMesh()->setHardwareMappingHint(scene::EHM_STATIC);
 		
-		IMeshSceneNode* cube = smgr->addCubeSceneNode(1, 0, id, centre, vector3df(0,0,0), size);
-		cube->setMaterialFlag(video::EMF_LIGHTING, false);
-		smgr->getMeshManipulator()->setVertexColors(cube->getMesh(), SColor(id));
-		cube->setVisible(false);
-		
-		CollisionCube c;
-		c.cubeNode = cube;
-		c.parentNode = meshnode;
-		c.parentPrevVisibility = true;
-		
-		EventReceiver::cubes.push_back(c);
+		meshnode->setMaterialType((video::E_MATERIAL_TYPE)TransparentMaterialShader::materialIDNonAdd);
+		meshnode->getMaterial(0).MaterialTypeParam = 1;
+		meshnode->getMaterial(0).MaterialTypeParam2 = id;
 	}
 	
 	rendComp->sceneNodeStatic = meshnode;

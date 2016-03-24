@@ -18,6 +18,31 @@ StatePlaying::StatePlaying(std::string mapname) {
 	transparentUpdate = false;
 	ISceneManager* smgr = Game::game.getRendMgr()->getSceneManager();
 
+	IGPUProgrammingServices* gpu = Game::game.getRendMgr()->getDriver()->getGPUProgrammingServices();
+	
+	if (gpu) {
+		TransparentMaterialShader* shader = new TransparentMaterialShader();
+		
+		s32 newMat = gpu->addHighLevelShaderMaterialFromFiles(
+			"./res/materials/shaders/transparentshader.vert", "vertexMain", video::EVST_VS_1_1,
+			"./res/materials/shaders/transparentshader.frag", "pixelMain", video::EPST_PS_1_1,
+			shader, video::EMT_TRANSPARENT_ADD_COLOR, 0, video::EGSL_CG
+		);
+		
+		s32 newMat2 = gpu->addHighLevelShaderMaterialFromFiles(
+			"./res/materials/shaders/transparentshader.vert", "vertexMain", video::EVST_VS_1_1,
+			"./res/materials/shaders/transparentshader.frag", "pixelMain", video::EPST_PS_1_1,
+			shader, video::EMT_SOLID, 0, video::EGSL_CG
+		);
+		
+		shader->drop();
+		
+		TransparentMaterialShader::materialID = newMat;
+		TransparentMaterialShader::materialIDNonAdd = newMat2;
+		
+		//std::cout << "Mat: " << newMat << ", ID: " << TransparentMaterialShader::materialID << std::endl;
+	}
+	
 	interactionMenu.init(128, this);
 	messageDisplay.init(RenderManager::resPath + "/materials/textures/SerifFont.xml");
 	TeamComponent::reset();
@@ -32,29 +57,6 @@ StatePlaying::StatePlaying(std::string mapname) {
 	sndGunshot1.setAttenuation(0.1f);
 	sndGunshot1.setPosition(128, 0, 128);
 	
-	IGPUProgrammingServices* gpu = Game::game.getRendMgr()->getDriver()->getGPUProgrammingServices();
-	
-	if (gpu) {
-		TransparentMaterialShader* shader = new TransparentMaterialShader();
-		
-		s32 newMat = gpu->addHighLevelShaderMaterialFromFiles(
-			"./res/materials/shaders/transparentshader.vert", "vertexMain", video::EVST_VS_1_1,
-			"./res/materials/shaders/transparentshader.frag", "pixelMain", video::EPST_PS_1_1,
-			shader, video::EMT_TRANSPARENT_ADD_COLOR, 0, video::EGSL_CG
-		);
-		
-		shader->drop();
-		
-		TransparentMaterialShader::materialID = newMat;
-		
-		std::cout << "Mat: " << newMat << ", ID: " << TransparentMaterialShader::materialID << std::endl;
-		
-		/*IMeshSceneNode* node = smgr->addCubeSceneNode(20);
-		node->setPosition(vector3df(200, 40, 200));
-		node->setMaterialTexture(0, Game::game.getRendMgr()->getDriver()->getTexture("./res/materials/textures/grass-texture3.jpg"));
-		node->setMaterialType((video::E_MATERIAL_TYPE)TransparentMaterialShader::materialID);*/
-	}
-	
 	ObjectManager* objmgr = Game::game.getObjMgr();
 }
 
@@ -63,8 +65,7 @@ void StatePlaying::loadMap ( std::string mapname ) {
 	Game::game.getRendMgr()->getSceneManager()->clear();
 	Game::game.getObjMgr()->clearObjects();
 	objectPlacer.init();
-	resourceCache.init(0,0,0);
-	EventReceiver::cubes.clear();
+	resourceCache.init(10000,10000,10000);
 	
 	///////////////////////////////////
 	ISceneManager* smgr = Game::game.getRendMgr()->getSceneManager();

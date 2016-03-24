@@ -5,6 +5,7 @@
 #include <NoiseGenerator.h>
 #include <time.h>
 #include <unistd.h>
+#include <TransparentMaterialShader.h>
 
 using namespace irr;
 using namespace scene;
@@ -65,18 +66,22 @@ void MapGenerator::loadMap ( std::string mapname ) {
 		}
 		
 		// Build terrain texture
-		/*ITerrainSceneNode* terrain = (ITerrainSceneNode*)Game::game.getRendMgr()->getSceneManager()->getSceneNodeFromName("MainTerrain");
+		ITerrainSceneNode* terrain = (ITerrainSceneNode*)Game::game.getRendMgr()->getSceneManager()->getSceneNodeFromName("MainTerrain");
 		
 		float gridW = Game::game.getObjMgr()->worldManager->gridWidth;
 		float gridH = Game::game.getObjMgr()->worldManager->gridHeight;
-		float scale = 16;
+		float scale = 1;
 		float texWidth = gridW * gridSize * scale;
 		float texHeight = gridH * gridSize * scale;
 		
 		IVideoDriver* driver = Game::game.getRendMgr()->getDriver();
 		ITexture* texTerrain = driver->addRenderTargetTexture(dimension2du(texWidth, texHeight));
-		ITexture* texGrass1 = driver->getTexture("./res/materials/textures/grass-texture2.jpg");
-		ITexture* texGrass2 = driver->getTexture("./res/materials/textures/grass-texture5.png");
+		ITexture* texGrass1 = driver->getTexture("./res/materials/textures/grass-texture6.jpg");
+		ITexture* texGrass2 = driver->getTexture("./res/materials/textures/grass-texture7.jpg");
+		ITexture* texGrass3 = driver->getTexture("./res/materials/textures/grass-texture8.jpg");
+		ITexture* texGrass4 = driver->getTexture("./res/materials/textures/grass-texture9.jpg");
+		
+		ITexture* texLeaves = driver->getTexture("./res/materials/textures/grass-texture5.png");
 		driver->setRenderTarget(texTerrain);
 		
 		float tileSize = texWidth / 32;
@@ -96,22 +101,34 @@ void MapGenerator::loadMap ( std::string mapname ) {
 				int dx = gridW - x - 1;
 				int dy = y;
 				
+				ITexture* tex = rand()%20 ? texGrass1 : (rand()%2 ? texGrass3 : texGrass4);
+				tex = rand()%5 ? tex : texGrass2;
+				
 				if (Game::game.getObjMgr()->worldManager->checkPassableGridCoords(x,y)) {
 					driver->draw2DImage(
-						texGrass1, 
+						tex, 
 						recti((dx * gridSize)*scale, (dy * gridSize)*scale, (dx * gridSize + gridSize)*scale, (dy * gridSize + gridSize)*scale),
-						recti(0, 0, texGrass1->getSize().Width, texGrass1->getSize().Height)
+						recti(0, 0, tex->getSize().Width, tex->getSize().Height)
 					);
-				} else {
+				}
+			}
+		}
+		
+		for (int x = 0; x < gridW; x++) {
+			for (int y = 0; y < gridH; y++) {
+				int dx = gridW - x - 1;
+				int dy = y;
+				
+				if (!Game::game.getObjMgr()->worldManager->checkPassableGridCoords(x,y)) {
 					driver->draw2DImage(
-						texGrass2, 
+						texLeaves, 
 						recti(
-							(dx * gridSize)*scale - (gridSize*scale*0.5f), 
-							(dy * gridSize)*scale - (gridSize*scale*0.5f), 
-							(dx * gridSize + gridSize)*scale + (gridSize*scale*0.5f), 
-							(dy * gridSize + gridSize)*scale  + (gridSize*scale*0.5f)
+							(dx * gridSize) - (gridSize*2.5), 
+							(dy * gridSize) - (gridSize*2.5), 
+							(dx * gridSize + gridSize) + (gridSize*2.5), 
+							(dy * gridSize + gridSize)  + (gridSize*2.5)
 						),
-						recti(0, 0, texGrass2->getSize().Width, texGrass2->getSize().Height), 0, 0, true
+						recti(0, 0, texLeaves->getSize().Width, texLeaves->getSize().Height), 0, 0, true
 					);
 				}
 			}
@@ -119,7 +136,15 @@ void MapGenerator::loadMap ( std::string mapname ) {
 		
 		driver->setRenderTarget(0);
 		terrain->setMaterialTexture(0, texTerrain);
-		terrain->scaleTexture(1, 1);*/
+		
+		ITexture* texGrassDetail = driver->getTexture("./res/materials/textures/grassdetailmap.jpg");
+		terrain->setMaterialTexture(1, texGrassDetail);
+		terrain->setMaterialType(video::EMT_DETAIL_MAP);
+		terrain->scaleTexture(1, 20);
+
+		/*terrain->setMaterialType((video::E_MATERIAL_TYPE)TransparentMaterialShader::materialIDNonAdd);
+		terrain->getMaterial(0).MaterialTypeParam = 1;
+		terrain->getMaterial(0).MaterialTypeParam2 = -1;*/
 		
 		mapTexture->drop();
 	} else {
@@ -212,18 +237,25 @@ void MapGenerator::addTerrain ( ISceneManager* smgr ) {
 		-1, 
 		vector3df(0,0,0),
 		vector3df(0,0,0),
-		vector3df(2,0.2f,2),
+		vector3df(2,0.2,2),
 		SColor(255,255,255,255),
 		1,
 		scene::ETPS_17,
 		1
 	);
 	
-	terrain->setMaterialFlag(video::EMF_LIGHTING, true);
+	terrain->setMaterialFlag(video::EMF_LIGHTING, false);
 	terrain->setMaterialTexture(0, Game::game.getRendMgr()->getDriver()->getTexture("./res/materials/textures/grass-texture2.jpg"));
 	terrain->scaleTexture(32, 32);
 	
 	ITriangleSelector* terrainSelector = smgr->createTerrainTriangleSelector(terrain);
 	terrain->setTriangleSelector(terrainSelector);
 	terrain->setName("MainTerrain");
+	
+	ISceneNode* skydome = smgr->addSkyDomeSceneNode(Game::game.getRendMgr()->getDriver()->getTexture("./res/materials/textures/skydome.jpg"), 16, 8, 1, 2);
+	skydome->setName("SkyDome");
+	skydome->setVisible(false);
 }
+
+
+

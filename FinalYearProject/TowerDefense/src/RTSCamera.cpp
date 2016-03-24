@@ -11,6 +11,7 @@ using namespace scene;
 RTSCamera::RTSCamera() {
 	cameraHeight = 100;
 	targetCamHeight = 100;
+	targetGroundCamHeight = 7;
 	camX = 100;
 	camZ = 100;
 	targetCamX = 100;
@@ -18,6 +19,9 @@ RTSCamera::RTSCamera() {
 	camRotY = 45;
 	targetCamRotY = 45;
 	camAngleXZ = 1.2f;
+	groundCam = false;
+	tabPressed = false;
+	lookTarget = 0;
 }
 
 void RTSCamera::addToScene() {
@@ -39,8 +43,20 @@ void RTSCamera::update() {
 	double speedMult = 1;
 	
 	if (Game::game.getRendMgr()->getDevice()->isWindowActive()) {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Tab)) {
+			if (!tabPressed) {
+				tabPressed = true;
+				groundCam = !groundCam;
+				Game::game.getRendMgr()->getSceneManager()->getSceneNodeFromName("SkyDome")->setVisible(groundCam);
+			}
+		} else {
+			tabPressed = false;
+		}
+		
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) speedMult = 0.25;
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) speedMult = 0.05;
+		
+		if (groundCam) speedMult *= 0.5;
 		
 		// Camera controls
 		if (Keyboard::isKeyPressed(Keyboard::W)) {
@@ -72,19 +88,22 @@ void RTSCamera::update() {
 		}
 	}
 	
-	if (EventReceiver::getMouseState()->wheelDelta < 0) {
-		EventReceiver::getMouseState()->wheelDelta = 0;
-		targetCamHeight += 10 * speedMult;
-		targetCamHeight = (targetCamHeight > 200) ? 200 : targetCamHeight;
+	if (!groundCam) {
+		if (EventReceiver::getMouseState()->wheelDelta < 0) {
+			EventReceiver::getMouseState()->wheelDelta = 0;
+			targetCamHeight += 10 * speedMult;
+			targetCamHeight = (targetCamHeight > 200) ? 200 : targetCamHeight;
+		}
+		
+		if (EventReceiver::getMouseState()->wheelDelta > 0) {
+			EventReceiver::getMouseState()->wheelDelta = 0;
+			targetCamHeight -= 10 * speedMult;
+			targetCamHeight = (targetCamHeight < 20) ? 20 : targetCamHeight;
+		}
 	}
 	
-	if (EventReceiver::getMouseState()->wheelDelta > 0) {
-		EventReceiver::getMouseState()->wheelDelta = 0;
-		targetCamHeight -= 10 * speedMult;
-		targetCamHeight = (targetCamHeight < 20) ? 20 : targetCamHeight;
-	}
-	
-	cameraHeight = cameraHeight + (targetCamHeight - cameraHeight) * 0.2f;
+	double targetHeight = groundCam ? targetGroundCamHeight : targetCamHeight;
+	cameraHeight = cameraHeight + (targetHeight - cameraHeight) * 0.2f;
 	camRotY = camRotY + (targetCamRotY - camRotY) * 0.2f;
 	camX = camX + (targetCamX - camX) * 0.2f;
 	camZ = camZ + (targetCamZ - camZ) * 0.2f;
@@ -100,7 +119,13 @@ void RTSCamera::update() {
 	double terY = terrain->getHeight(onTerX, onTerY);
 	
 	camera->setPosition(vector3df(camX, terY + cameraHeight, camZ));
-	camera->setTarget(vector3df(camX + cos(camRotY), (terY + cameraHeight) - camAngleXZ, camZ + sin(camRotY)));
+	
+	if (groundCam)
+		lookTarget = terY+cameraHeight-0.2;
+	else
+		lookTarget = (terY + cameraHeight) - camAngleXZ;
+	
+	camera->setTarget(vector3df(camX + cos(camRotY), lookTarget, camZ + sin(camRotY)));
 	
 	Listener::setPosition(camX, cameraHeight, camZ);
 	vector3df lookvec = (camera->getPosition() - camera->getTarget()).normalize();

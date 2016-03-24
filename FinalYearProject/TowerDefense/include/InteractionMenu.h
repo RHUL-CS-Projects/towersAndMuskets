@@ -7,18 +7,26 @@
 #include <irrlicht/irrlicht.h>
 #include <sfml/SFML/Audio.hpp>
 #include <GameState.h>
+#include <map>
+#include <GuiElementPurchase.h>
 
 class InteractionMenu : public GuiObserver {
 private:
 	std::list<GuiElement*> guiElements;
 	int height;
 	double progressPercent = 1;
+	double alpha = 0;
+	
 	sf::Sound* sndRolloverSound;
 	sf::Sound* sndClickSound;
 	GameState* parentState;
 	irr::gui::IGUIFont* font;
 	
-	irr::video::ITexture* texRes;
+	std::map<int, PurchaseDetails> purchases;
+	PurchaseDetails currentPurchase;
+	bool showPurchaseTooltip = false;
+	
+	irr::video::ITexture* texRes, *texPurchase;
 	irr::video::ITexture* texHUD, *texBarFront, *texBarBack;
 	
 public:

@@ -50,7 +50,7 @@ void ObjectPlacer::update() {
 	}
 	
 	if (EventReceiver::getMouseState()->rightPressed) {
-		setObjectType(nullObject);
+		//setObjectType(nullObject);
 	}
 }
 
@@ -186,6 +186,7 @@ void ObjectPlacer::place() {
 									 terrainPoint.Z + (colHeight * gridSize) / 2.0f), false);
 		
 		addObject(terrainPoint);
+		setObjectType(nullObject);
 	}
 }
 

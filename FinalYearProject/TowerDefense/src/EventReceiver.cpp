@@ -5,6 +5,7 @@
 #include <Game.h>
 #include <list>
 #include <ResourceComponent.h>
+#include <TransparentMaterialShader.h>
 
 EventReceiver::SMouseState EventReceiver::MouseState;
 
@@ -16,7 +17,6 @@ using namespace video;
 
 int EventReceiver::hoverID;
 irr::video::ITexture* EventReceiver::renderTarget;
-std::list<CollisionCube> EventReceiver::cubes;
 irr::video::IImage* EventReceiver::renderImage;
 
 bool EventReceiver::OnEvent ( const SEvent& event ) {
@@ -67,44 +67,20 @@ void EventReceiver::renderCollisionBoxes() {
 			std::cout << "Video card does not support rendering to textures!" << std::endl;
 		}
 	}
-	
-	for (CollisionCube n : cubes) {
-		if (n.cubeNode != nullptr) {
-			aabbox3df box = n.parentNode->getTransformedBoundingBox();
-			vector3df centre = box.getCenter();
-			vector3df size = box.getExtent();
-			
-			n.cubeNode->setPosition(centre);
-			n.cubeNode->setScale(size);
-			
-			n.parentPrevVisibility = n.parentNode->isVisible();
-			n.cubeNode->setVisible(n.parentPrevVisibility);
-			n.parentNode->setVisible(false);
-		} else {
-			std::cout << "Cube was null" << std::endl;
-		}
-	}
-	
+
 	// Hide terrain
 	ISceneNode* terrain = Game::game.getRendMgr()->getSceneManager()->getSceneNodeFromName("MainTerrain");
 	if (terrain != nullptr)
 		terrain->setVisible(false);	
 	
+	TransparentMaterialShader::useIDColors = true;
 	Game::game.getRendMgr()->getDriver()->setRenderTarget(renderTarget, true, true, SColor(255,255,255,255));
 	Game::game.getRendMgr()->getSceneManager()->drawAll();
 	Game::game.getRendMgr()->getDriver()->setRenderTarget(0, true, true, 0);
+	TransparentMaterialShader::useIDColors = false;
 	
 	if (terrain != nullptr)
 		terrain->setVisible(true);
-	
-	for (CollisionCube n : cubes) {
-		if (n.cubeNode != nullptr) {
-			n.cubeNode->setVisible(false);
-			n.parentNode->setVisible(n.parentPrevVisibility);
-		} else {
-			std::cout << "Cube was null" << std::endl;
-		}
-	}
 }
 
 int EventReceiver::getHoverObject() {
