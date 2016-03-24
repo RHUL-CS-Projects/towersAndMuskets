@@ -6,7 +6,8 @@
 
 enum GUI_EVENTS {
 	mouseOver,
-	mousePressed
+	mousePressed,
+	mouseLeft
 };
 
 class GuiSubject {

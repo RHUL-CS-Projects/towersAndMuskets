@@ -7,6 +7,8 @@ using namespace core;
 using namespace scene;
 
 void ParticleManager::addSmokeTrailParticle(vector3df from, vector3df to) {
+	// Top down plane
+	
 	ParticleData newPart;
 	IMesh* planeMesh = Game::game.getRendMgr()->getSceneManager()->getGeometryCreator()->createPlaneMesh(dimension2df(1,1.5));
 	newPart.node = Game::game.getRendMgr()->getSceneManager()->addMeshSceneNode(planeMesh);
@@ -37,6 +39,7 @@ void ParticleManager::addSmokeTrailParticle(vector3df from, vector3df to) {
 	newPart.fade = true;
 	
 	newPart.node->getMaterial(0).MaterialTypeParam = newPart.startAlpha;
+	newPart.node->getMaterial(0).MaterialTypeParam2 = -1;
 	
 	newPart.life = 300;
 	newPart.startLife = 300;
@@ -45,6 +48,49 @@ void ParticleManager::addSmokeTrailParticle(vector3df from, vector3df to) {
 	newPart.finalScale = startScale + vector3df(0,0,5);
 	
 	particles.push_back(newPart);
+	
+	// Sideways plane
+	ParticleData newPart2;
+	parent = Game::game.getRendMgr()->getSceneManager()->addEmptySceneNode();
+	planeMesh = Game::game.getRendMgr()->getSceneManager()->getGeometryCreator()->createPlaneMesh(dimension2df(1,1.5));
+	newPart2.node = Game::game.getRendMgr()->getSceneManager()->addMeshSceneNode(planeMesh);
+	
+	dif = to - from;
+	
+	newPart2.node->setMaterialTexture(0, Game::game.getRendMgr()->getDriver()->getTexture("./res/materials/textures/smoketrail.png"));
+	newPart2.node->setMaterialFlag(video::EMF_BLEND_OPERATION, true);
+	newPart2.node->setMaterialType((video::E_MATERIAL_TYPE)TransparentMaterialShader::materialID);
+	newPart2.node->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
+	
+	startScale = vector3df(dif.getLength(), 1, 1);
+
+	parent->addChild(newPart2.node);
+	parent->setRotation(vector3df(0, 90+radToDeg(atan2(dif.X, dif.Z)), 0));
+	parent->setPosition(from + dif/2);
+	newPart2.node->setPosition(vector3df(0,0,0));
+	
+	h = dif.getLength();
+	zangle = asin(-dif.Y / h);
+	
+	newPart2.node->setRotation(vector3df(90, 0, radToDeg(zangle)));
+	newPart2.node->setScale(startScale);
+	
+	newPart2.startAlpha = 0.4;
+	newPart2.alpha = newPart2.startAlpha;
+	newPart2.fade = true;
+	
+	newPart2.node->getMaterial(0).MaterialTypeParam = newPart2.startAlpha;
+	newPart2.node->getMaterial(0).MaterialTypeParam2 = -1;
+	
+	newPart2.node->setMaterialFlag(irr::video::EMF_BACK_FACE_CULLING, false);
+	
+	newPart2.life = 300;
+	newPart2.startLife = 300;
+	
+	newPart2.startScale = startScale;
+	newPart2.finalScale = startScale + vector3df(0,0,5);
+	
+	particles.push_back(newPart2);
 	
 	addSmokeParticle(from);
 }
@@ -70,6 +116,7 @@ void ParticleManager::addSmokeParticle ( vector3df from ) {
 	newPart.fade = true;
 	
 	newPart.node->getMaterial(0).MaterialTypeParam = newPart.startAlpha;
+	newPart.node->getMaterial(0).MaterialTypeParam2 = -1;
 	
 	newPart.life = 400;
 	newPart.startLife = 400;
@@ -102,6 +149,7 @@ void ParticleManager::addMuzzleFlashParticle ( vector3df unitpos, vector3df unit
 	newPart.fade = true;
 	
 	newPart.node->getMaterial(0).MaterialTypeParam = newPart.startAlpha;
+	newPart.node->getMaterial(0).MaterialTypeParam2 = -1;
 	
 	newPart.life = 2;
 	newPart.startLife = 2;

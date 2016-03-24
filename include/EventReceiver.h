@@ -21,12 +21,6 @@ struct SAppContext
 	irr::gui::IGUIStaticText* txtGridWorld;*/
 };
 
-struct CollisionCube {
-	irr::scene::ISceneNode* cubeNode;
-	irr::scene::ISceneNode* parentNode;
-	bool parentPrevVisibility;
-};
-
 /**
  * IDs for GUI elements
  */
@@ -92,7 +86,6 @@ public:
 	static int hoverID;
 	static irr::video::ITexture* renderTarget;
 	static irr::video::IImage* renderImage;
-	static std::list<CollisionCube> cubes;
 };
 
 

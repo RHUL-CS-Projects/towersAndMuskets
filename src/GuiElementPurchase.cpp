@@ -5,8 +5,9 @@ using namespace irr;
 using namespace core;
 using namespace video;
 
-GuiElementPurchase::GuiElementPurchase ( int x, int y, std::string back, std::string front, std::string backlight, int id ) {
+GuiElementPurchase::GuiElementPurchase ( int x, int y, std::string back, std::string front, std::string backlight, PurchaseDetails purchase, int id ) {
 	this->id = id;
+	this->purchase = purchase;
 	
 	texBack = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/" + back).c_str());
 	texFront = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/" + front).c_str());
@@ -40,6 +41,8 @@ void GuiElementPurchase::update() {
 			}
 		}
 	} else {
+		if (mouseOver) notify(mouseLeft);
+		
 		mouseOver = false;
 	}
 

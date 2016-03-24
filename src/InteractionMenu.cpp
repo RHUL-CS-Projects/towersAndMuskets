@@ -25,7 +25,7 @@ void InteractionMenu::init ( int height, GameState* state ) {
 	//guiElements.push_back(new GuiElement(20, top - 200 + 30, 100, 20, "Tower", filepath, SColor(150,255,255,255), 0));
 	//guiElements.push_back(new GuiElement(20, top - 200 + 60, 100, 20, "Tree", filepath, SColor(150,255,255,255), 1));
 	//guiElements.push_back(new GuiElement(20, top - 200 + 90, 100, 20, "Rock", filepath, SColor(150,255,255,255), 2));
-	guiElements.push_back(new GuiElement(140, top - 200 + 30, 100, 20, "EnemyUnit", filepath, SColor(150,255,255,255), 3));
+	//guiElements.push_back(new GuiElement(140, top - 200 + 30, 100, 20, "EnemyUnit", filepath, SColor(150,255,255,255), 3));
 	//guiElements.push_back(new GuiElement(140, top - 200 + 60, 100, 20, "Musketeer", filepath, SColor(150,255,255,255), 4));
 	//guiElements.push_back(new GuiElement(140, top - 200 + 90, 100, 20, "Cannon", filepath, SColor(150,255,255,255), 5));
 	//guiElements.push_back(new GuiElement(260, top - 200 + 30, 100, 20, "Villager", filepath, SColor(150,255,255,255), 10));
@@ -33,10 +33,38 @@ void InteractionMenu::init ( int height, GameState* state ) {
 	guiElements.push_back(new GuiElement(width - 130, top + 50, 100, 20, "Menu", filepath, SColor(50,255,255,255), 6));
 	guiElements.push_back(new GuiElement(width - 520, top + height - 30, 100, 20, "Skip Wait", filepath, SColor(50,255,255,255), 11));
 	
-	guiElements.push_back(new GuiElementPurchase(20 + 10, top + 20, "unitbuttonback.png", "towerbutton.png", "unitbuttonbacklight.png", 0));
-	guiElements.push_back(new GuiElementPurchase(20 + 90, top + 20, "unitbuttonback.png", "musketbutton.png", "unitbuttonbacklight.png", 4));
-	guiElements.push_back(new GuiElementPurchase(20 + 170, top + 20, "unitbuttonback.png", "cannonbutton.png", "unitbuttonbacklight.png", 5));
-	guiElements.push_back(new GuiElementPurchase(20 + 250, top + 20, "unitbuttonback.png", "villagerbutton.png", "unitbuttonbacklight.png", 10));
+	PurchaseDetails towerPurchase;
+	towerPurchase.gold = 50;
+	towerPurchase.stone = 100;
+	towerPurchase.wood = 200;
+	towerPurchase.name = "Watchtower";
+	purchases.insert(std::pair<int, PurchaseDetails>(0, towerPurchase));
+	guiElements.push_back(new GuiElementPurchase(20 + 10, top + 20, "unitbuttonback.png", "towerbutton.png", "unitbuttonbacklight.png", towerPurchase, 0));
+	
+	PurchaseDetails musketPurchase;
+	musketPurchase.gold = 100;
+	musketPurchase.stone = 0;
+	musketPurchase.wood = 50;
+	musketPurchase.name = "Musketeer";
+	purchases.insert(std::pair<int, PurchaseDetails>(4, musketPurchase));
+	guiElements.push_back(new GuiElementPurchase(20 + 90, top + 20, "unitbuttonback.png", "musketbutton.png", "unitbuttonbacklight.png", musketPurchase, 4));
+	
+	PurchaseDetails cannonPurchase;
+	cannonPurchase.gold = 100;
+	cannonPurchase.stone = 20;
+	cannonPurchase.wood = 100;
+	cannonPurchase.name = "Cannon";
+	purchases.insert(std::pair<int, PurchaseDetails>(5, cannonPurchase));
+	guiElements.push_back(new GuiElementPurchase(20 + 170, top + 20, "unitbuttonback.png", "cannonbutton.png", "unitbuttonbacklight.png", cannonPurchase, 5));
+	
+	PurchaseDetails gatherPurchase;
+	gatherPurchase.gold = 20;
+	gatherPurchase.stone = 0;
+	gatherPurchase.wood = 0;
+	gatherPurchase.name = "Gatherer";
+	purchases.insert(std::pair<int, PurchaseDetails>(10, gatherPurchase));
+	guiElements.push_back(new GuiElementPurchase(20 + 250, top + 20, "unitbuttonback.png", "villagerbutton.png", "unitbuttonbacklight.png", gatherPurchase, 10));
+	currentPurchase = gatherPurchase;
 	
 	//guiElements.push_back(new GuiElement(400, top + 40, 100, 20, "Map1", filepath, SColor(150,255,255,255), 7));
 	//guiElements.push_back(new GuiElement(400, top + 70, 100, 20, "Map2", filepath, SColor(150,255,255,255), 8));
@@ -52,6 +80,7 @@ void InteractionMenu::init ( int height, GameState* state ) {
 	sndClickSound = Game::game.resources.loadSound("click2.ogg");
 	
 	texRes = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/hud resources.png").c_str());
+	texPurchase = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/hud popup.png").c_str());
 	
 	texHUD = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/hudimage.png").c_str());
 	texBarBack = Game::game.getRendMgr()->getDriver()->getTexture((RenderManager::resPath + "/materials/textures/progressbarback.png").c_str());
@@ -69,10 +98,22 @@ void InteractionMenu::onNotify ( int id, int eventID ) {
 	
 	if (eventID == mouseOver) {
 		sndRolloverSound->play();
+		
+		if (purchases.find(id) != purchases.end()) {
+			showPurchaseTooltip = true;
+			currentPurchase = purchases.at(id);
+		}
+	} else if (eventID == mouseLeft) {
+		showPurchaseTooltip = false;
 	} else {
 		switch (id) {
 		case 0:
-			((StatePlaying*)parentState)->message(SET_PLACE_OBJECT_TOWER);
+			if (((StatePlaying*)parentState)->getResourceCache()->canAfford(currentPurchase.stone, currentPurchase.gold, currentPurchase.wood)) {
+				((StatePlaying*)parentState)->message(SET_PLACE_OBJECT_TOWER);
+				((StatePlaying*)parentState)->getResourceCache()->spend(currentPurchase.stone, currentPurchase.gold, currentPurchase.wood);
+			} else {
+				((StatePlaying*)parentState)->message(SHOW_MESSAGE_BAD, "Cannot afford this purchase!");
+			}
 			break;
 		case 1:
 			((StatePlaying*)parentState)->message(SET_PLACE_OBJECT_TREE);
@@ -84,10 +125,20 @@ void InteractionMenu::onNotify ( int id, int eventID ) {
 			((StatePlaying*)parentState)->message(SET_PLACE_OBJECT_ENEMY_UNIT);
 			break;
 		case 4:
-			((StatePlaying*)parentState)->message(SET_PLACE_OBJECT_PLAYER_UNIT);
+			if (((StatePlaying*)parentState)->getResourceCache()->canAfford(currentPurchase.stone, currentPurchase.gold, currentPurchase.wood)) {
+				((StatePlaying*)parentState)->message(SET_PLACE_OBJECT_PLAYER_UNIT);
+				((StatePlaying*)parentState)->getResourceCache()->spend(currentPurchase.stone, currentPurchase.gold, currentPurchase.wood);
+			} else {
+				((StatePlaying*)parentState)->message(SHOW_MESSAGE_BAD, "Cannot afford this purchase!");
+			}
 			break;
 		case 5:
-			((StatePlaying*)parentState)->message(SET_PLACE_OBJECT_PLAYER_CANNON);
+			if (((StatePlaying*)parentState)->getResourceCache()->canAfford(currentPurchase.stone, currentPurchase.gold, currentPurchase.wood)) {
+				((StatePlaying*)parentState)->message(SET_PLACE_OBJECT_PLAYER_CANNON);
+				((StatePlaying*)parentState)->getResourceCache()->spend(currentPurchase.stone, currentPurchase.gold, currentPurchase.wood);
+			} else {
+				((StatePlaying*)parentState)->message(SHOW_MESSAGE_BAD, "Cannot afford this purchase!");
+			}
 			break;
 		case 6:
 			Game::game.pushState(new StatePauseMenu());
@@ -102,7 +153,12 @@ void InteractionMenu::onNotify ( int id, int eventID ) {
 			((StatePlaying*)Game::game.currentState())->reloadMap("map3");
 			break;
 		case 10:
-			((StatePlaying*)parentState)->message(SET_PLACE_OBJECT_PLAYER_VILLAGER);
+			if (((StatePlaying*)parentState)->getResourceCache()->canAfford(currentPurchase.stone, currentPurchase.gold, currentPurchase.wood)) {
+				((StatePlaying*)parentState)->message(SET_PLACE_OBJECT_PLAYER_VILLAGER);
+				((StatePlaying*)parentState)->getResourceCache()->spend(currentPurchase.stone, currentPurchase.gold, currentPurchase.wood);
+			} else {
+				((StatePlaying*)parentState)->message(SHOW_MESSAGE_BAD, "Cannot afford this purchase!");
+			}
 			break;
 		case 11:
 			((StatePlaying*)parentState)->message(SKIP_WAVE_WAIT);
@@ -116,6 +172,11 @@ void InteractionMenu::update() {
 	for (GuiElement* e : guiElements) {
 		e->update();
 	}
+	
+	if (showPurchaseTooltip)
+		alpha = alpha + (1.0 - alpha) * 0.2;
+	else
+		alpha = alpha - alpha * 0.2;
 }
 
 void InteractionMenu::render ( irr::video::IVideoDriver* driver ) {
@@ -165,6 +226,29 @@ void InteractionMenu::render ( irr::video::IVideoDriver* driver ) {
 	font->draw(gold.c_str(), recti(980, bottom-height+20, 1040, bottom-height+40),SColor(200,255,255,255),false, true);
 	font->draw(stone.c_str(), recti(980, bottom-height+55, 1040, bottom-height+75),SColor(200,255,255,255),false, true);
 	font->draw(wood.c_str(), recti(980, bottom-height+90, 1040, bottom-height+110),SColor(200,255,255,255),false, true);
+	
+	PlayerResourceCache* resCache = ((StatePlaying*)parentState)->getResourceCache();
+	
+	vector2di topLeft(15, bottom-height-20-texPurchase->getSize().Height);
+	driver->draw2DImage(
+		texPurchase, topLeft, 
+		recti(0,0,texPurchase->getSize().Width, texPurchase->getSize().Height),
+		0, 
+		SColor(255*alpha,255,255,255),
+		true
+	);
+	
+	SColor textCol = resCache->canAfford(currentPurchase.stone, currentPurchase.gold, currentPurchase.wood)? SColor(255*alpha,255,255,255) : SColor(100*alpha,255,255,255);
+	font->draw(currentPurchase.name.c_str(), recti(topLeft + vector2di(10,5), dimension2di(100,20)), textCol);
+	
+	SColor goldCol = resCache->getGold() >= currentPurchase.gold ? SColor(255*alpha,214,210,184) : SColor(200*alpha,255,0,0);
+	font->draw(std::to_string(currentPurchase.gold).c_str(), recti(topLeft + vector2di(50,95), dimension2di(50,20)), goldCol);
+	
+	SColor stoneCol = resCache->getStone() >= currentPurchase.stone ? SColor(255*alpha,214,214,214) : SColor(200*alpha,255,0,0);
+	font->draw(std::to_string(currentPurchase.stone).c_str(), recti(topLeft + vector2di(130,95), dimension2di(50,20)), stoneCol);
+	
+	SColor woodCol = resCache->getWood() >= currentPurchase.wood ? SColor(255*alpha,214,199,182) : SColor(200*alpha,255,0,0);
+	font->draw(std::to_string(currentPurchase.wood).c_str(), recti(topLeft + vector2di(215,95), dimension2di(50,20)), woodCol);
 }
 
 

@@ -127,6 +127,8 @@ public:
 		objmgr->attachComponent(id, new SteeringComponent(0.2, 80));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
 		objmgr->attachComponent(id, new TeamComponent(id, 1));
+		
+		return id;
 	}
 	
 	static int addPlayerUnit(irr::core::vector3df pos) {
@@ -156,6 +158,8 @@ public:
 		objmgr->attachComponent(id, new SteeringComponent(0.2, 80));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
 		objmgr->attachComponent(id, new TeamComponent(id, 0));
+		
+		return id;
 	}
 	
 	static int addPlayerCannon(irr::core::vector3df pos) {
@@ -189,6 +193,8 @@ public:
 		objmgr->attachComponent(id, new SteeringComponent(0.1, 80, 8));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
 		objmgr->attachComponent(id, new TeamComponent(id, 0));
+		
+		return id;
 	}
 	
 	static int addPlayerVillager(irr::core::vector3df pos) {
@@ -215,6 +221,8 @@ public:
 		objmgr->attachComponent(id, new SteeringComponent(0.2, 80));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
 		objmgr->attachComponent(id, new TeamComponent(id, 0));
+		
+		return id;
 	}
 };
 
