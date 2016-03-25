@@ -105,7 +105,7 @@ void StatePlaying::update() {
 		resourceCache.update();
 		particleManager.update();
 		
-		interactionMenu.setProgress(waveController.getPercentage());
+		interactionMenu.setWaveDetails(waveController.getWaveDetails());
 		Game::game.getObjMgr()->updateSystems(0);
 		
 		TeamComponent::updateTeamLists();

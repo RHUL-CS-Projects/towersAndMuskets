@@ -14,14 +14,19 @@ void NotificationMessage::init ( std::string fontpath ) {
 }
 
 void NotificationMessage::render(IVideoDriver* driver) {
+	int height = driver->getScreenSize().Height;
+	int width = driver->getScreenSize().Width;
+	
+	int mid = width/2;
+	
 	driver->draw2DRectangle(
 		SColor(((alpha > 255) ? 255 : alpha) * 0.5, 0, 0, 0),
-		recti(0, 0, driver->getScreenSize().Width, 30)
+		recti(mid-260, height-180, mid+260, height-150)
 	);
 	
 	font->draw(
 		stringw(message.c_str()), 
-		recti(0, 0, driver->getScreenSize().Width, 30),
+		recti(mid-260, height-180, mid+260, height-150),
 		colour,
 		true,
 		true

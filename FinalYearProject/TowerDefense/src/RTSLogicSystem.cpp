@@ -410,6 +410,7 @@ int RTSLogicSystem::getNearestOnOtherTeam ( ObjectManager* mgr, int id ) {
 		if (distsq < dist) {
 			dist = distsq;
 			best = i;
+			break;
 		}
 	}
 	
@@ -476,15 +477,20 @@ void RTSLogicSystem::stateIdle ( ObjectManager* mgr, int id ) {
 		return;
 	}
 	
-	int nearestEnemy = getNearestOnOtherTeam(mgr, id);
-	// Start walking to attack nearby target
-	if (nearestEnemy >= 0) {
-		currentRTSComp->attackTargetID = nearestEnemy;
-		currentRTSComp->pathSet = false;
-		
-		currentRTSComp->stateStack.pop();
-		currentRTSComp->stateStack.push(MOVE_TO_ATTACK);
-		return;
+	int nearestEnemy = -1;
+	currentRTSComp->nearestEnemyDelay--;
+	if (currentRTSComp->nearestEnemyDelay <= 0) {
+		currentRTSComp->nearestEnemyDelay += 120;
+		nearestEnemy = getNearestOnOtherTeam(mgr, id);
+		// Start walking to attack nearby target
+		if (nearestEnemy >= 0) {
+			currentRTSComp->attackTargetID = nearestEnemy;
+			currentRTSComp->pathSet = false;
+			
+			currentRTSComp->stateStack.pop();
+			currentRTSComp->stateStack.push(MOVE_TO_ATTACK);
+			return;
+		}
 	}
 	
 	// Start walking to tower target
@@ -798,14 +804,20 @@ void RTSLogicSystem::stateGarrissoned ( ObjectManager* mgr, int id ) {
 	float dist = (mgr->worldManager->gridSize * currentRTSComp->rangeInSquares * rangeBonus);
 	float distSq = dist * dist;
 	
-	int nearestEnemy = getNearestOnOtherTeam(mgr, id);
-	// Start walking to attack nearby target
-	if (nearestEnemy >= 0 && distanceToObjectSq(mgr, nearestEnemy) < distSq) {
-		currentRTSComp->attackTargetID = nearestEnemy;
-		currentRTSComp->pathSet = false;
-		
-		currentRTSComp->stateStack.push(AIMING);
-		return;
+	int nearestEnemy = -1;
+	currentRTSComp->nearestEnemyDelay--;
+	if (currentRTSComp->nearestEnemyDelay <= 0) {
+		currentRTSComp->nearestEnemyDelay += 120;
+		nearestEnemy = getNearestOnOtherTeam(mgr, id);
+
+		// Start walking to attack nearby target
+		if (nearestEnemy >= 0 && distanceToObjectSq(mgr, nearestEnemy) < distSq) {
+			currentRTSComp->attackTargetID = nearestEnemy;
+			currentRTSComp->pathSet = false;
+			
+			currentRTSComp->stateStack.push(AIMING);
+			return;
+		}
 	}
 }
 
@@ -962,17 +974,12 @@ void RTSLogicSystem::stateAiming ( ObjectManager* mgr, int id ) {
 		currentRTSComp->shootSound->setPitch(0.9f + (1.0f/1000*(rand()%1000))*0.2f);
 		currentRTSComp->shootSound->play();
 		
-		vector3df enemyPos = attackTargetPosition(mgr);
-		vector3df dif = enemyPos - currentTransComp->worldPosition;
-		
-		vector3df start = currentTransComp->worldPosition + vector3df(sin(atan2(dif.X, dif.Z))*4, 7.5, cos(atan2(dif.X, dif.Z))*4);
-		vector3df end = enemyPos + vector3df(0, 7.5, 0);
-		((StatePlaying*)Game::game.currentState())->particleManager.addSmokeTrailParticle(start, end);
-		
+		vector3df start = currentTransComp->worldPosition;
+		vector3df end = attackTargetPosition(mgr);
 		FaceDirectionComponent* faceComp = mgr->getObjectComponent<FaceDirectionComponent>(id, "FaceDirectionComponent");
-	
-		if (faceComp != nullptr)
-			((StatePlaying*)Game::game.currentState())->particleManager.addMuzzleFlashParticle(currentTransComp->worldPosition, vector3df(0, faceComp->currentYRot, 0));
+		
+		((StatePlaying*)Game::game.currentState())->particleManager.spawnEffect(start, end, vector3df(0, faceComp->currentYRot, 0), currentRTSComp->effectType);
+		
 		
 		return;
 	}

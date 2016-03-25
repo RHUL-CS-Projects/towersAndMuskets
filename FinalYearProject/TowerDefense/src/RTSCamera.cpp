@@ -11,7 +11,7 @@ using namespace scene;
 RTSCamera::RTSCamera() {
 	cameraHeight = 100;
 	targetCamHeight = 100;
-	targetGroundCamHeight = 7;
+	targetGroundCamHeight = 8;
 	camX = 100;
 	camZ = 100;
 	targetCamX = 100;
@@ -98,7 +98,7 @@ void RTSCamera::update() {
 		if (EventReceiver::getMouseState()->wheelDelta > 0) {
 			EventReceiver::getMouseState()->wheelDelta = 0;
 			targetCamHeight -= 10 * speedMult;
-			targetCamHeight = (targetCamHeight < 20) ? 20 : targetCamHeight;
+			targetCamHeight = (targetCamHeight < 60) ? 60 : targetCamHeight;
 		}
 	}
 	
@@ -121,10 +121,10 @@ void RTSCamera::update() {
 	camera->setPosition(vector3df(camX, terY + cameraHeight, camZ));
 	
 	if (groundCam)
-		lookTarget = terY+cameraHeight-0.2;
+		lookTarget = terY+cameraHeight-0.4;
 	else
 		lookTarget = (terY + cameraHeight) - camAngleXZ;
-	
+		
 	camera->setTarget(vector3df(camX + cos(camRotY), lookTarget, camZ + sin(camRotY)));
 	
 	Listener::setPosition(camX, cameraHeight, camZ);

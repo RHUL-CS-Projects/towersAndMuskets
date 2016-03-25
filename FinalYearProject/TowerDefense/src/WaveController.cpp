@@ -13,14 +13,10 @@ WaveController::WaveController() {
 	waitSpeed = 1.0/(60*200);
 }
 
-double WaveController::getPercentage() {
-	return (inWave) ? wavePercent : waitPercent;
-}
-
 void WaveController::init() {
 	wavePercent = 0;
 	waitPercent = 0;
-	waveNumber = 0;
+	waveNumber = 1;
 	inWave = false;
 
 	pickSpawnLocations();
@@ -57,7 +53,10 @@ void WaveController::updateWave() {
 		inWave = false;
 		killed = 0;
 		wavePercent = 0;
-		spawnNumber += 5;
+		spawnNumberUnits += 4 + rand()%3;
+		spawnNumberCannons += 1 + rand()%2;
+		
+		waveNumber++;
 		
 		pickSpawnLocations();
 	}
@@ -73,9 +72,7 @@ void WaveController::spawnWave() {
 	int left = 0;
 	for (SpawnLocation s : spawnLocations) {
 		left += s.leftToSpawn;
-		std::cout << s.leftToSpawn << ", ";
 	}
-	std::cout << std::endl;
 	
 	if (spawnTimeCount <= 0) {
 		if (left > 0) {
@@ -98,7 +95,24 @@ void WaveController::spawnWave() {
 }
 
 void WaveController::spawnUnit ( vector3df position ) {
-	int id = ObjectFactory::addEnemyUnit(position);
+	int id;
+	
+	if (cannonsLeft > 0 && unitsLeft > 0) {
+		if (rand()%2) {
+			id = ObjectFactory::addEnemyUnit(position);
+			unitsLeft--;
+		} else {
+			cannonsLeft--;
+			id = ObjectFactory::addEnemyCannon(position);
+		}
+	} else if (cannonsLeft > 0) {
+		cannonsLeft--;
+		id = ObjectFactory::addEnemyCannon(position);
+	} else {
+		unitsLeft--;
+		id = ObjectFactory::addEnemyUnit(position);
+	}
+	
 	enemies.push_back(id);
 }
 
@@ -119,9 +133,11 @@ void WaveController::pickSpawnLocations() {
 	spawnLocations.clear();
 	hideAllSpawnLocations();
 	
-	int unitsPerSpawn = 2;
+	int unitsPerSpawn = 4;
 	std::list<int> spawns  = Game::game.getObjMgr()->getObjectsWithComponent("SpawnLocationComponent"); 
 	std::vector<int> spawnsVec { spawns.begin(), spawns.end() };
+	
+	spawnNumber = spawnNumberCannons + spawnNumberUnits;
 	
 	srand(time(nullptr));
 	
@@ -145,6 +161,9 @@ void WaveController::pickSpawnLocations() {
 	}
 	std::cout << spawnLocations.size() << std::endl;
 	showCurrentSpawnLocations();
+	
+	unitsLeft = spawnNumberUnits;
+	cannonsLeft = spawnNumberCannons;
 }
 
 bool WaveController::unitAlive ( int id ) {
@@ -166,6 +185,16 @@ void WaveController::updateUnitsLeft() {
 	}
 }
 
+WaveDetails WaveController::getWaveDetails() {
+	WaveDetails details;
+	details.cannonsLeft = spawnNumberCannons;
+	details.unitsLeft = spawnNumberUnits;
+	details.waveNumber = waveNumber;
+	details.percent = (inWave) ? wavePercent : waitPercent;
+	details.inWave = inWave;
+	
+	return details;
+}
 
 
 

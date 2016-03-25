@@ -24,7 +24,7 @@ void GroupPathMover::calculatePaths( std::vector<int> objs, irr::core::vector3df
 	WorldManager* wmgr = mgr->worldManager;
 	
 	double gridSize = wmgr->gridSize;
-	double spacing = gridSize * 0.75;
+	double spacing = gridSize * 1;
 	
 	double spacedWidth = boxWidth * spacing;
 	double spacedHeight = boxHeight * spacing;

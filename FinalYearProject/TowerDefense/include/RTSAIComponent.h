@@ -5,12 +5,14 @@
 #include <irrlicht/irrlicht.h>
 #include <sfml/SFML/Audio.hpp>
 #include <Enums.h>
+#include <ParticleManager.h>
 
 class RTSAIComponent : public GameComponent {
 public:
 	RTSAIComponent() : GameComponent("RTSAIComponent") {}
 	
-	RTSAIComponent(int actionFrame, sf::Sound* shoot, sf::Sound* walkSound, int shootDelay, int attackDamage = 4, int rangeInSquares = 10) : GameComponent("RTSAIComponent") {
+	RTSAIComponent(int actionFrame, sf::Sound* shoot, sf::Sound* walkSound, int shootDelay, int attackDamage = 4, int rangeInSquares = 10, 
+				   EFFECT_TYPE effectType = ET_MUSKET) : GameComponent("RTSAIComponent") {
 		attackActionFrame = actionFrame;
 		shootSound = shoot;
 		
@@ -19,6 +21,7 @@ public:
 		this->attackDamage = attackDamage;
 		this->rangeInSquares = rangeInSquares;
 		this->walkSound = walkSound;
+		this->effectType = effectType;
 	}
 	
 	int attackTargetID = -1;
@@ -35,6 +38,8 @@ public:
 	sf::Sound* walkSound;
 	int shootDelay;
 	int shootCounter;
+	
+	EFFECT_TYPE effectType;
 	
 	std::stack<RTS_UNIT_STATE> stateStack;
 };

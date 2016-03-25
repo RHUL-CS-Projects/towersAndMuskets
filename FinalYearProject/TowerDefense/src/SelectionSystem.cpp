@@ -31,7 +31,6 @@ void SelectionSystem::update ( float timestep ) {
 		//std::cout << "mouse over" << std::endl;
 	}
 	
-	
 	if (mouseState.leftPressed) {
 		if (!dragging) {
 			dragging = true;

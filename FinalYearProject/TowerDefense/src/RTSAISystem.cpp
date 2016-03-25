@@ -490,17 +490,11 @@ void RTSAISystem::stateAiming ( ObjectManager* mgr, int id ) {
 		currentRTSComp->shootSound->setPitch(0.9f + (1.0f/1000*(rand()%1000))*0.2f);
 		currentRTSComp->shootSound->play();
 		
-		vector3df enemyPos = attackTargetPosition(mgr);
-		vector3df dif = enemyPos - currentTransComp->worldPosition;
-		
-		vector3df start = currentTransComp->worldPosition + vector3df(sin(atan2(dif.X, dif.Z))*4, 7.5, cos(atan2(dif.X, dif.Z))*4);
-		vector3df end = enemyPos + vector3df(0, 7.5, 0);
-		((StatePlaying*)Game::game.currentState())->particleManager.addSmokeTrailParticle(start, end);
-		
+		vector3df start = currentTransComp->worldPosition;
+		vector3df end = attackTargetPosition(mgr);
 		FaceDirectionComponent* faceComp = mgr->getObjectComponent<FaceDirectionComponent>(id, "FaceDirectionComponent");
-	
-		if (faceComp != nullptr)
-			((StatePlaying*)Game::game.currentState())->particleManager.addMuzzleFlashParticle(currentTransComp->worldPosition, vector3df(0, faceComp->currentYRot, 0));
+		
+		((StatePlaying*)Game::game.currentState())->particleManager.spawnEffect(start, end, vector3df(0, faceComp->currentYRot, 0), currentRTSComp->effectType);
 		
 		return;
 	}
