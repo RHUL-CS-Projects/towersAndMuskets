@@ -10,20 +10,32 @@ struct SpawnLocation {
 	int leftToSpawn;
 };
 
+struct WaveDetails {
+	int waveNumber;
+	int cannonsLeft;
+	int unitsLeft;
+	double percent;
+	bool inWave;
+};
+
 class WaveController {
 private:
 	std::vector<SpawnLocation> spawnLocations;
 	std::vector<int> enemies;
 	
 	bool inWave;
-	int waveNumber;
+	int waveNumber = 1;
 	double wavePercent;
 	double waitPercent;
 	double waveSpeed;
 	double waitSpeed;
 	
 	int killed = 0;
-	int spawnNumber = 5;
+	int spawnNumber = 0;
+	int spawnNumberUnits = 5;
+	int spawnNumberCannons = 0;
+	int unitsLeft = 0;
+	int cannonsLeft = 0;
 	int toSpawn = 0;
 	int spawnTimeCount = 0;
 	int spawnDelay = 60;
@@ -43,7 +55,7 @@ public:
 	
 	void init();
 	void update();
-	double getPercentage();
+	WaveDetails getWaveDetails();
 	void skipWait();
 };
 

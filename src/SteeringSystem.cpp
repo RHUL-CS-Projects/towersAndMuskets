@@ -65,57 +65,65 @@ void SteeringSystem::update ( float timestep ) {
 					steerComp->velocity *= 0;
 				}
 			}
-		} else {
-			steerComp->velocity *= 0.9;
 		}
 		
-		if (steerComp->velocity.getLength() > 0.01) {
-			// Get list of possible collisions from the quadtree
-			possibleCollisions.clear();
-			collisionTree.getObjects(possibleCollisions, i, transComp->worldPosition, steerComp->radius);
+		bool colliding = false;
+		
+
+		// Get list of possible collisions from the quadtree
+		possibleCollisions.clear();
+		collisionTree.getObjects(possibleCollisions, i, transComp->worldPosition, steerComp->radius);
+		
+		// Avoid other units
+		for (int j : possibleCollisions) {
+			if (j == i) continue;
 			
-			// Avoid other units
-			for (int j : possibleCollisions) {
-				if (j == i) continue;
+			collisionCalls++;
+			
+			SteeringComponent* otherSteerComp = mgr->getObjectComponent<SteeringComponent>(j, "SteeringComponent");
+			
+			if (!otherSteerComp->enabled)
+				continue;
+			
+			// Check the object has a transform
+			TransformComponent* otherTransComp = mgr->getObjectComponent<TransformComponent>(j, "TransformComponent");
+			
+			if (otherTransComp == nullptr)
+				continue;
+			
+			double dist;
+			if ((dist = (transComp->worldPosition - otherTransComp->worldPosition).getLengthSQ()) < steerComp->radius*steerComp->radius + otherSteerComp->radius*otherSteerComp->radius) {
+				colliding = true;
 				
-				collisionCalls++;
+				/*if (!steerComp->path.finalNode()) {
+					//avoid(otherTransComp->worldPosition, steerComp, transComp);
+					avoid(transComp->worldPosition, otherSteerComp, otherTransComp);
+				}*/
 				
-				SteeringComponent* otherSteerComp = mgr->getObjectComponent<SteeringComponent>(j, "SteeringComponent");
-				
-				if (!otherSteerComp->enabled)
-					continue;
-				
-				// Check the object has a transform
-				TransformComponent* otherTransComp = mgr->getObjectComponent<TransformComponent>(j, "TransformComponent");
-				
-				if (otherTransComp == nullptr)
-					continue;
-				
-				double dist;
-				if ((dist = (transComp->worldPosition - otherTransComp->worldPosition).getLengthSQ()) < steerComp->radius*steerComp->radius + otherSteerComp->radius*otherSteerComp->radius) {
-					if (!steerComp->path.finalNode())
-						//avoid(otherTransComp->worldPosition, steerComp, transComp);
-					
-						avoid(transComp->worldPosition, otherSteerComp, otherTransComp);
+				if (steerComp->path.ended() && otherSteerComp->path.ended()) {
+					avoid(otherTransComp->worldPosition, steerComp, transComp);
+					avoid(transComp->worldPosition, otherSteerComp, otherTransComp);
 				}
 			}
 		}
 		
+		
+		if (steerComp->path.ended() && !colliding) {
+			steerComp->velocity *= 0.8;
+		}
+		
 		transComp->worldPosition += steerComp->velocity;
+		
+		if (transComp->worldPosition.X < 0) transComp->worldPosition.X = 0;
+		if (transComp->worldPosition.X >= mgr->worldManager->getWorldBounds().getWidth()-2) 
+			transComp->worldPosition.X = mgr->worldManager->getWorldBounds().getWidth()-2;
+		
+		if (transComp->worldPosition.Z < 0) transComp->worldPosition.Z = 0;
+		if (transComp->worldPosition.Z >= mgr->worldManager->getWorldBounds().getHeight()-2) 
+			transComp->worldPosition.Z = mgr->worldManager->getWorldBounds().getHeight()-2;
+		
 		transComp->worldPosition.Y = 
 		((ITerrainSceneNode*)Game::game.getRendMgr()->getSceneManager()->getSceneNodeFromName("MainTerrain"))->getHeight(transComp->worldPosition.X, transComp->worldPosition.Z);
-		
-		// Animate the object appropriately (TEMPORARY)
-		RenderComponent* rendComp = mgr->getObjectComponent<RenderComponent>(i, "RenderComponent");
-		AnimatorComponent* animComp = mgr->getObjectComponent<AnimatorComponent>(i, "AnimatorComponent");
-		
-		if (rendComp != nullptr && animComp != nullptr) {
-			if (steerComp->path.ended() && steerComp->velocity.getLength() < 0.03) {
-				//animComp->setAnimation("IDLE", rendComp->sceneNode);
-			} else {
-				//animComp->setAnimation("WALK", rendComp->sceneNode);
-			}
-		}
 		
 		// Update facing direction if necessary
 		FaceDirectionComponent* faceComp = mgr->getObjectComponent<FaceDirectionComponent>(i, "FaceDirectionComponent");
@@ -252,7 +260,7 @@ void SteeringSystem::avoid ( vector3df avoidPos, SteeringComponent* steerComp, T
 		steerForce = steerForce.normalize() * steerComp->maxSpeed;
 	steerForce /= steerComp->mass;
 	
-	steerComp->velocity += steerForce*2;
+	steerComp->velocity += steerForce;
 }
 
 /**

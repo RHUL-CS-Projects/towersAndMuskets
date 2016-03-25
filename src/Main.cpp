@@ -63,7 +63,6 @@ int main() {
 		
 		client.connectToServer(input);
 	}*/
-	//basicGraphics();
 	
 	runGame();
 	

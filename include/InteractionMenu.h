@@ -9,12 +9,15 @@
 #include <GameState.h>
 #include <map>
 #include <GuiElementPurchase.h>
+#include <WaveController.h>
 
 class InteractionMenu : public GuiObserver {
 private:
+	enum MENU_BUTTONS { btnGatherer=0, btnUnit, btnCannon, btnTower, btnReveille, btnMenu, btnSkip };
+	
 	std::list<GuiElement*> guiElements;
 	int height;
-	double progressPercent = 1;
+	int mouseOverID;
 	double alpha = 0;
 	
 	sf::Sound* sndRolloverSound;
@@ -29,6 +32,7 @@ private:
 	irr::video::ITexture* texRes, *texPurchase;
 	irr::video::ITexture* texHUD, *texBarFront, *texBarBack;
 	
+	WaveDetails waveDetails;
 public:
 	InteractionMenu();
 	
@@ -43,7 +47,7 @@ public:
 	void update();
 	void render(irr::video::IVideoDriver* driver);
 	void setResourcesDisplay(int stone, int gold, int wood);
-	void setProgress(double percent);
+	void setWaveDetails(WaveDetails details);
 	virtual void onNotify(int id, int eventID);
 };
 

@@ -46,7 +46,7 @@ NodePath PathFinder::findPath ( vector3df start, vector3df end ) {
 		path.addNodeFront(start);
 		path.addNode(end);
 	} else {
-		((StatePlaying*)Game::game.currentState())->message(SHOW_MESSAGE_BAD, "Cannot move here");
+		// ((StatePlaying*)Game::game.currentState())->message(SHOW_MESSAGE_BAD, "Cannot move here");
 	}
 	
 	return path;

@@ -6,6 +6,7 @@
 #include <list>
 #include <ResourceComponent.h>
 #include <TransparentMaterialShader.h>
+#include <StatePlaying.h>
 
 EventReceiver::SMouseState EventReceiver::MouseState;
 
@@ -68,6 +69,8 @@ void EventReceiver::renderCollisionBoxes() {
 		}
 	}
 
+	((StatePlaying*)Game::game.currentState())->particleManager.toggleParticleVisibility();
+	
 	// Hide terrain
 	ISceneNode* terrain = Game::game.getRendMgr()->getSceneManager()->getSceneNodeFromName("MainTerrain");
 	if (terrain != nullptr)
@@ -78,6 +81,8 @@ void EventReceiver::renderCollisionBoxes() {
 	Game::game.getRendMgr()->getSceneManager()->drawAll();
 	Game::game.getRendMgr()->getDriver()->setRenderTarget(0, true, true, 0);
 	TransparentMaterialShader::useIDColors = false;
+	
+	((StatePlaying*)Game::game.currentState())->particleManager.toggleParticleVisibility();
 	
 	if (terrain != nullptr)
 		terrain->setVisible(true);

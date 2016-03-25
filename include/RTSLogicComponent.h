@@ -7,6 +7,8 @@
 #include <stack>
 #include <irrlicht/irrlicht.h>
 #include <Enums.h>
+#include <iostream>
+#include <ParticleManager.h>
 
 /**
  * Component to control the logic/AI of units by controlling their states
@@ -17,7 +19,8 @@ private:
 public:
 	RTSLogicComponent() : GameComponent("RTSLogicComponent") {}
 	
-	RTSLogicComponent(int actionFrame, sf::Sound* shoot, sf::Sound* walkSound, int shootDelay, bool canGarrisson, int attackDamage = 4, int rangeInSquares = 10) : GameComponent("RTSLogicComponent") {
+	RTSLogicComponent(int actionFrame, sf::Sound* shoot, sf::Sound* walkSound, int shootDelay, bool canGarrisson, int attackDamage = 4, int rangeInSquares = 10,
+					  EFFECT_TYPE effectType = ET_MUSKET) : GameComponent("RTSLogicComponent") {
 		attackActionFrame = actionFrame;
 		shootSound = shoot;
 		this->canGarrisson = canGarrisson;
@@ -27,6 +30,9 @@ public:
 		this->attackDamage = attackDamage;
 		this->rangeInSquares = rangeInSquares;
 		this->walkSound = walkSound;
+		this->effectType = effectType;
+		
+		nearestEnemyDelay = rand()%120;
 	}
 	
 	int attackTargetID = -1;
@@ -46,6 +52,10 @@ public:
 	sf::Sound* walkSound;
 	int shootDelay;
 	int shootCounter;
+	
+	int nearestEnemyDelay;
+	
+	EFFECT_TYPE effectType;
 	
 	std::stack<RTS_UNIT_STATE> stateStack;
 };

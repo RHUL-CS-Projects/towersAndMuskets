@@ -55,8 +55,14 @@ public:
 		ObjectManager* objmgr = Game::game.getObjMgr();
 		int id = objmgr->createObject();
 		
+		int treenum = rand()%4 + 1;
+		std::string treeModel = "tree" + std::to_string(treenum) + ".x";
+		
+		int texnum = rand()%4 + 1;
+		std::string treeTex = "TreeTexture" + std::to_string(texnum) + ".png";
+		
 		objmgr->attachComponent(id, new TransformComponent(pos));
-		objmgr->attachComponent(id, new StaticMeshComponent("tree.x", "TreeTexture.png", irr::core::vector3df(-90,0,0)));
+		objmgr->attachComponent(id, new StaticMeshComponent(treeModel, treeTex, irr::core::vector3df(-90,0,0)));
 		objmgr->attachComponent(id, new RenderComponent(true));
 		objmgr->attachComponent(id, new ResourceComponent(WOOD));
 		
@@ -131,6 +137,40 @@ public:
 		return id;
 	}
 	
+	static int addEnemyCannon(irr::core::vector3df pos) {
+		ObjectManager* objmgr = Game::game.getObjMgr();
+		int id = objmgr->createObject();
+		
+		objmgr->attachComponent(id, new TransformComponent(pos));
+		
+		std::vector<std::string> textures;
+		textures.push_back("ManTexture2.png");
+		textures.push_back("CannonTexture.png");
+		
+		objmgr->attachComponent(id, new AnimatedMeshComponent("cannon.x", textures, irr::core::vector3df(0,0,0)));
+		
+		AnimatorComponent* animComp = new AnimatorComponent();
+		animComp->addAnimation("IDLE", 0, 28, 10);
+		animComp->addAnimation("WALK", 30, 189, 30);
+		animComp->addAnimation("TAKEAIM", 190, 219, 30);
+		animComp->addAnimation("AIM", 221, 230, 30);
+		animComp->addAnimation("SHOOT", 232, 263, 30);
+		animComp->addAnimation("RELOAD", 266, 576, 30);
+		animComp->addAnimation("REST", 580, 609, 30);
+		animComp->addAnimation("DEATH1", 612, 623, 20);
+		
+		objmgr->attachComponent(id, animComp);
+		
+		objmgr->attachComponent(id, new RenderComponent(true));
+		objmgr->attachComponent(id, new FaceDirectionComponent(0, 0.08f));
+		objmgr->attachComponent(id, new RTSAIComponent(1, Game::game.resources.loadSound("cannonfire.ogg"), Game::game.resources.loadSound(" "), 60, 10, 15, ET_CANNON));
+		objmgr->attachComponent(id, new SteeringComponent(0.1, 80, 8));
+		objmgr->attachComponent(id, new HealthComponent(10, 10));
+		objmgr->attachComponent(id, new TeamComponent(id, 1));
+		
+		return id;
+	}
+	
 	static int addPlayerUnit(irr::core::vector3df pos) {
 		ObjectManager* objmgr = Game::game.getObjMgr();
 		int id = objmgr->createObject();
@@ -189,7 +229,7 @@ public:
 		objmgr->attachComponent(id, new SelectableComponent(3,3));
 		objmgr->attachComponent(id, new RenderComponent(true));
 		objmgr->attachComponent(id, new FaceDirectionComponent(0, 0.08f));
-		objmgr->attachComponent(id, new RTSLogicComponent(1, Game::game.resources.loadSound("cannonfire.ogg"), Game::game.resources.loadSound("cannonmove.ogg"), 60, false, 10, 15));
+		objmgr->attachComponent(id, new RTSLogicComponent(1, Game::game.resources.loadSound("cannonfire.ogg"), Game::game.resources.loadSound("cannonmove.ogg"), 60, false, 10, 15, ET_CANNON));
 		objmgr->attachComponent(id, new SteeringComponent(0.1, 80, 8));
 		objmgr->attachComponent(id, new HealthComponent(10, 10));
 		objmgr->attachComponent(id, new TeamComponent(id, 0));
