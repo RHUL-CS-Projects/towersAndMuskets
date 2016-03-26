@@ -480,7 +480,7 @@ void RTSLogicSystem::stateIdle ( ObjectManager* mgr, int id ) {
 	int nearestEnemy = -1;
 	currentRTSComp->nearestEnemyDelay--;
 	if (currentRTSComp->nearestEnemyDelay <= 0) {
-		currentRTSComp->nearestEnemyDelay += 120;
+		currentRTSComp->nearestEnemyDelay += 60;
 		nearestEnemy = getNearestOnOtherTeam(mgr, id);
 		// Start walking to attack nearby target
 		if (nearestEnemy >= 0) {
@@ -807,7 +807,7 @@ void RTSLogicSystem::stateGarrissoned ( ObjectManager* mgr, int id ) {
 	int nearestEnemy = -1;
 	currentRTSComp->nearestEnemyDelay--;
 	if (currentRTSComp->nearestEnemyDelay <= 0) {
-		currentRTSComp->nearestEnemyDelay += 120;
+		currentRTSComp->nearestEnemyDelay += 60;
 		nearestEnemy = getNearestOnOtherTeam(mgr, id);
 
 		// Start walking to attack nearby target

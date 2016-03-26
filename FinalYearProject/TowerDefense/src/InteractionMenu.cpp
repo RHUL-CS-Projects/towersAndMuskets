@@ -18,6 +18,8 @@ void InteractionMenu::init ( int height, GameState* state ) {
 	this->height = height;
 	this->parentState = state;
 	
+	resCache = ((StatePlaying*)parentState)->getResourceCache();
+	
 	int top = Game::game.getRendMgr()->getDriver()->getScreenSize().Height - height;
 	int width = Game::game.getRendMgr()->getDriver()->getScreenSize().Width;
 	
@@ -263,16 +265,14 @@ void InteractionMenu::render ( irr::video::IVideoDriver* driver ) {
 	
 	driver->draw2DImage(texRes, recti(920, bottom-height+10, 920+texRes->getSize().Width, bottom-height+10+texRes->getSize().Height), 
 						recti(0, 0, texRes->getSize().Width, texRes->getSize().Height), 0, 0, true);
-
 	
-	std::string stone = std::to_string(((StatePlaying*)Game::game.currentState())->getResourceCache()->getStone());
-	std::string gold = std::to_string(((StatePlaying*)Game::game.currentState())->getResourceCache()->getGold());
-	std::string wood = std::to_string(((StatePlaying*)Game::game.currentState())->getResourceCache()->getWood());
+	std::string stone = std::to_string(resCache->getStone());
+	std::string gold = std::to_string(resCache->getGold());
+	std::string wood = std::to_string(resCache->getWood());
 	font->draw(gold.c_str(), recti(980, bottom-height+20, 1040, bottom-height+40),SColor(200,255,255,255),false, true);
 	font->draw(stone.c_str(), recti(980, bottom-height+55, 1040, bottom-height+75),SColor(200,255,255,255),false, true);
 	font->draw(wood.c_str(), recti(980, bottom-height+90, 1040, bottom-height+110),SColor(200,255,255,255),false, true);
 	
-	PlayerResourceCache* resCache = ((StatePlaying*)parentState)->getResourceCache();
 	
 	vector2di topLeft(15, bottom-height-20-texPurchase->getSize().Height);
 	driver->draw2DImage(
@@ -294,6 +294,8 @@ void InteractionMenu::render ( irr::video::IVideoDriver* driver ) {
 	
 	SColor woodCol = resCache->getWood() >= currentPurchase.wood ? SColor(255*alpha,214,199,182) : SColor(200*alpha,255,0,0);
 	font->draw(std::to_string(currentPurchase.wood).c_str(), recti(topLeft + vector2di(215,95), dimension2di(50,20)), woodCol);
+	
+	if (waveDetails.gameOver) return;
 	
 	std::string cannonsLeft = "Cannons: " + std::to_string(waveDetails.cannonsLeft);
 	std::string unitsLeft = "Units: " + std::to_string(waveDetails.unitsLeft);

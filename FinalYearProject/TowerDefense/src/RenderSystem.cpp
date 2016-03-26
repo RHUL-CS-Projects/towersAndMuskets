@@ -239,6 +239,7 @@ void RenderSystem::addAnimatedSceneNode (RenderComponent* rendComp, AnimatedMesh
 		animnode->getMaterial(0).SpecularColor = SColor(0,0,0,0);
 		
 		//animnode->addShadowVolumeSceneNode();
+		animnode->setAutomaticCulling(2);	
 		
 		animnode->setAnimationSpeed(70);
 		animnode->setFrameLoop(62, 142);
@@ -289,6 +290,7 @@ void RenderSystem::addStaticSceneNode (RenderComponent* rendComp, StaticMeshComp
 
 		meshnode->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, true);
 		//meshnode->addShadowVolumeSceneNode();
+		meshnode->setAutomaticCulling(2);		
 		
 		ITriangleSelector* selector = smgr->createTriangleSelector(meshComp->mesh, meshnode);
 		meshnode->setTriangleSelector(selector);

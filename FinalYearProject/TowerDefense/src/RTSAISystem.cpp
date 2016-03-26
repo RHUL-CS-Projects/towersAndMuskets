@@ -404,19 +404,20 @@ void RTSAISystem::stateMoveToAttack ( ObjectManager* mgr, int id ) {
 		return;
 	}
 	
-	float distSq = (mgr->worldManager->gridSize * currentRTSComp->rangeInSquares) * (mgr->worldManager->gridSize * currentRTSComp->rangeInSquares);
-	//std::cout << currentRTSComp->attackTargetID << std::endl;
-	
-	// Start aiming at target
-	if (currentRTSComp->attackTargetID >= 0 && distanceToObjectSq(mgr, currentRTSComp->attackTargetID) < distSq) {
-		currentRTSComp->pathSet = false;
-		currentSteerComp->path.resetPath();
-		currentRTSComp->stateStack.pop();
-		currentRTSComp->stateStack.push(AIMING);
-		currentRTSComp->stateStack.push(TAKE_AIM);
-		return;
+	if (mgr->objectExists(currentRTSComp->attackTargetID)) {
+		float distSq = (mgr->worldManager->gridSize * currentRTSComp->rangeInSquares) * (mgr->worldManager->gridSize * currentRTSComp->rangeInSquares);
+		
+		// Start aiming at target
+		if (currentRTSComp->attackTargetID >= 0 && distanceToObjectSq(mgr, currentRTSComp->attackTargetID) < distSq) {
+			currentRTSComp->pathSet = false;
+			currentSteerComp->path.resetPath();
+			currentRTSComp->stateStack.pop();
+			currentRTSComp->stateStack.push(AIMING);
+			currentRTSComp->stateStack.push(TAKE_AIM);
+			return;
+		}
 	}
-
+	
 	// Finished walking
 	if (currentSteerComp->path.ended()) {
 		currentRTSComp->attackTargetID = -1;
