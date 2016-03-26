@@ -24,10 +24,10 @@ private:
 	irr::video::ITexture* backImage;
 	
 public:
-	StateMainMenu() : GameState() {
+	StateMainMenu() : GameState("StateMainMenu") {
 		std::string filepath = RenderManager::resPath + "/materials/textures/SerifFont.xml";
-		guiElements.push_back(new GuiElement(500, 680, 200, 25, "Play", filepath, irr::video::SColor(50,255,255,255), btnPlay));
-		guiElements.push_back(new GuiElement(720, 680, 200, 25, "Options", filepath, irr::video::SColor(50,255,255,255), btnOptions));
+		guiElements.push_back(new GuiElement(720, 680, 200, 25, "Play", filepath, irr::video::SColor(50,255,255,255), btnPlay));
+		//guiElements.push_back(new GuiElement(720, 680, 200, 25, "Options", filepath, irr::video::SColor(50,255,255,255), btnOptions));
 		guiElements.push_back(new GuiElement(940, 680, 200, 25, "Quit", filepath, irr::video::SColor(50,255,255,255), btnQuit));
 			
 		for (GuiElement* e : guiElements) {

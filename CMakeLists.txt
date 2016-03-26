@@ -65,6 +65,7 @@ set (SOURCES
   src/TransparentMaterialShader.cpp
   src/ParticleManager.cpp
   src/GuiElementPurchase.cpp
+  src/StateWinLose.cpp
 )
 
 #set(BUILD_SHARED_LIBS OFF)

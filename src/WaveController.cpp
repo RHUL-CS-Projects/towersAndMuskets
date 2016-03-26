@@ -16,9 +16,11 @@ WaveController::WaveController() {
 void WaveController::init() {
 	wavePercent = 0;
 	waitPercent = 0;
-	waveNumber = 1;
+	waveNumber = 5;
 	inWave = false;
-
+	victory = true;
+	gameOver = false;
+	
 	pickSpawnLocations();
 }
 
@@ -27,6 +29,15 @@ void WaveController::update() {
 		updateWave();
 	} else {
 		updateWait();
+	}
+	
+	if (TeamComponent::getObjectsOnTeam(0).size() == 0) {
+		victory = false;
+		gameOver = true;
+	}
+	
+	if (waveNumber > numWaves) {
+		gameOver = true;
 	}
 }
 
@@ -192,6 +203,8 @@ WaveDetails WaveController::getWaveDetails() {
 	details.waveNumber = waveNumber;
 	details.percent = (inWave) ? wavePercent : waitPercent;
 	details.inWave = inWave;
+	details.gameOver = gameOver;
+	details.victory = victory;
 	
 	return details;
 }

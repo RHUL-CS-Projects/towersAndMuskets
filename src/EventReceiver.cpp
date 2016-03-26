@@ -69,6 +69,8 @@ void EventReceiver::renderCollisionBoxes() {
 		}
 	}
 
+	if (Game::game.currentState()->name != "StatePlaying") return;
+	
 	((StatePlaying*)Game::game.currentState())->particleManager.toggleParticleVisibility();
 	
 	// Hide terrain

@@ -16,6 +16,8 @@ struct WaveDetails {
 	int unitsLeft;
 	double percent;
 	bool inWave;
+	bool gameOver;
+	bool victory;
 };
 
 class WaveController {
@@ -25,10 +27,13 @@ private:
 	
 	bool inWave;
 	int waveNumber = 1;
+	int numWaves = 5;
 	double wavePercent;
 	double waitPercent;
 	double waveSpeed;
 	double waitSpeed;
+	bool victory;
+	bool gameOver;
 	
 	int killed = 0;
 	int spawnNumber = 0;

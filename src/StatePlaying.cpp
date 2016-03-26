@@ -4,6 +4,7 @@
 #include <sfml/SFML/Audio.hpp>
 #include <sfml/SFML/Window.hpp>
 #include <TransparentMaterialShader.h>
+#include <StateWinLose.h>
 
 using namespace irr;
 using namespace core;
@@ -13,7 +14,7 @@ using namespace video;
 using namespace sf;
 
 
-StatePlaying::StatePlaying(std::string mapname) {
+StatePlaying::StatePlaying(std::string mapname) : GameState("StatePlaying") {
 	transparentDraw = false;
 	transparentUpdate = false;
 	ISceneManager* smgr = Game::game.getRendMgr()->getSceneManager();
@@ -65,7 +66,7 @@ void StatePlaying::loadMap ( std::string mapname ) {
 	Game::game.getRendMgr()->getSceneManager()->clear();
 	Game::game.getObjMgr()->clearObjects();
 	objectPlacer.init();
-	resourceCache.init(10000,10000,10000);
+	resourceCache.init(100,100,100);
 	
 	///////////////////////////////////
 	ISceneManager* smgr = Game::game.getRendMgr()->getSceneManager();
@@ -109,6 +110,10 @@ void StatePlaying::update() {
 		Game::game.getObjMgr()->updateSystems(0);
 		
 		TeamComponent::updateTeamLists();
+		
+		if (waveController.getWaveDetails().gameOver) {
+			Game::game.pushState(new StateWinLose(waveController.getWaveDetails().victory));
+		}
 	} else {
 		shouldReload = false;
 		loadMap(currentMap);

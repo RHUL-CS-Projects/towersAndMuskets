@@ -10,10 +10,13 @@
 #include <map>
 #include <GuiElementPurchase.h>
 #include <WaveController.h>
+#include <PlayerResourceCache.h>
 
 class InteractionMenu : public GuiObserver {
 private:
 	enum MENU_BUTTONS { btnGatherer=0, btnUnit, btnCannon, btnTower, btnReveille, btnMenu, btnSkip };
+	
+	PlayerResourceCache* resCache;
 	
 	std::list<GuiElement*> guiElements;
 	int height;
