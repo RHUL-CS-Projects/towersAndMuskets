@@ -24,16 +24,9 @@ void InteractionMenu::init ( int height, GameState* state ) {
 	int width = Game::game.getRendMgr()->getDriver()->getScreenSize().Width;
 	
 	std::string filepath = RenderManager::resPath + "/materials/textures/SerifFont.xml";
-	//guiElements.push_back(new GuiElement(20, top - 200 + 30, 100, 20, "Tower", filepath, SColor(150,255,255,255), 0));
-	//guiElements.push_back(new GuiElement(20, top - 200 + 60, 100, 20, "Tree", filepath, SColor(150,255,255,255), 1));
-	//guiElements.push_back(new GuiElement(20, top - 200 + 90, 100, 20, "Rock", filepath, SColor(150,255,255,255), 2));
-	//guiElements.push_back(new GuiElement(140, top - 200 + 30, 100, 20, "EnemyUnit", filepath, SColor(150,255,255,255), 3));
-	//guiElements.push_back(new GuiElement(140, top - 200 + 60, 100, 20, "Musketeer", filepath, SColor(150,255,255,255), 4));
-	//guiElements.push_back(new GuiElement(140, top - 200 + 90, 100, 20, "Cannon", filepath, SColor(150,255,255,255), 5));
-	//guiElements.push_back(new GuiElement(260, top - 200 + 30, 100, 20, "Villager", filepath, SColor(150,255,255,255), 10));
 	
-	guiElements.push_back(new GuiElement(width - 130, top + 50, 100, 20, "Menu", filepath, SColor(50,255,255,255), btnMenu));
-	guiElements.push_back(new GuiElement(width - 520, top + height - 30, 100, 20, "Skip Wait", filepath, SColor(50,255,255,255), btnSkip));
+	guiElements.push_back(new GuiElement(width - 130, top + 90, 100, 20, "Menu", filepath, SColor(50,255,255,255), btnMenu));
+	guiElements.push_back(new GuiElement(width - 520, top + height - 35, 100, 20, "Skip Wait", filepath, SColor(50,255,255,255), btnSkip));
 	
 	PurchaseDetails towerPurchase;
 	towerPurchase.gold = 50;
@@ -130,15 +123,6 @@ void InteractionMenu::onNotify ( int id, int eventID ) {
 				((StatePlaying*)parentState)->message(SHOW_MESSAGE_BAD, "Cannot afford this purchase!");
 			}
 			break;
-		/*case 1:
-			((StatePlaying*)parentState)->message(SET_PLACE_OBJECT_TREE);
-			break;
-		case 2:
-			((StatePlaying*)parentState)->message(SET_PLACE_OBJECT_ROCK);
-			break;
-		case 3:
-			((StatePlaying*)parentState)->message(SET_PLACE_OBJECT_ENEMY_UNIT);
-			break;*/
 		case btnUnit:
 			if (waveDetails.inWave) {
 				((StatePlaying*)parentState)->message(SHOW_MESSAGE_BAD, "Units cannot be purchased during waves");
@@ -168,15 +152,6 @@ void InteractionMenu::onNotify ( int id, int eventID ) {
 		case btnMenu:
 			Game::game.pushState(new StatePauseMenu());
 			break;
-		/*case 7:
-			((StatePlaying*)Game::game.currentState())->reloadMap("map1");
-			break;
-		case 8:
-			((StatePlaying*)Game::game.currentState())->reloadMap("map2");
-			break;
-		case 9:
-			((StatePlaying*)Game::game.currentState())->reloadMap("map3");
-			break;*/
 		case btnGatherer:
 			if (waveDetails.inWave) {
 				((StatePlaying*)parentState)->message(SHOW_MESSAGE_BAD, "Units cannot be purchased during waves");
@@ -253,11 +228,13 @@ void InteractionMenu::render ( irr::video::IVideoDriver* driver ) {
 	driver->draw2DRectangle(SColor(150,0,255,0), barRect);
 	driver->draw2DImage(texBarFront, barTexRect, recti(0, 0, texBarFront->getSize().Width, texBarFront->getSize().Height), 0, 0, true);
 	
+	std::string captionText = waveDetails.inWave ? "Wave Progress" : "Time to Next Wave";
+	
 	recti captionShadowRect(barPos.X + 3, barPos.Y + barTexRect.getHeight() + 3, barTexRect.LowerRightCorner.X + 3, barTexRect.LowerRightCorner.Y + barTexRect.getHeight() + 13);
-	font->draw("Time to Next Wave", captionShadowRect, SColor(200,0,0,0), true);
+	font->draw(captionText.c_str(), captionShadowRect, SColor(200,0,0,0), true);
 	
 	recti captionRect(barPos.X, barPos.Y + barTexRect.getHeight(), barTexRect.LowerRightCorner.X, barTexRect.LowerRightCorner.Y + barTexRect.getHeight() + 10);
-	font->draw("Time to Next Wave", captionRect, SColor(200,255,255,255), true);
+	font->draw(captionText.c_str(), captionRect, SColor(200,255,255,255), true);
 	
 	for (GuiElement* e : guiElements) {
 		e->render(driver);

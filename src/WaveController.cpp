@@ -16,7 +16,7 @@ WaveController::WaveController() {
 void WaveController::init() {
 	wavePercent = 0;
 	waitPercent = 0;
-	waveNumber = 5;
+	waveNumber = 1;
 	inWave = false;
 	victory = true;
 	gameOver = false;
@@ -89,8 +89,6 @@ void WaveController::spawnWave() {
 		if (left > 0) {
 			toSpawn--;
 			
-			//std::random_shuffle(spawnLocations.begin(), spawnLocations.end());
-			
 			SpawnLocation* current = &spawnLocations.back();
 			
 			if (current->leftToSpawn > 0) {
@@ -153,8 +151,6 @@ void WaveController::pickSpawnLocations() {
 	srand(time(nullptr));
 	
 	std::random_shuffle(spawnsVec.begin(), spawnsVec.end());
-	
-	//int numSpawnPoints = (int)ceil(spawnNumber/unitsPerSpawn);
 	int leftToAssign = spawnNumber;
 	
 	while (leftToAssign > 0 && spawnsVec.size() > 0) {

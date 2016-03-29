@@ -40,8 +40,6 @@ StatePlaying::StatePlaying(std::string mapname) : GameState("StatePlaying") {
 		
 		TransparentMaterialShader::materialID = newMat;
 		TransparentMaterialShader::materialIDNonAdd = newMat2;
-		
-		//std::cout << "Mat: " << newMat << ", ID: " << TransparentMaterialShader::materialID << std::endl;
 	}
 	
 	interactionMenu.init(128, this);
@@ -66,9 +64,8 @@ void StatePlaying::loadMap ( std::string mapname ) {
 	Game::game.getRendMgr()->getSceneManager()->clear();
 	Game::game.getObjMgr()->clearObjects();
 	objectPlacer.init();
-	resourceCache.init(100,100,100);
+	resourceCache.init(150,150,150);
 	
-	///////////////////////////////////
 	ISceneManager* smgr = Game::game.getRendMgr()->getSceneManager();
 	
 	Game::game.getObjMgr()->clearObjects();

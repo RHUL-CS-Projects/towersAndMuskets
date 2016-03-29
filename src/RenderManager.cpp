@@ -12,7 +12,6 @@ using namespace video;
 using namespace io;
 using namespace gui;
 
-//RenderManager RenderManager::renderManager;
 std::string const RenderManager::resPath = "./res";
 
 RenderManager::RenderManager() {
@@ -20,7 +19,8 @@ RenderManager::RenderManager() {
 }
 
 RenderManager::~RenderManager() {
-	device->drop();
+	if (device != nullptr)
+		device->drop();
 }
 
 /**
