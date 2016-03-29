@@ -25,44 +25,15 @@ using namespace io;
 using namespace gui;
 using namespace sf;
 
-Server server;
-Client client;
-
-void signalExit(int s) {
-	server.stopServer();
-	client.disconnect();
-}
-
 void runGame() {
 	Game::game.init();
 	Game::game.run();
+	Game::game.dispose();
 	
 	cout << "Game Exited" << endl;
-	Game::game.dispose();
 }
 
 int main() {
-	struct sigaction sigIntHandler;
-	sigIntHandler.sa_handler = signalExit;
-	sigemptyset(&sigIntHandler.sa_mask);
-	sigIntHandler.sa_flags = 0;
-	
-	sigaction(SIGINT, &sigIntHandler, NULL);
-	
-	/*enet_uint16 port;
-	string input;
-	
-	cout << "Host? y/n: ";
-	cin >> input;
-	
-	if (input[0] == 'y') {
-		server.startServer();
-	} else {
-		cout << "Connect to ip: ";
-		cin >> input;
-		
-		client.connectToServer(input);
-	}*/
 	
 	runGame();
 	

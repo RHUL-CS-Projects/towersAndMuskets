@@ -45,8 +45,6 @@ NodePath PathFinder::findPath ( vector3df start, vector3df end ) {
 	if (pathFound) {
 		path.addNodeFront(start);
 		path.addNode(end);
-	} else {
-		// ((StatePlaying*)Game::game.currentState())->message(SHOW_MESSAGE_BAD, "Cannot move here");
 	}
 	
 	return path;
@@ -60,7 +58,9 @@ NodePath PathFinder::findPath ( int startX, int startY, int endX, int endY ) {
 	
 	vector<PathFindNode*> openList;
 	vector<PathFindNode*> closedList;
-	PathFindNode nodes[gridWidth][gridHeight];
+	PathFindNode** nodes = new PathFindNode*[gridHeight];
+	for (int i = 0; i < gridHeight; i++)
+		nodes[i] = new PathFindNode[gridWidth];
 	
 	// Initialise start node
 	nodes[startX][startY].h = calcHValue(startX, startY, endX, endY);
@@ -147,7 +147,10 @@ NodePath PathFinder::findPath ( int startX, int startY, int endX, int endY ) {
 		}
 		pathFound = true;
 	}
-	//path.addNodeFront(vector3df(startX * worldManager->gridSize + worldManager->gridSize/2, 0, startY * worldManager->gridSize + worldManager->gridSize/2));
+	
+	for (int i = 0; i < gridHeight; i++)
+		delete nodes[i];
+	delete nodes;
 	
 	return path;
 }
@@ -199,28 +202,6 @@ int PathFinder::indexOfSmallestF ( std::vector< PathFindNode* > nodes ) {
 	}
 	return index;
 }
-
-/*vector< PathFindNode* > PathFinder::getNeighbours ( PathFindNode nodes[][], int x, int y ) {
-	vector<PathFindNode*> neighbours;
-	
-	
-}*/
-
-
-/*int PathFinder::containsNode ( PathFindNode* node, std::vector< PathFindNode* > nodes ) {
-
-}
-*/
-
-
-/*std::vector< PathFindNode* > PathFinder::getNeighboursJPS ( PathFindNode* current, int endX, int endY ) {
-
-}*/
-
-
-/*PathFindNode* PathFinder::jump ( int x, int y, int fromX, int fromY, int endX, int endY ) {
-
-}*/
 
 
 
