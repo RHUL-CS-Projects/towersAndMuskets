@@ -2,7 +2,8 @@
 <strong>Programmed by Jon Mortiboy</strong><br /><br />
 This is a tower defence game mixing elements of real-time strategy created over the course of 
 6 months as my final year project on the computer science course at Royal Holloway University of London.
-It was written under Ubuntu in C++ using KDevelop4 for code editing. The code is cross-platform and can be
+It was written under Ubuntu in C++ using KDevelop4 for code editing. 3D models were created and animated
+using Blender by myself as a side-project. The code is cross-platform and can be
 built for both Linux and Windows (possibly MacOS as well, although this is untested). 
 
 #Features
