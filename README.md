@@ -8,9 +8,9 @@ using Blender by myself as a side-project. The code is cross-platform and can be
 built for both Linux and Windows (possibly MacOS as well, although this is untested). 
 
 #Features
-The game uses an engine that was written from the ground up by myself, utilising the Irrlicht
-library for grapihcs rendering and SFML for input and audio. The main technical features of the engine
-consist of:<br />
+The game uses an engine that was written from the ground up as one of the main focuses of the project, 
+utilising the Irrlicht library for grapihcs rendering and SFML for input and audio. The main technical features 
+of the engine consist of:<br />
 
 - Pathfinding using the A* algorithm on a 2D grid<br />
 - AI behaviours controlled by pushdown automata<br />
