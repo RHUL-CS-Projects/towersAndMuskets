@@ -9,7 +9,7 @@ built for both Linux and Windows (possibly MacOS as well, although this is untes
 
 #Features
 The game uses an engine that was written from the ground up as one of the main focuses of the project, 
-utilising the Irrlicht library for grapihcs rendering and SFML for input and audio. The main technical features 
+utilising the Irrlicht library for graphics rendering and SFML for input and audio. The main technical features 
 of the engine consist of:<br />
 
 - Pathfinding using the A* algorithm on a 2D grid<br />
