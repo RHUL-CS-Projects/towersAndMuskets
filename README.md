@@ -1,18 +1,27 @@
-#Towers and Muskets - Jon Mortiboy
-This is a tower defence game created over the course of 6 months as my final year project 
-on the computer science course at Royal Holloway University of London. 
+#Towers and Muskets
+<strong>Programmed by Jon Mortiboy</strong><br /><br />
+This is a tower defence game mixing elements of real-time strategy created over the course of 
+6 months as my final year project on the computer science course at Royal Holloway University of London.
+It was written under Ubuntu in C++ using KDevelop4 for code editing. The code is cross-platform and can be
+built for both Linux and Windows (possibly MacOS as well, although this is untested). 
 
 #Features
 The game uses an engine that was written from the ground up by myself, utilising the Irrlicht
-library for grapihcs rendering and SFML for input and audio. The main features of the engine
-include:
+library for grapihcs rendering and SFML for input and audio. The main technical features of the engine
+consist of:<br />
 
+- Pathfinding using the A* algorithm on a 2D grid<br />
+- AI behaviours controlled by pushdown automata<br />
+- Support for menu systems using state machines<br />
+- Path following using steering behaviours<br />
+- Basic collision avoidance for units<br />
+- Mouse picking using an off-screen image rendered using shaders<br />
 - Loading game worlds encoded as image files<br />
-<br />
-<br />
-<br />
-<br />
+- Collision optimisation using spacial partitioning (quadtrees)<br />
+- Units moving into formation when arriving as a group<br />
 
+#Build/compilation instructions
+(To be written)
 
 #Directory Structure
 
@@ -47,7 +56,7 @@ Q,E			- Rotate camera left/right<br />
 Mousewheel	- Zoom in/out<br />
 TAB			- Toggle ground camera<br />
 
-Hints
+<strong>Hints</strong>
 
 - Units cannot be bought during waves<br />
 - There is a timer that counts up between waves during which no enemies spawn. Use this time
