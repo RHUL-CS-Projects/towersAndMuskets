@@ -23,7 +23,7 @@ of the engine consist of:<br />
 - Units moving into formation when arriving as a group<br />
 
 #Build/compilation instructions
-(To be written)
+(To be written. Prebuilt binaries will also be added for Windows, and hopefully a package for Linux as well)
 
 #Directory Structure
 
