@@ -1,3 +1,4 @@
+<a href="http://imgur.com/jpx185b"><img src="http://i.imgur.com/jpx185b.png" title="source: imgur.com" /></a>
 #Towers and Muskets
 <strong>Programmed by Jon Mortiboy</strong><br /><br />
 This is a tower defence game mixing elements of real-time strategy created over the course of 
